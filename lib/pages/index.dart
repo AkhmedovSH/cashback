@@ -18,19 +18,20 @@ class _IndexState extends State<Index> {
         child: Container(
           width: MediaQuery.of(context).size.width,
           // color: Colors.white,
-          margin: const EdgeInsets.only(top: 30, left: 30, right: 30),
+          margin: const EdgeInsets.only(top: 200, left: 30, right: 30),
           // color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                margin: const EdgeInsets.only(bottom: 95),
-                child: Image.asset(
-                  'images/cashback_icon.png',
-                  height: 70,
-                  width: 70,
-                ),
-              ),
+              // Container(
+              //   margin: const EdgeInsets.only(bottom: 95),
+              //   child: Image.asset(
+              //     'images/cashback_icon.png',
+              //     height: 70,
+              //     width: 70,
+              //   ),
+              // ),
               // Container(
               //   margin: const EdgeInsets.only(bottom: 40),
               //   child: const Text(
@@ -151,6 +152,15 @@ class _IndexState extends State<Index> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        currentIndex: 0,
+        selectedItemColor: const Color(0xFF7D4196),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Главная'),
+          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Отчеты')
+        ],
       ),
     );
   }
