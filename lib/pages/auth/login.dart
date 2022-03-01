@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../helpers/api.dart';
+import '../../helpers/api.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -13,17 +13,22 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  dynamic sendData = {'username': 'testmd', 'password': '8520'};
+  dynamic sendData = {'username': 'cashier', 'password': '123123'};
   bool showPassword = true;
 
   login() async {
     final response = await guestPost('/auth/login', sendData);
-    print(response);
-    print(response['access_token'] != null);
+
     if (response['access_token'] != null) {
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('access_token', response['access_token'].toString());
-      Get.offAllNamed('/dashboard');
+      final user = await get('/services/uaa/api/account');
+      print(user);
+      for (var i = 0; i < user['authorities'].length; i++) {
+        if (user['authorities'][i] == 'ROLE_CASHIER') {
+          Get.offAllNamed('/select-access-pos');
+        }
+      }
     }
   }
 
@@ -34,9 +39,7 @@ class _LoginState extends State<Login> {
           child: SingleChildScrollView(
         child: Container(
           width: MediaQuery.of(context).size.width,
-          // color: Colors.white,
           margin: const EdgeInsets.only(top: 30, left: 30, right: 30),
-          // color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

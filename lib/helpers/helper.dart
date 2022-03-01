@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 // Colors
 
 Color purple = const Color(0xFF7D4196);
+Color white = const Color(0xFFFFFFFF);
 
 // Date formaters
 

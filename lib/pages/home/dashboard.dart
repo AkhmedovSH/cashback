@@ -14,6 +14,10 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int currentIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  dynamic drawerList = [
+    {'title': 'Чеки', 'routeName': '/check-create'}
+  ];
 
   @override
   void initState() {
@@ -34,6 +38,36 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          icon: Icon(
+            Icons.menu,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      drawer: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: Drawer(
+            child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var i = 0; i < drawerList.length; i++)
+                TextButton(
+                  onPressed: () {},
+                  child: Text('Чеки', ),
+                )
+            ],
+          ),
+        )),
+      ),
       bottomNavigationBar: BottomNavigation(
         changeIndex: changeIndex,
         currentIndex: currentIndex,

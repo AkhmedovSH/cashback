@@ -4,7 +4,8 @@ import 'package:flutter/services.dart';
 
 import 'pages/splash.dart';
 
-import 'pages/login.dart';
+import 'pages/auth/login.dart';
+import 'pages/auth/selectAccessPos.dart';
 
 import 'pages/home/index.dart';
 import 'pages/home/reports.dart';
@@ -41,6 +42,8 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: '/splash', page: () => const Splash()),
         GetPage(name: '/login', page: () => const Login(), transition: Transition.fade),
+        GetPage(name: '/select-access-pos', page: () => const SelectAccessPos(), transition: Transition.fade),
+
         GetPage(name: '/', page: () => const Index(), transition: Transition.fade),
         GetPage(name: '/reports', page: () => const Reports(), transition: Transition.fade),
         GetPage(name: '/checks', page: () => const Checks(), transition: Transition.fade),
