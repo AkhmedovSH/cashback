@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cashback/helpers/api.dart';
 import 'package:cashback/helpers/helper.dart';
@@ -13,49 +15,51 @@ class Index extends StatefulWidget {
 }
 
 class _IndexState extends State<Index> {
-  Timer? _debounce;
+  bool showCreateProductDialog = false;
+  bool showProductsDialog = false;
+  dynamic data = {'posId': '', 'clientCode': '', 'totalAmount': '', 'writeOff': '', 'cashierName': ''};
 
-  serchUser() {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      final response = get('url');
+  searchUser(value) async {
+    if (value.length == 6 || value.length == 12) {
+      final prefs = await SharedPreferences.getInstance();
+      final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
+      print(response);
+    }
+  }
+
+  createCheque() async {
+    final response = await post('/services/gocashapi/api/cashbox-create-cheque', data);
+    print(response);
+  }
+
+  getData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final user = jsonDecode(prefs.getString('user')!);
+    setState(() {
+      data['posId'] = prefs.getString('posId');
+      data['cashierName'] = user['username'];
     });
   }
 
   @override
-  void dispose() {
-    _debounce?.cancel();
-    super.dispose();
+  void initState() {
+    super.initState();
+    getData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+          child: SingleChildScrollView(
         child: Container(
           width: MediaQuery.of(context).size.width,
-          // color: Colors.white,
-          margin: const EdgeInsets.only(top: 200, left: 30, right: 30),
-          // color: Colors.white,
+          // height: MediaQuery.of(context).size.height,
+          margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Container(
-              //   margin: const EdgeInsets.only(bottom: 95),
-              //   child: Image.asset(
-              //     'images/cashback_icon.png',
-              //     height: 70,
-              //     width: 70,
-              //   ),
-              // ),
-              // Container(
-              //   margin: const EdgeInsets.only(bottom: 40),
-              //   child: const Text(
-              //     'Войдите в систему чтобы продолжить',
-              //     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-              //   ),
-              // ),
               Container(
                   margin: const EdgeInsets.only(bottom: 20),
                   child: Theme(
@@ -65,30 +69,34 @@ class _IndexState extends State<Index> {
                           ),
                     ),
                     child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.phone_iphone,
-                            )),
-                        contentPadding: const EdgeInsets.all(18.0),
-                        focusColor: const Color(0xFF7D4196),
+                      onChanged: (value) {
+                        setState(() {
+                          data['clientCode'] = value;
+                        });
+                        searchUser(value);
+                      },
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.phone_iphone,
+                        ),
+                        contentPadding: EdgeInsets.all(18.0),
+                        focusColor: Color(0xFF7D4196),
                         filled: true,
                         fillColor: Colors.transparent,
-                        enabledBorder: const UnderlineInputBorder(
+                        enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF9C9C9C)),
                         ),
-                        focusedBorder: const UnderlineInputBorder(
+                        focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF7D4196)),
                         ),
                         hintText: 'QR Code или Телефон номер',
-                        hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                        hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
                       ),
                       style: const TextStyle(color: Color(0xFF9C9C9C)),
                     ),
                   )),
               Container(
-                  margin: const EdgeInsets.only(bottom: 25),
+                  margin: const EdgeInsets.only(bottom: 20),
                   child: Theme(
                     data: Theme.of(context).copyWith(
                       colorScheme: ThemeData().colorScheme.copyWith(
@@ -96,6 +104,11 @@ class _IndexState extends State<Index> {
                           ),
                     ),
                     child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          data['totalAmount'] = value;
+                        });
+                      },
                       decoration: InputDecoration(
                         prefixIcon: IconButton(
                             onPressed: () {},
@@ -118,44 +131,51 @@ class _IndexState extends State<Index> {
                       style: const TextStyle(color: Color(0xFF9C9C9C)),
                     ),
                   )),
+              Container(
+                  margin: const EdgeInsets.only(bottom: 90),
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: ThemeData().colorScheme.copyWith(
+                            primary: const Color(0xFF7D4196),
+                          ),
+                    ),
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          data['writeOff'] = value;
+                        });
+                      },
+                      scrollPadding: const EdgeInsets.only(bottom: 50),
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.payments_outlined,
+                        ),
+                        contentPadding: EdgeInsets.all(18.0),
+                        focusColor: Color(0xFF7D4196),
+                        filled: true,
+                        fillColor: Colors.transparent,
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF7D4196)),
+                        ),
+                        hintText: 'Накопленные баллы',
+                        hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
+                      ),
+                      style: const TextStyle(color: Color(0xFF9C9C9C)),
+                    ),
+                  )),
             ],
           ),
         ),
-      ),
+      )),
       floatingActionButton: Container(
         margin: const EdgeInsets.only(left: 32),
         width: double.infinity,
         child: ElevatedButton(
           onPressed: () {
-            showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text('Оплата прошла успешно'),
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, 'Cancel'),
-                      child: const Text('Посмотреть отчеты'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, 'OK'),
-                      child: const Text('OK'),
-                    ),
-                  ],
-                ),
-                // actions: <Widget>[
-                //   TextButton(
-                //     onPressed: () => Navigator.pop(context, 'Cancel'),
-                //     child: const Text('Cancel'),
-                //   ),
-                //   TextButton(
-                //     onPressed: () => Navigator.pop(context, 'OK'),
-                //     child: const Text('OK'),
-                //   ),
-                // ],
-              ),
-            );
+            createCheque();
           },
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),

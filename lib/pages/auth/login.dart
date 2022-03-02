@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,8 +24,8 @@ class _LoginState extends State<Login> {
     if (response['access_token'] != null) {
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('access_token', response['access_token'].toString());
+      prefs.setString('user', jsonEncode(sendData));
       final user = await get('/services/uaa/api/account');
-      print(user);
       for (var i = 0; i < user['authorities'].length; i++) {
         if (user['authorities'][i] == 'ROLE_CASHIER') {
           Get.offAllNamed('/select-access-pos');
@@ -178,14 +180,6 @@ class _LoginState extends State<Login> {
                           )),
                     ],
                   )),
-              Container(
-                alignment: Alignment.centerRight,
-                margin: EdgeInsets.only(bottom: 50),
-                child: const Text(
-                  'Забыли пароль?',
-                  style: TextStyle(color: Color(0xFF7D4196), fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
             ],
           ),
         ),

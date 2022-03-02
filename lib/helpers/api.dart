@@ -21,9 +21,11 @@ Future get(String url, {payload}) async {
     final response = await dio.get(hostUrl + url,
         queryParameters: payload,
         options: Options(headers: {
+          // "authorization":
+          //     "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJ0ZXN0bWQiLCJzY29wZSI6WyJvcGVuaWQiXSwiZXhwIjoxNjQ2MjY5NDExLCJpYXQiOjE2NDYxODMwMTEsImF1dGhvcml0aWVzIjpbIlJPTEVfQlVTSU5FU1NfT1dORVIiXSwianRpIjoiTGpaeWRaY3RrYW9za2J6UXBuY2N3bHBRNVJVIiwiY2xpZW50X2lkIjoid2ViX2FwcCJ9.Gg2AIXgkHpDB_UZEnTtP3hWeeR5M3fddrgpTaC18OcoPvgNTnxXddiM1q40J89yfQbB70kkihOFlxxhwdaTRToP0tFZU7RXNAxggAk2VFp7zJ5O6gMtiKwc276trqJsdasRWANFIYv3ouOy3t6x4Rr-ivzGYYHmgdXaeSnTAWcaVuDYGYd-gqliWlYO09mXRpOTNq71JATJBnKbo2ZNjWWZcKZDlvTsHSKIIgyuj9Oe_5yZKHC_Q4uBHbXsSV3mPFnTEtJTpxFHkyufRZFgmgLuwFjvecYMf13Qmer1Iy_6QUshYvaoPeVdhTFxU3Tiw9D_w_zhLXVMQt_gL9A59JQ"
           "authorization": "Bearer ${prefs.getString('access_token')}",
         }));
-    // print(response.data);
+    print(response.data);
     return response.data;
   } on DioError catch (e) {
     print(e.response?.statusCode);

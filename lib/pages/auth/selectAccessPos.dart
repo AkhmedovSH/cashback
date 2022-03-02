@@ -53,7 +53,7 @@ class _SelectAccessPosState extends State<SelectAccessPos> {
                 padding: const EdgeInsets.only(bottom: 2),
                 decoration: BoxDecoration(border: Border(bottom: BorderSide(color: white, width: 1))),
                 child: Text(
-                  'Свободные кассы',
+                  'Свободные точки',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: white),
                 ),
               ),
@@ -67,13 +67,13 @@ class _SelectAccessPosState extends State<SelectAccessPos> {
               for (var i = 0; i < accessPos.length; i++)
                 Column(
                   children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: Text(
-                        accessPos[i]['posGroupName'],
-                        style: TextStyle(color: white, fontSize: 20, fontWeight: FontWeight.w500),
-                      ),
-                    ),
+                    // Container(
+                    //   margin: const EdgeInsets.only(bottom: 10),
+                    //   child: Text(
+                    //     accessPos[i]['posGroupName'],
+                    //     style: TextStyle(color: white, fontSize: 20, fontWeight: FontWeight.w500),
+                    //   ),
+                    // ),
                     for (var j = 0; j < accessPos[i]['posList'].length; j++)
                       Container(
                         margin: const EdgeInsets.only(bottom: 10),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:cashback/helpers/helper.dart';
+
 import '../../components/bottom/BottomNavigation.dart';
 import './index.dart';
 import './reports.dart';
-import './checks.dart';
+import 'cheques.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -22,11 +24,6 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    // if (widget.index != null) {
-    //   setState(() {
-    //     currentIndex = widget.index!;
-    //   });
-    // }
   }
 
   changeIndex(int index) {
@@ -41,33 +38,58 @@ class _DashboardState extends State<Dashboard> {
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            _scaffoldKey.currentState!.openDrawer();
-          },
-          icon: Icon(
-            Icons.menu,
-            color: Colors.black,
-          ),
+        // elevation: 0,
+        title: const Text(
+          'CashBek',
+          style: TextStyle(color: Colors.black),
         ),
-      ),
-      drawer: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
-        child: Drawer(
-            child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var i = 0; i < drawerList.length; i++)
-                TextButton(
+        centerTitle: true,
+        actions: [
+          currentIndex == 0
+              ? IconButton(
                   onPressed: () {},
-                  child: Text('Чеки', ),
-                )
-            ],
-          ),
-        )),
+                  icon: Icon(
+                    Icons.add,
+                    color: purple,
+                  ))
+              : Container(),
+          currentIndex == 0
+              ? IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.save,
+                    color: purple,
+                  ))
+              : Container()
+        ],
+        // leading: IconButton(
+        //   onPressed: () {
+        //     _scaffoldKey.currentState!.openDrawer();
+        //   },
+        //   icon: const Icon(
+        //     Icons.menu,
+        //     color: Colors.black,
+        //   ),
+        // ),
       ),
+      // drawer: SizedBox(
+      //   width: MediaQuery.of(context).size.width * 0.8,
+      //   child: Drawer(
+      //       child: SafeArea(
+      //     child: Column(
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         for (var i = 0; i < drawerList.length; i++)
+      //           TextButton(
+      //             onPressed: () {},
+      //             child: Text(
+      //               'Чеки',
+      //             ),
+      //           )
+      //       ],
+      //     ),
+      //   )),
+      // ),
       bottomNavigationBar: BottomNavigation(
         changeIndex: changeIndex,
         currentIndex: currentIndex,

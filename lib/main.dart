@@ -7,10 +7,12 @@ import 'pages/splash.dart';
 import 'pages/auth/login.dart';
 import 'pages/auth/selectAccessPos.dart';
 
+import 'pages/home/dashboard.dart';
 import 'pages/home/index.dart';
 import 'pages/home/reports.dart';
-import 'pages/home/checks.dart';
-import 'pages/home/dashboard.dart';
+import 'pages/home/cheques.dart';
+
+import 'pages/cheque_by_id.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,11 +46,13 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/login', page: () => const Login(), transition: Transition.fade),
         GetPage(name: '/select-access-pos', page: () => const SelectAccessPos(), transition: Transition.fade),
 
-        GetPage(name: '/', page: () => const Index(), transition: Transition.fade),
-        GetPage(name: '/reports', page: () => const Reports(), transition: Transition.fade),
-        GetPage(name: '/checks', page: () => const Checks(), transition: Transition.fade),
-
         GetPage(name: '/dashboard', page: () => const Dashboard(), transition: Transition.fade),
+
+        GetPage(name: '/cheque-by-id', page: () => const ChequeById(), transition: Transition.fade),
+
+        // GetPage(name: '/', page: () => const Index(), transition: Transition.fade),
+        // GetPage(name: '/reports', page: () => const Reports(), transition: Transition.fade),
+        // GetPage(name: '/checks', page: () => const Checks(), transition: Transition.fade),
       ],
     );
     // if (snapshot.connectionState == ConnectionState.waiting) {
