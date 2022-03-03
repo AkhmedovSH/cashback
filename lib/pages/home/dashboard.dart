@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cashback/helpers/helper.dart';
 
-import '../../components/bottom/BottomNavigation.dart';
+import '../../components/bottom/bottom_navigation.dart';
 import './index.dart';
 import './reports.dart';
 import 'cheques.dart';

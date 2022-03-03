@@ -43,7 +43,7 @@ Future post(String url, dynamic payload) async {
         }));
     return response.data;
   } on DioError catch (e) {
-    //print(e.response?.statusCode);
+    print(e.response?.statusCode);
     //print(e.response?.data);
     if (e.response?.statusCode == 400) {
       return;

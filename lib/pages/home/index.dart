@@ -17,19 +17,29 @@ class Index extends StatefulWidget {
 class _IndexState extends State<Index> {
   bool showCreateProductDialog = false;
   bool showProductsDialog = false;
-  dynamic data = {'posId': '', 'clientCode': '', 'totalAmount': '', 'writeOff': '', 'cashierName': ''};
+  dynamic data = {'posId': '', 'clientCode': '', 'totalAmount': '0', 'writeOff': '0', 'cashierName': ''};
+  dynamic user = {};
 
   searchUser(value) async {
     if (value.length == 6 || value.length == 12) {
       final prefs = await SharedPreferences.getInstance();
       final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
-      print(response);
+      if (response['firstName']! != null) {
+        setState(() {
+          user = response;
+        });
+      }
     }
   }
 
   createCheque() async {
-    final response = await post('/services/gocashapi/api/cashbox-create-cheque', data);
-    print(response);
+    if (user['firstName'] != null) {
+      final response = await post('/services/gocashapi/api/cashbox-create-cheque', data);
+      print(response);
+      setState(() {
+        data = {'posId': '', 'clientCode': '', 'totalAmount': '0', 'writeOff': '0', 'cashierName': ''};
+      });
+    }
   }
 
   getData() async {
@@ -75,6 +85,7 @@ class _IndexState extends State<Index> {
                         });
                         searchUser(value);
                       },
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(
                           Icons.phone_iphone,
@@ -109,6 +120,7 @@ class _IndexState extends State<Index> {
                           data['totalAmount'] = value;
                         });
                       },
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         prefixIcon: IconButton(
                             onPressed: () {},
@@ -145,6 +157,7 @@ class _IndexState extends State<Index> {
                           data['writeOff'] = value;
                         });
                       },
+                      keyboardType: TextInputType.number,
                       scrollPadding: const EdgeInsets.only(bottom: 50),
                       decoration: const InputDecoration(
                         prefixIcon: Icon(
@@ -180,6 +193,9 @@ class _IndexState extends State<Index> {
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             elevation: 0,
+            // primary: user['firstName'] != null && (user['balance']).round() > int.parse(data['writeOff']) && int.parse(data['writeOff']) > 0 ||
+            //         int.parse(data['totalAmount']) > 0
+            primary: user['firstName'] != null ? purple : grey,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

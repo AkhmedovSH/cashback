@@ -17,7 +17,6 @@ class _SelectAccessPosState extends State<SelectAccessPos> {
 
   selectAccessPos(posId) async {
     final prefs = await SharedPreferences.getInstance();
-    print(posId);
     prefs.setString('posId', posId.toString());
     Get.offAllNamed('/dashboard');
   }
@@ -30,7 +29,6 @@ class _SelectAccessPosState extends State<SelectAccessPos> {
 
   getAccessPos() async {
     final response = await get('/services/gocashapi/api/get-access-pos');
-    print(response);
     setState(() {
       accessPos = response;
     });

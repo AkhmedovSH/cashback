@@ -15,18 +15,19 @@ class Checks extends StatefulWidget {
 
 class _ChecksState extends State<Checks> {
   dynamic checks = [];
+  dynamic user = {};
   Timer? _debounce;
+  dynamic filter = {};
 
-  searchCheque(value) {
-    if (value.length > 0) {
-      if (_debounce?.isActive ?? false) _debounce!.cancel();
-      _debounce = Timer(const Duration(milliseconds: 1000), () async {
-        final response = await get('/services/gocashapi/api/cheque-pageList', payload: {'search': value});
-        print(response);
-        setState(() {});
-      });
-    }
-  }
+  // searchCheque(value) {
+  //   if (value.length > 0) {
+  //     if (_debounce?.isActive ?? false) _debounce!.cancel();
+  //     _debounce = Timer(const Duration(milliseconds: 1000), () async {
+  //       final response = await get('/services/gocashapi/api/cashbox-cheque-pageList', payload: {'search': value});
+  //       setState(() {});
+  //     });
+  //   }
+  // }
 
   @override
   void initState() {
@@ -35,8 +36,7 @@ class _ChecksState extends State<Checks> {
   }
 
   getChecks() async {
-    final response = await get('/services/gocashapi/api/cheque-pageList');
-    print(response);
+    final response = await get('/services/gocashapi/api/cashbox-cheque-pageList');
     if (response != null) {
       setState(() {
         checks = response;
@@ -61,31 +61,6 @@ class _ChecksState extends State<Checks> {
             children: [
               Row(
                 children: [
-                  Expanded(
-                    flex: 2,
-                    child: TextFormField(
-                      onChanged: (value) {
-                        searchCheque(value);
-                      },
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(18.0),
-                        focusColor: Color(0xFF7D4196),
-                        filled: true,
-                        fillColor: Colors.transparent,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFFced4da)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFFced4da)),
-                        ),
-                        hintText: 'Поиск',
-                        hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
                   Expanded(
                     flex: 1,
                     child: ElevatedButton(
