@@ -33,9 +33,8 @@ class _SplashState extends State<Splash> {
       backgroundColor: Color(0xFF7D4196),
       body: Center(
           child: Text(
-        'CashBek',
-        style: TextStyle(
-            fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
+        'moneyBek',
+        style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
       )),
     );
   }

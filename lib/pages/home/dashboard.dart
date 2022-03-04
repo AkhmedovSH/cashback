@@ -56,7 +56,7 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Colors.white,
         // elevation: 0,
         title: const Text(
-          'CashBek',
+          'moneyBek',
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,

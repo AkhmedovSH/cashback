@@ -58,10 +58,11 @@ class _SelectAccessPosState extends State<SelectAccessPos> {
               Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 child: Text(
-                  'Выберите кассу для входа',
+                  'Выберите торговую точку для входа',
                   style: TextStyle(color: white, fontSize: 18, fontWeight: FontWeight.w500),
                 ),
               ),
+              const SizedBox(height: 15),
               for (var i = 0; i < accessPos.length; i++)
                 Column(
                   children: [

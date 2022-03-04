@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 import 'pages/splash.dart';
 
@@ -8,12 +8,16 @@ import 'pages/auth/login.dart';
 import 'pages/auth/selectAccessPos.dart';
 
 import 'pages/home/dashboard.dart';
-import 'pages/home/index.dart';
-import 'pages/home/cheques.dart';
 
 import 'pages/cheque_by_id.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   runApp(const MyApp());
 }
 
@@ -54,62 +58,5 @@ class MyApp extends StatelessWidget {
         // GetPage(name: '/checks', page: () => const Checks(), transition: Transition.fade),
       ],
     );
-    // if (snapshot.connectionState == ConnectionState.waiting) {
-    //   return const MaterialApp(home: Splash());
-    // } else {
-    //   return GetMaterialApp(
-    //     debugShowCheckedModeBanner: false,
-    //     popGesture: true,
-    //     defaultTransition: Transition.leftToRight,
-    //     transitionDuration: Duration(milliseconds: 250),
-    //     theme: ThemeData(
-    //       backgroundColor: const Color(0xFFFFFFFF),
-    //       scaffoldBackgroundColor: const Color(0xFFFFFFFF),
-    //       elevatedButtonTheme: ElevatedButtonThemeData(
-    //         style: ElevatedButton.styleFrom(
-    //           primary: const Color(0xFF7D4196),
-    //         ),
-    //       ),
-    //       textButtonTheme: TextButtonThemeData(
-    //           style: TextButton.styleFrom(
-    //         primary: const Color(0xFF7D4196),
-    //       )),
-    //     ),
-    //     initialRoute: '/splash',
-    //     getPages: [
-    //       GetPage(name: '/login', page: () => const Login()),
-    //       GetPage(
-    //           name: '/',
-    //           page: () => const Index(),
-    //           transition: Transition.fade)
-    //     ],
-    //   );
-    // }
-
-    // return GetMaterialApp(
-    //   debugShowCheckedModeBanner: false,
-    //   popGesture: true,
-    //   defaultTransition: Transition.leftToRight,
-    //   transitionDuration: Duration(milliseconds: 250),
-    //   theme: ThemeData(
-    //     backgroundColor: const Color(0xFFFFFFFF),
-    //     scaffoldBackgroundColor: const Color(0xFFFFFFFF),
-    //     elevatedButtonTheme: ElevatedButtonThemeData(
-    //       style: ElevatedButton.styleFrom(
-    //         primary: const Color(0xFF7D4196),
-    //       ),
-    //     ),
-    //     textButtonTheme: TextButtonThemeData(
-    //         style: TextButton.styleFrom(
-    //       primary: const Color(0xFF7D4196),
-    //     )),
-    //   ),
-    //   initialRoute: '/login',
-    //   getPages: [
-    //     GetPage(name: '/login', page: () => const Login()),
-    //     GetPage(
-    //         name: '/', page: () => const Index(), transition: Transition.fade)
-    //   ],
-    // );
   }
 }
