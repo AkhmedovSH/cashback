@@ -9,7 +9,6 @@ import 'pages/auth/selectAccessPos.dart';
 
 import 'pages/home/dashboard.dart';
 import 'pages/home/index.dart';
-import 'pages/home/reports.dart';
 import 'pages/home/cheques.dart';
 
 import 'pages/cheque_by_id.dart';

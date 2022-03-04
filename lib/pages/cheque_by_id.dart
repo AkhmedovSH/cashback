@@ -208,7 +208,7 @@ class _ChequeByIdState extends State<ChequeById> {
       builder: (BuildContext context) => AlertDialog(
         // titlePadding: EdgeInsets.all(0),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 30),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 15),
         title: const Text(
           'Возврат',
           textAlign: TextAlign.center,

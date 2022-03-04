@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,17 +7,25 @@ import 'package:cashback/helpers/api.dart';
 import 'package:cashback/helpers/helper.dart';
 
 class Index extends StatefulWidget {
-  const Index({Key? key}) : super(key: key);
+  final dynamic products;
+  final Function? clearProducts;
+  const Index({Key? key, this.products, this.clearProducts}) : super(key: key);
 
   @override
   _IndexState createState() => _IndexState();
 }
 
 class _IndexState extends State<Index> {
-  bool showCreateProductDialog = false;
-  bool showProductsDialog = false;
-  dynamic data = {'posId': '', 'clientCode': '', 'totalAmount': '0', 'writeOff': '0', 'cashierName': ''};
+  dynamic data = {
+    'posId': '',
+    'clientCode': TextEditingController(),
+    'totalAmount': TextEditingController(),
+    'writeOff': TextEditingController(),
+    'cashierName': '',
+    'products': []
+  };
   dynamic user = {};
+  dynamic totalAmount = 0;
 
   searchUser(value) async {
     if (value.length == 6 || value.length == 12) {
@@ -34,20 +41,42 @@ class _IndexState extends State<Index> {
 
   createCheque() async {
     if (user['firstName'] != null) {
-      final response = await post('/services/gocashapi/api/cashbox-create-cheque', data);
+      var sendData = Map.from(data);
+      sendData['clientCode'] = data['clientCode'].text;
+      sendData['totalAmount'] = data['totalAmount'].text == '' ? '0' : data['totalAmount'].text;
+      sendData['writeOff'] = data['writeOff'].text == '' ? '0' : data['writeOff'].text;
+      final response = await post('/services/gocashapi/api/cashbox-create-cheque', sendData);
       print(response);
-      setState(() {
-        data = {'posId': '', 'clientCode': '', 'totalAmount': '0', 'writeOff': '0', 'cashierName': ''};
-      });
+      if (response['success']) {
+        setState(() {
+          data['clientCode'].text = '';
+          data['totalAmount'].text = '';
+          data['writeOff'].text = '';
+          data['products'] = [];
+        });
+        widget.clearProducts!();
+      }
     }
+  }
+
+  deleteProduct(i) {
+    dynamic productsCopy = widget.products;
+    productsCopy.removeAt(i);
   }
 
   getData() async {
     final prefs = await SharedPreferences.getInstance();
     final user = jsonDecode(prefs.getString('user')!);
+    print(widget.products);
+    dynamic amount = 0;
+    for (var i = 0; i < widget.products.length; i++) {
+      amount = widget.products[i]['quantity'] * widget.products[i]['amount'];
+    }
     setState(() {
       data['posId'] = prefs.getString('posId');
       data['cashierName'] = user['username'];
+      data['products'] = widget.products;
+      totalAmount = amount;
     });
   }
 
@@ -64,7 +93,6 @@ class _IndexState extends State<Index> {
           child: SingleChildScrollView(
         child: Container(
           width: MediaQuery.of(context).size.width,
-          // height: MediaQuery.of(context).size.height,
           margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,10 +107,8 @@ class _IndexState extends State<Index> {
                           ),
                     ),
                     child: TextField(
+                      controller: data['clientCode'],
                       onChanged: (value) {
-                        setState(() {
-                          data['clientCode'] = value;
-                        });
                         searchUser(value);
                       },
                       keyboardType: TextInputType.number,
@@ -115,11 +141,7 @@ class _IndexState extends State<Index> {
                           ),
                     ),
                     child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          data['totalAmount'] = value;
-                        });
-                      },
+                      controller: data['totalAmount'],
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         prefixIcon: IconButton(
@@ -152,11 +174,7 @@ class _IndexState extends State<Index> {
                           ),
                     ),
                     child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          data['writeOff'] = value;
-                        });
-                      },
+                      controller: data['writeOff'],
                       keyboardType: TextInputType.number,
                       scrollPadding: const EdgeInsets.only(bottom: 50),
                       decoration: const InputDecoration(
@@ -179,6 +197,62 @@ class _IndexState extends State<Index> {
                       style: const TextStyle(color: Color(0xFF9C9C9C)),
                     ),
                   )),
+              for (var i = 0; i < widget.products.length; i++)
+                Dismissible(
+                  key: UniqueKey(),
+                  onDismissed: (DismissDirection direction) {
+                    deleteProduct(i);
+                  },
+                  background: Container(
+                    color: white,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 10, bottom: 10, top: 10),
+                    child: Icon(Icons.delete, color: red),
+                  ),
+                  direction: DismissDirection.endToStart,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.only(bottom: 5),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Color(0xFFF5F3F5), width: 1),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${(i + 1).toString() + '. ' + widget.products[i]['name']}',
+                          style: const TextStyle(fontSize: 16),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          softWrap: false,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 5),
+                                Text(
+                                  '${formatMoney(widget.products[i]['amount'])}x ${formatMoney(widget.products[i]['quantity'])}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              '${formatMoney(int.parse(widget.products[i]['quantity']) * int.parse(widget.products[i]['amount']))}So\'m',
+                              style: TextStyle(fontWeight: FontWeight.w600, color: purple, fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
             ],
           ),
         ),
