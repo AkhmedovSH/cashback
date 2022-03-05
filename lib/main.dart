@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import 'helpers/translations.dart';
+
 import 'pages/splash.dart';
 
 import 'pages/auth/login.dart';
@@ -26,6 +28,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      translations: Messages(),
+      locale: const Locale('ru', 'RU'),
+      fallbackLocale: const Locale('en', 'EN'),
       debugShowCheckedModeBanner: false,
       popGesture: true,
       defaultTransition: Transition.leftToRight,

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/api.dart';
+import '../../helpers/helper.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -17,6 +18,13 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   dynamic sendData = {'username': 'cashier', 'password': '123123'};
   bool showPassword = true;
+  List translations = [
+    {'id': 1, 'name': 'Русский', 'locale': const Locale('ru', 'RU')},
+    {'id': 2, 'name': 'Английский', 'locale': const Locale('en', 'EN')},
+    {'id': 3, 'name': 'Узбекский(лат)', 'locale': const Locale('uz_cyrl', 'UZ')},
+    {'id': 4, 'name': 'Узбекский(кир)', 'locale': const Locale('uz_latn', 'UZ')},
+  ];
+  dynamic currentLocale = '1';
 
   login() async {
     final response = await guestPost('/auth/login', sendData);
@@ -34,6 +42,22 @@ class _LoginState extends State<Login> {
     }
   }
 
+  updateTranslation(newValue) {
+    for (var i = 0; i < translations.length; i++) {
+      if (translations[i]['id'].toString() == newValue) {
+        Get.updateLocale(translations[i]['locale']);
+      }
+    }
+    setState(() {
+      currentLocale = newValue;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,13 +69,58 @@ class _LoginState extends State<Login> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                margin: const EdgeInsets.only(bottom: 15),
-                child: Image.asset(
-                  'images/cashback_icon.png',
-                  height: 70,
-                  width: 70,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 15),
+                    child: Image.asset(
+                      'images/cashback_icon.png',
+                      height: 70,
+                      width: 70,
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.44,
+                    height: 50,
+                    decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 2, color: Color(0xFFECECEC)))),
+                    // decoration: const ShapeDecoration(
+                    //   shape: RoundedRectangleBorder(
+                    //     side: BorderSide(width: 1.0, style: BorderStyle.solid, color: Color(0xFFECECEC)),
+                    //     borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    //   ),
+                    // ),
+                    child: DropdownButtonHideUnderline(
+                      child: ButtonTheme(
+                        alignedDropdown: true,
+                        child: DropdownButton(
+                          value: currentLocale,
+                          isExpanded: true,
+                          hint: Text('${translations[0]['name']}'),
+                          icon: const Icon(Icons.chevron_right),
+                          iconSize: 24,
+                          iconEnabledColor: purple,
+                          elevation: 16,
+                          style: const TextStyle(color: Color(0xFF313131)),
+                          underline: Container(
+                            height: 2,
+                            width: MediaQuery.of(context).size.width * 0.44,
+                            color: purple,
+                          ),
+                          onChanged: (newValue) {
+                            updateTranslation(newValue);
+                          },
+                          items: translations.map((item) {
+                            return DropdownMenuItem<String>(
+                              value: '${item['id']}',
+                              child: Text(item['name']),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 margin: const EdgeInsets.only(bottom: 15),

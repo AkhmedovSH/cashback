@@ -25,6 +25,8 @@ class _IndexState extends State<Index> {
   };
   dynamic user = {};
   dynamic totalAmount = 0;
+  dynamic previousValue = '';
+  bool validate = true;
 
   searchUser(value) async {
     if (value.length == 6 || value.length == 12) {
@@ -39,7 +41,8 @@ class _IndexState extends State<Index> {
   }
 
   createCheque() async {
-    if (user['firstName'] != null) {
+    if (user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
+        int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0) {
       var sendData = Map.from(data);
       sendData['clientCode'] = data['clientCode'].text;
       sendData['totalAmount'] = data['totalAmount'].text == '' ? '0' : data['totalAmount'].text;
@@ -61,6 +64,25 @@ class _IndexState extends State<Index> {
   deleteProduct(i) {
     dynamic productsCopy = widget.products;
     productsCopy.removeAt(i);
+  }
+
+  validateWriteOffField(value) {
+    print('previous value: ' + previousValue);
+    print('current value: ' + data['writeOff'].text);
+    print('user balance: ${user['balance']}');
+    if (user['firstName'] != null) {
+      if (data['writeOff'].text != '') {
+        if (int.parse(data['writeOff'].text) > user['balance']) {
+          setState(() {
+            data['writeOff'].text = previousValue;
+          });
+        } else {
+          setState(() {
+            previousValue = value;
+          });
+        }
+      }
+    }
   }
 
   getData() async {
@@ -98,7 +120,7 @@ class _IndexState extends State<Index> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                  margin: const EdgeInsets.only(bottom: 20),
+                  margin: const EdgeInsets.only(bottom: 10),
                   child: Theme(
                     data: Theme.of(context).copyWith(
                       colorScheme: ThemeData().colorScheme.copyWith(
@@ -131,6 +153,33 @@ class _IndexState extends State<Index> {
                       style: const TextStyle(color: Color(0xFF9C9C9C)),
                     ),
                   )),
+              Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                child: user['firstName'] != null
+                    ? Text(
+                        '${user['firstName'] + ' ' + user['lastName']}',
+                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                      )
+                    : null,
+              ),
+              user['firstName'] != null
+                  ? Row(
+                      children: [
+                        Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: const Text(
+                              'Баланс: ',
+                              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                            )),
+                        Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: Text(
+                              '${formatMoney(user['balance'])}',
+                              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: purple),
+                            ))
+                      ],
+                    )
+                  : Container(),
               Container(
                   margin: const EdgeInsets.only(bottom: 20),
                   child: Theme(
@@ -176,6 +225,13 @@ class _IndexState extends State<Index> {
                       controller: data['writeOff'],
                       keyboardType: TextInputType.number,
                       scrollPadding: const EdgeInsets.only(bottom: 50),
+                      onChanged: (value) {
+                        // validateWriteOffField(value);
+                        setState(() {
+                          validate = user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text);
+                        });
+                        print(user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text));
+                      },
                       decoration: const InputDecoration(
                         prefixIcon: Icon(
                           Icons.payments_outlined,
@@ -260,15 +316,18 @@ class _IndexState extends State<Index> {
         margin: const EdgeInsets.only(left: 32),
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: () {
-            createCheque();
-          },
+          onPressed: user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
+                  int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0
+              ? createCheque() 
+              : null,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             elevation: 0,
-            // primary: user['firstName'] != null && (user['balance']).round() > int.parse(data['writeOff']) && int.parse(data['writeOff']) > 0 ||
-            //         int.parse(data['totalAmount']) > 0
-            primary: user['firstName'] != null ? purple : grey,
+            primary: user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
+                    int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0
+                ? purple
+                : grey,
+            // primary: user['firstName'] != null ? purple : grey,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
