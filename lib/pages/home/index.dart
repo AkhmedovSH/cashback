@@ -41,6 +41,7 @@ class _IndexState extends State<Index> {
   }
 
   createCheque() async {
+    print('dasdas');
     if (user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
         int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0) {
       var sendData = Map.from(data);
@@ -55,6 +56,7 @@ class _IndexState extends State<Index> {
           data['totalAmount'].text = '';
           data['writeOff'].text = '';
           data['products'] = [];
+          user = {};
         });
         widget.clearProducts!();
       }
@@ -191,6 +193,11 @@ class _IndexState extends State<Index> {
                     child: TextField(
                       controller: data['totalAmount'],
                       keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        setState(() {
+                          validate = int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0;
+                        });
+                      },
                       decoration: InputDecoration(
                         prefixIcon: IconButton(
                             onPressed: () {},
@@ -227,10 +234,11 @@ class _IndexState extends State<Index> {
                       scrollPadding: const EdgeInsets.only(bottom: 50),
                       onChanged: (value) {
                         // validateWriteOffField(value);
-                        setState(() {
-                          validate = user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text);
-                        });
-                        print(user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text));
+                        if (user['balance'] != null) {
+                          setState(() {
+                            validate = user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text);
+                          });
+                        }
                       },
                       decoration: const InputDecoration(
                         prefixIcon: Icon(
@@ -318,15 +326,15 @@ class _IndexState extends State<Index> {
         child: ElevatedButton(
           onPressed: user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
                   int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0
-              ? createCheque() 
+              ? () {
+                  createCheque();
+                }
               : null,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             elevation: 0,
-            primary: user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
-                    int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0
-                ? purple
-                : grey,
+            onSurface: Colors.black,
+            primary: purple,
             // primary: user['firstName'] != null ? purple : grey,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),

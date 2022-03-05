@@ -20,7 +20,6 @@ class _LoginState extends State<Login> {
   bool showPassword = true;
   List translations = [
     {'id': 1, 'name': 'Русский', 'locale': const Locale('ru', 'RU')},
-    {'id': 2, 'name': 'Английский', 'locale': const Locale('en', 'EN')},
     {'id': 3, 'name': 'Узбекский(лат)', 'locale': const Locale('uz_cyrl', 'UZ')},
     {'id': 4, 'name': 'Узбекский(кир)', 'locale': const Locale('uz_latn', 'UZ')},
   ];
@@ -124,16 +123,16 @@ class _LoginState extends State<Login> {
               ),
               Container(
                 margin: const EdgeInsets.only(bottom: 15),
-                child: const Text(
-                  'Добро пожаловать в moneyBek',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                child: Text(
+                  'welcome_to_moneyback'.tr,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                 ),
               ),
               Container(
                 margin: const EdgeInsets.only(bottom: 40),
-                child: const Text(
-                  'Войдите в систему чтобы продолжить',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                child: Text(
+                  'sign_in_to_continue'.tr,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
               ),
               Form(
@@ -177,7 +176,7 @@ class _LoginState extends State<Login> {
                                 focusedBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(color: Color(0xFF7D4196)),
                                 ),
-                                hintText: 'Телефонный номер(9* *** ** **)',
+                                hintText: 'telephone_number'.tr + '(9* *** ** **)',
                                 hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                               ),
                               style: const TextStyle(color: Color(0xFF9C9C9C)),
@@ -269,8 +268,8 @@ class _LoginState extends State<Login> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: const Text(
-            'Войти',
+          child: Text(
+            'login'.tr,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
           ),
         ),
