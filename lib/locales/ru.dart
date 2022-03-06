@@ -4,5 +4,8 @@ final ru = {
   'telephone_number': 'Телефонный номер',
   'password': 'Пароль',
   'login': 'Войти',
-  'password': 'Пароль',
+  'free_points': 'Свободные точки',
+  'select_merchant_to_enter': 'Выберите торговую точку для входа',
+  'create_product': 'Создать продукт',
+  'required_field': 'Обязательное поле',
 };

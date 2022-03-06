@@ -224,72 +224,70 @@ class _ChecksState extends State<Checks> {
                                 ),
                               ),
                             ),
-                            Container(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      selectDate(context, 1);
-                                    },
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width * 0.44,
-                                      child: TextField(
-                                        controller: filter['startDate'],
-                                        textInputAction: TextInputAction.next,
-                                        enabled: false,
-                                        enableInteractiveSelection: false,
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 10),
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xFFced4da),
-                                              width: 1,
-                                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    selectDate(context, 1);
+                                  },
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width * 0.44,
+                                    child: TextField(
+                                      controller: filter['startDate'],
+                                      textInputAction: TextInputAction.next,
+                                      enabled: false,
+                                      enableInteractiveSelection: false,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 10),
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xFFced4da),
+                                            width: 1,
                                           ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xFFced4da),
-                                              width: 1,
-                                            ),
-                                          ),
-                                          hintStyle: TextStyle(color: Color(0xFF495057)),
                                         ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xFFced4da),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        hintStyle: TextStyle(color: Color(0xFF495057)),
                                       ),
                                     ),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      selectDate(context, 2);
-                                    },
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width * 0.44,
-                                      child: TextField(
-                                        controller: filter['endDate'],
-                                        textInputAction: TextInputAction.next,
-                                        enabled: false,
-                                        enableInteractiveSelection: false,
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 10),
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xFFced4da),
-                                              width: 1,
-                                            ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    selectDate(context, 2);
+                                  },
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width * 0.44,
+                                    child: TextField(
+                                      controller: filter['endDate'],
+                                      textInputAction: TextInputAction.next,
+                                      enabled: false,
+                                      enableInteractiveSelection: false,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 10),
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xFFced4da),
+                                            width: 1,
                                           ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xFFced4da),
-                                              width: 1,
-                                            ),
-                                          ),
-                                          hintStyle: TextStyle(color: Color(0xFF495057)),
                                         ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xFFced4da),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        hintStyle: TextStyle(color: Color(0xFF495057)),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                             Container(
                               margin: const EdgeInsets.only(top: 20, bottom: 20),
@@ -412,7 +410,7 @@ class _ChecksState extends State<Checks> {
                                         iconSize: 24,
                                         iconEnabledColor: purple,
                                         elevation: 16,
-                                        style: const TextStyle(color: const Color(0xFF313131)),
+                                        style: const TextStyle(color: Color(0xFF313131)),
                                         underline: Container(
                                           height: 2,
                                           color: purple,
@@ -451,7 +449,7 @@ class _ChecksState extends State<Checks> {
                                         iconSize: 24,
                                         iconEnabledColor: purple,
                                         elevation: 16,
-                                        style: const TextStyle(color: const Color(0xFF313131)),
+                                        style: const TextStyle(color: Color(0xFF313131)),
                                         underline: Container(
                                           height: 2,
                                           color: purple,

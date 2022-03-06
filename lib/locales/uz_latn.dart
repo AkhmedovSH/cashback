@@ -4,4 +4,8 @@ final uz_latn = {
   'telephone_number': 'Telefon raqami',
   'password': 'Parol',
   'login': 'Tizimga kirish',
+  'free_points': 'Свободные точки',
+  'select_merchant_to_enter': 'Kirish uchun sotuvchini tanlang',
+  'create_product': 'Mahsulot yaratish',
+  'required_field': 'Majburiy maydon',
 };

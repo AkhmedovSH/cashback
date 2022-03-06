@@ -20,8 +20,8 @@ class _LoginState extends State<Login> {
   bool showPassword = true;
   List translations = [
     {'id': 1, 'name': 'Русский', 'locale': const Locale('ru', 'RU')},
-    {'id': 3, 'name': 'Узбекский(лат)', 'locale': const Locale('uz_cyrl', 'UZ')},
-    {'id': 4, 'name': 'Узбекский(кир)', 'locale': const Locale('uz_latn', 'UZ')},
+    {'id': 3, 'name': 'Узбекский(лат)', 'locale': const Locale('uz_latn', 'UZ')},
+    {'id': 4, 'name': 'Узбекский(кир)', 'locale': const Locale('uz_cyrl', 'UZ')},
   ];
   dynamic currentLocale = '1';
 
@@ -151,7 +151,7 @@ class _LoginState extends State<Login> {
                             child: TextFormField(
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Обязательное поле';
+                                  return 'required_field'.tr;
                                 }
                               },
                               initialValue: sendData['username'],
@@ -193,7 +193,7 @@ class _LoginState extends State<Login> {
                             child: TextFormField(
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Обязательное поле';
+                                  return 'required_field'.tr;
                                 }
                               },
                               initialValue: sendData['password'],

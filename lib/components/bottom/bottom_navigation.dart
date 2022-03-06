@@ -23,6 +23,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       onTap: onSelectMenu,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Главная'),
+        BottomNavigationBarItem(icon: Icon(Icons.add_box), label: 'Продукты'),
         BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Чеки'),
       ],
     );

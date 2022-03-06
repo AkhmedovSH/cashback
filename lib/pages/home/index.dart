@@ -15,6 +15,7 @@ class Index extends StatefulWidget {
 }
 
 class _IndexState extends State<Index> {
+  final focus = FocusNode();
   dynamic data = {
     'posId': '',
     'clientCode': TextEditingController(),
@@ -129,7 +130,11 @@ class _IndexState extends State<Index> {
                             primary: const Color(0xFF7D4196),
                           ),
                     ),
-                    child: TextField(
+                    child: TextFormField(
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (v) {
+                        FocusScope.of(context).requestFocus(focus);
+                      },
                       controller: data['clientCode'],
                       onChanged: (value) {
                         searchUser(value);
@@ -190,7 +195,9 @@ class _IndexState extends State<Index> {
                             primary: const Color(0xFF7D4196),
                           ),
                     ),
-                    child: TextField(
+                    child: TextFormField(
+                      textInputAction: TextInputAction.next,
+                      focusNode: focus,
                       controller: data['totalAmount'],
                       keyboardType: TextInputType.number,
                       onChanged: (value) {
@@ -228,7 +235,8 @@ class _IndexState extends State<Index> {
                             primary: const Color(0xFF7D4196),
                           ),
                     ),
-                    child: TextField(
+                    child: TextFormField(
+                      textInputAction: TextInputAction.done,
                       controller: data['writeOff'],
                       keyboardType: TextInputType.number,
                       scrollPadding: const EdgeInsets.only(bottom: 50),

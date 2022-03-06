@@ -51,14 +51,14 @@ class _SelectAccessPosState extends State<SelectAccessPos> {
                 padding: const EdgeInsets.only(bottom: 2),
                 decoration: BoxDecoration(border: Border(bottom: BorderSide(color: white, width: 1))),
                 child: Text(
-                  'Свободные точки',
+                  'free_points'.tr,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: white),
                 ),
               ),
               Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 child: Text(
-                  'Выберите торговую точку для входа',
+                  'select_merchant_to_enter'.tr,
                   style: TextStyle(color: white, fontSize: 18, fontWeight: FontWeight.w500),
                 ),
               ),

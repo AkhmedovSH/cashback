@@ -44,8 +44,7 @@ class _ChequeByIdState extends State<ChequeById> {
   }
 
   returnCheque() async {
-    // print(data);
-    if (user['firstName'] != null) {
+    if (user['firstName'] != null && int.parse(data['returnAmount']) > 0) {
       final response = await post('/services/gocashapi/api/cashbox-return-cheque', data);
       print(response);
       Navigator.pop(context);
@@ -201,132 +200,177 @@ class _ChequeByIdState extends State<ChequeById> {
     );
   }
 
-  showReturnModal(context) {
+  showReturnModal(context) async {
     getData();
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        // titlePadding: EdgeInsets.all(0),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 15),
-        title: const Text(
-          'Возврат',
-          textAlign: TextAlign.center,
-        ),
-        content: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                      colorScheme: ThemeData().colorScheme.copyWith(
-                            primary: const Color(0xFF7D4196),
+    final result = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              // titlePadding: EdgeInsets.all(0),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 15),
+              title: const Text(
+                'Возврат',
+                textAlign: TextAlign.center,
+              ),
+              content: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ThemeData().colorScheme.copyWith(
+                                  primary: const Color(0xFF7D4196),
+                                ),
                           ),
-                    ),
-                    child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          data['clientCode'] = value;
-                        });
-                        searchUser(value);
-                      },
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.phone_iphone,
-                        ),
-                        contentPadding: EdgeInsets.all(12.0),
-                        focusColor: Color(0xFF7D4196),
-                        filled: true,
-                        fillColor: Colors.transparent,
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF7D4196)),
-                        ),
-                        hintText: 'QR Code или Телефон номер',
-                        hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
-                      ),
-                      style: const TextStyle(color: Color(0xFF9C9C9C)),
-                    ),
-                  )),
-              Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                      colorScheme: ThemeData().colorScheme.copyWith(
-                            primary: const Color(0xFF7D4196),
+                          child: TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                data['clientCode'] = value;
+                              });
+                              searchUser(value);
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.phone_iphone,
+                              ),
+                              contentPadding: EdgeInsets.all(12.0),
+                              focusColor: Color(0xFF7D4196),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF7D4196)),
+                              ),
+                              hintText: 'QR Code или Телефон номер',
+                              hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
+                            ),
+                            style: const TextStyle(color: Color(0xFF9C9C9C)),
                           ),
+                        )),
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: user['firstName'] != null
+                          ? Text(
+                              '${user['firstName'] + ' ' + user['lastName']}',
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                            )
+                          : null,
                     ),
-                    child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          data['returnAmount'] = value;
-                        });
-                      },
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.payments_outlined,
-                        ),
-                        contentPadding: EdgeInsets.all(12.0),
-                        focusColor: Color(0xFF7D4196),
-                        filled: true,
-                        fillColor: Colors.transparent,
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF7D4196)),
-                        ),
-                        hintText: 'Сумма возврата',
-                        hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
-                      ),
-                      style: const TextStyle(color: Color(0xFF9C9C9C)),
-                    ),
-                  )),
-            ],
-          ),
-        ),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    primary: white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(side: BorderSide(color: red, width: 1), borderRadius: BorderRadius.circular(5)),
-                  ),
-                  child: Text(
-                    'Отмена',
-                    style: TextStyle(color: red),
-                  ),
+                    user['firstName'] != null
+                        ? Row(
+                            children: [
+                              Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  child: const Text(
+                                    'Баланс: ',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                                  )),
+                              Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    '${formatMoney(user['balance'])}',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: purple),
+                                  ))
+                            ],
+                          )
+                        : Container(),
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ThemeData().colorScheme.copyWith(
+                                  primary: const Color(0xFF7D4196),
+                                ),
+                          ),
+                          child: TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                if (value.length > 0) {
+                                  data['returnAmount'] = value;
+                                }
+                                if (value.length == 0) {
+                                  data['returnAmount'] = '0';
+                                }
+                              });
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.payments_outlined,
+                              ),
+                              contentPadding: EdgeInsets.all(12.0),
+                              focusColor: Color(0xFF7D4196),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF7D4196)),
+                              ),
+                              hintText: 'Сумма возврата',
+                              hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
+                            ),
+                            style: const TextStyle(color: Color(0xFF9C9C9C)),
+                          ),
+                        )),
+                  ],
                 ),
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: ElevatedButton(
-                  onPressed: () {
-                    returnCheque();
-                    // Get.back();
-                  },
-                  style:
-                      ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12), primary: user['firstName'] != null ? purple : grey),
-                  child: const Text('Продолжить'),
-                ),
-              )
-            ],
-          )
-        ],
-      ),
-    );
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: ElevatedButton.styleFrom(
+                          primary: white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(side: BorderSide(color: red, width: 1), borderRadius: BorderRadius.circular(5)),
+                        ),
+                        child: Text(
+                          'Отмена',
+                          style: TextStyle(color: red),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      child: ElevatedButton(
+                        onPressed: user['firstName'] != null && int.parse(data['returnAmount']) > 0
+                            ? () {
+                                returnCheque();
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            primary: user['firstName'] != null ? purple : grey,
+                            onSurface: Colors.black),
+                        child: const Text('Продолжить'),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            );
+          });
+        });
+    if (result == null) {
+      setState(() {
+        user = {};
+        data = {'id': '', 'posId': '', 'clientCode': '', 'cashierName': '', 'returnAmount': '0'};
+      });
+    }
   }
 }

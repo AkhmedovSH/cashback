@@ -9,6 +9,8 @@ Color white = const Color(0xFFFFFFFF);
 Color red = const Color(0xFFdc3545);
 Color blue = const Color(0xFF17a2b8);
 Color grey = const Color(0xFF838488);
+Color lightGrey = const Color(0xFF9C9C9C);
+Color borderColor = const Color(0xFFF8F8F8);
 
 // Date formaters
 
