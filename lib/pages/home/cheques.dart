@@ -59,6 +59,10 @@ class _ChecksState extends State<Checks> {
     }
   }
 
+  void printSample() {
+    print("Sample text");
+  }
+
   getPoses() async {
     final response = await get('/services/gocashapi/api/get-access-pos');
     if (response != null) {
@@ -85,23 +89,23 @@ class _ChecksState extends State<Checks> {
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(8)),
-                      onPressed: () {
-                        showFilterBottomSheet();
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [Icon(Icons.filter_alt_outlined), Text('Фильтр')],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       flex: 1,
+              //       child: ElevatedButton(
+              //         style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(8)),
+              //         onPressed: () {
+              //           showFilterBottomSheet();
+              //         },
+              //         child: Row(
+              //           mainAxisAlignment: MainAxisAlignment.center,
+              //           children: [const Icon(Icons.filter_alt_outlined), Text('filter'.tr)],
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
               SingleChildScrollView(
                 child: Container(
                   margin: const EdgeInsets.only(top: 20),
@@ -109,13 +113,13 @@ class _ChecksState extends State<Checks> {
                     children: [
                       Table(
                         children: [
-                          const TableRow(children: [
+                          TableRow(children: [
                             Text(
-                              'Дата',
+                              'date'.tr,
                               textAlign: TextAlign.center,
                             ),
                             Text(
-                              'Сумма чека	',
+                              'check_amount'.tr,
                               textAlign: TextAlign.center,
                             ),
                           ]),
@@ -181,7 +185,7 @@ class _ChecksState extends State<Checks> {
   }
 
   showFilterBottomSheet() {
-    return showModalBottomSheet(
+    showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16))),
@@ -189,15 +193,15 @@ class _ChecksState extends State<Checks> {
         List statusList = [
           {
             "id": 1,
-            "name": 'Подтверждено',
+            "name": 'confirmed'.tr,
           },
           {
             "id": 2,
-            "name": 'Отказано',
+            "name": 'denied'.tr,
           },
           {
             "id": 3,
-            "name": 'Ошибка обработки',
+            "name": 'processing_error'.tr,
           }
         ];
         List posList = poses;
@@ -216,11 +220,11 @@ class _ChecksState extends State<Checks> {
                           children: [
                             Container(
                               margin: const EdgeInsets.only(top: 50, bottom: 5),
-                              child: const Opacity(
+                              child: Opacity(
                                 opacity: 0.4,
                                 child: Text(
-                                  'Период',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                                  'period'.tr,
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                                 ),
                               ),
                             ),
@@ -299,11 +303,11 @@ class _ChecksState extends State<Checks> {
                                     children: [
                                       Container(
                                         margin: const EdgeInsets.only(bottom: 5),
-                                        child: const Opacity(
+                                        child: Opacity(
                                           opacity: 0.4,
                                           child: Text(
-                                            'Клиент',
-                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                                            'client'.tr,
+                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                                           ),
                                         ),
                                       ),
@@ -344,11 +348,11 @@ class _ChecksState extends State<Checks> {
                                     children: [
                                       Container(
                                         margin: const EdgeInsets.only(bottom: 5),
-                                        child: const Opacity(
+                                        child: Opacity(
                                           opacity: 0.4,
                                           child: Text(
-                                            'Кассир',
-                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                                            'cashier'.tr,
+                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                                           ),
                                         ),
                                       ),
@@ -484,7 +488,7 @@ class _ChecksState extends State<Checks> {
                                 Navigator.pop(context);
                               },
                               style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                              child: const Text('Фильтр'),
+                              child: Text('filter'.tr),
                             ),
                           ))
                     ],

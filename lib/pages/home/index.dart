@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cashback/helpers/api.dart';
@@ -91,16 +92,16 @@ class _IndexState extends State<Index> {
   getData() async {
     final prefs = await SharedPreferences.getInstance();
     final user = jsonDecode(prefs.getString('user')!);
-    print(widget.products);
-    dynamic amount = 0;
-    for (var i = 0; i < widget.products.length; i++) {
-      amount = widget.products[i]['quantity'] * widget.products[i]['amount'];
-    }
+    // print(widget.products);
+    // dynamic amount = 0;
+    // for (var i = 0; i < widget.products.length; i++) {
+    //   amount = widget.products[i]['quantity'] * widget.products[i]['amount'];
+    // }
     setState(() {
       data['posId'] = prefs.getString('posId');
       data['cashierName'] = user['username'];
       data['products'] = widget.products;
-      totalAmount = amount;
+      // totalAmount = amount;
     });
   }
 
@@ -140,22 +141,22 @@ class _IndexState extends State<Index> {
                         searchUser(value);
                       },
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
+                      decoration:  InputDecoration(
+                        prefixIcon: const Icon(
                           Icons.phone_iphone,
                         ),
-                        contentPadding: EdgeInsets.all(18.0),
-                        focusColor: Color(0xFF7D4196),
+                        contentPadding: const EdgeInsets.all(18.0),
+                        focusColor: const Color(0xFF7D4196),
                         filled: true,
                         fillColor: Colors.transparent,
-                        enabledBorder: UnderlineInputBorder(
+                        enabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF9C9C9C)),
                         ),
-                        focusedBorder: UnderlineInputBorder(
+                        focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF7D4196)),
                         ),
-                        hintText: 'QR Code или Телефон номер',
-                        hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
+                        hintText: 'qr_code_or_phone_number'.tr,
+                        hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                       ),
                       style: const TextStyle(color: Color(0xFF9C9C9C)),
                     ),
@@ -174,9 +175,9 @@ class _IndexState extends State<Index> {
                       children: [
                         Container(
                             margin: const EdgeInsets.only(bottom: 10),
-                            child: const Text(
-                              'Баланс: ',
-                              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                            child: Text(
+                              'balance'.tr + ': ',
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                             )),
                         Container(
                             margin: const EdgeInsets.only(bottom: 10),
@@ -221,7 +222,7 @@ class _IndexState extends State<Index> {
                         focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF7D4196)),
                         ),
-                        hintText: 'Сумма оплаты',
+                        hintText: 'payment_amount'.tr,
                         hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                       ),
                       style: const TextStyle(color: Color(0xFF9C9C9C)),
@@ -248,22 +249,22 @@ class _IndexState extends State<Index> {
                           });
                         }
                       },
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
                           Icons.payments_outlined,
                         ),
-                        contentPadding: EdgeInsets.all(18.0),
-                        focusColor: Color(0xFF7D4196),
+                        contentPadding: const EdgeInsets.all(18.0),
+                        focusColor: const Color(0xFF7D4196),
                         filled: true,
                         fillColor: Colors.transparent,
-                        enabledBorder: UnderlineInputBorder(
+                        enabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF9C9C9C)),
                         ),
-                        focusedBorder: UnderlineInputBorder(
+                        focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF7D4196)),
                         ),
-                        hintText: 'Накопленные баллы',
-                        hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
+                        hintText: 'accumulated_points'.tr,
+                        hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                       ),
                       style: const TextStyle(color: Color(0xFF9C9C9C)),
                     ),
@@ -348,9 +349,9 @@ class _IndexState extends State<Index> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: const Text(
-            'Оплатить',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+          child: Text(
+            'pay'.tr,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
           ),
         ),
       ),

@@ -12,6 +12,11 @@ Color grey = const Color(0xFF838488);
 Color lightGrey = const Color(0xFF9C9C9C);
 Color borderColor = const Color(0xFFF8F8F8);
 
+
+Color success = const Color(0xFF34c38f);
+Color warning = const Color(0xFFf1b44c);
+Color danger = const Color(0xFFf46a6a);
+
 // Date formaters
 
 formatDate(date) {

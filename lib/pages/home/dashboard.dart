@@ -6,7 +6,7 @@ import 'package:cashback/helpers/helper.dart';
 import '../../components/bottom/bottom_navigation.dart';
 import './index.dart';
 import './products.dart';
-import './cheques.dart';
+import 'cheques.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -17,17 +17,18 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey globalKey = GlobalKey();
+  // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentIndex = 0;
   dynamic drawerList = [
     {'title': 'Чеки', 'routeName': '/check-create'}
   ];
   dynamic productList = [
-    {'name': 'Штрих-код', 'field_name': 'barcode', 'inputType': TextInputType.number},
-    {'name': 'Название', 'field_name': 'name', 'inputType': TextInputType.text},
-    {'name': 'Единица измерения', 'field_name': 'unit', 'inputType': TextInputType.text},
-    {'name': 'Количество', 'field_name': 'quantity', 'inputType': TextInputType.number},
-    {'name': 'Цена', 'field_name': 'amount', 'inputType': TextInputType.number},
+    {'name': 'barcode'.tr, 'field_name': 'barcode', 'inputType': TextInputType.number},
+    {'name': 'name'.tr, 'field_name': 'name', 'inputType': TextInputType.text},
+    {'name': 'unit'.tr, 'field_name': 'unit', 'inputType': TextInputType.text},
+    {'name': 'quantity'.tr, 'field_name': 'quantity', 'inputType': TextInputType.number},
+    {'name': 'price'.tr, 'field_name': 'amount', 'inputType': TextInputType.number},
   ];
   dynamic data = {"barcode": "", "name": "", "unit": "шт", "quantity": '0', "amount": '0'};
   dynamic products = [];
@@ -62,7 +63,6 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.white,
         // elevation: 0,
@@ -79,6 +79,16 @@ class _DashboardState extends State<Dashboard> {
                   },
                   icon: Icon(
                     Icons.add,
+                    color: purple,
+                  ))
+              : Container(),
+          currentIndex == 2
+              ? IconButton(
+                  onPressed: () {
+                    // globalKey.currentState?.printSample(); 
+                  },
+                  icon: Icon(
+                    Icons.filter_alt_outlined,
                     color: purple,
                   ))
               : Container(),
@@ -135,8 +145,12 @@ class _DashboardState extends State<Dashboard> {
                   clearProducts: clearProducts,
                 )
               : Container(),
-          currentIndex == 1 ? const Products() : Container(),
-          currentIndex == 2 ? const Checks() : Container(),
+          currentIndex == 1
+              ? Products(
+                  products: products,
+                )
+              : Container(),
+          currentIndex == 2 ? Checks(key: globalKey) : Container(),
         ],
       ),
       //screens[currentIndex]
@@ -250,13 +264,13 @@ class _DashboardState extends State<Dashboard> {
                       if (_formKey.currentState!.validate()) {
                         setState(() {
                           products.add(data);
-                          data = {"barcode": "", "name": "", "unit": "", "quantity": '0', "amount": '0'};
+                          data = {"barcode": "", "name": "", "unit": "шт", "quantity": '0', "amount": '0'};
                         });
                         Get.back();
                       }
                     },
                     style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                    child: const Text('Продолжить'),
+                    child: Text('proceed'.tr),
                   ),
                 )
               ],

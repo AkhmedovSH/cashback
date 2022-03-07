@@ -67,18 +67,21 @@ class _ChequeByIdState extends State<ChequeById> {
   }
 
   buildRow(text, text2, {fz = 16.0}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          text,
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: fz),
-        ),
-        Text(
-          '$text2',
-          style: TextStyle(fontSize: fz),
-        )
-      ],
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            text,
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: fz),
+          ),
+          Text(
+            '$text2',
+            style: TextStyle(fontSize: fz),
+          )
+        ],
+      ),
     );
   }
 
@@ -108,9 +111,19 @@ class _ChequeByIdState extends State<ChequeById> {
                 height: 64,
                 width: 200,
               )),
-              buildRow('Кассир', cheque['cashierName']),
-              buildRow('№ чека', cheque['id']),
-              buildRow('Дата', cheque['chequeDate'] != null ? formatDate(cheque['chequeDate']) : ''),
+              Container(
+                margin: EdgeInsets.only(bottom: 10),
+                child: Center(
+                  child: Text(
+                    cheque['posName'] ?? '',
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+              buildRow('cashier'.tr, cheque['cashierName']),
+              buildRow('№' + 'check'.tr, cheque['id']),
+              buildRow('date'.tr, cheque['chequeDate'] != null ? formatDate(cheque['chequeDate']) : ''),
+              buildRow('client'.tr, cheque['clientName']),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 5),
                 child: const Text(
@@ -128,15 +141,15 @@ class _ChequeByIdState extends State<ChequeById> {
                 TableRow(children: [
                   Container(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: const Text('№ Товар', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('№' + 'product'.tr, style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   Container(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: const Text('Кол-во', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('qty'.tr, style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   Container(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: const Text('Цена', textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('price'.tr, textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ]),
                 for (var i = 0; i < products.length; i++)
@@ -172,7 +185,39 @@ class _ChequeByIdState extends State<ChequeById> {
                   softWrap: false,
                 ),
               ),
-              buildRow('Сумма продажи', formatMoney(cheque['totalAmount'])),
+              buildRow('sale_amount'.tr, formatMoney(cheque['totalAmount'] != null ? cheque['totalAmount'] + cheque['writeOff'] : 0)),
+              buildRow('paid_in_soums'.tr, formatMoney(cheque['totalAmount'])),
+              buildRow('paid_with_points'.tr, formatMoney(cheque['writeOff'])),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'status'.tr,
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                    ),
+                    cheque['status'] == 1
+                        ? Text(
+                            'confirmed'.tr,
+                            style: TextStyle(fontSize: 16, color: success),
+                          )
+                        : const Text(''),
+                    cheque['status'] == 2
+                        ? Text(
+                            'denied'.tr,
+                            style: TextStyle(fontSize: 16, color: warning),
+                          )
+                        : const Text(''),
+                    cheque['status'] == 3
+                        ? Text(
+                            'processing_error'.tr,
+                            style: TextStyle(fontSize: 16, color: danger),
+                          )
+                        : const Text(''),
+                  ],
+                ),
+              )
             ],
           ),
         ),
@@ -191,8 +236,8 @@ class _ChequeByIdState extends State<ChequeById> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: const Text(
-            'Возврат',
+          child: Text(
+            'return'.tr,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
           ),
         ),
@@ -210,8 +255,8 @@ class _ChequeByIdState extends State<ChequeById> {
               // titlePadding: EdgeInsets.all(0),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               insetPadding: const EdgeInsets.symmetric(horizontal: 15),
-              title: const Text(
-                'Возврат',
+              title: Text(
+                'return'.tr,
                 textAlign: TextAlign.center,
               ),
               content: SizedBox(
@@ -236,22 +281,22 @@ class _ChequeByIdState extends State<ChequeById> {
                               searchUser(value);
                             },
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(
                                 Icons.phone_iphone,
                               ),
-                              contentPadding: EdgeInsets.all(12.0),
-                              focusColor: Color(0xFF7D4196),
+                              contentPadding: const EdgeInsets.all(12.0),
+                              focusColor: const Color(0xFF7D4196),
                               filled: true,
                               fillColor: Colors.transparent,
-                              enabledBorder: UnderlineInputBorder(
+                              enabledBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Color(0xFF9C9C9C)),
                               ),
-                              focusedBorder: UnderlineInputBorder(
+                              focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Color(0xFF7D4196)),
                               ),
-                              hintText: 'QR Code или Телефон номер',
-                              hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
+                              hintText: 'qr_code_or_phone_number'.tr,
+                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                             ),
                             style: const TextStyle(color: Color(0xFF9C9C9C)),
                           ),
@@ -270,9 +315,9 @@ class _ChequeByIdState extends State<ChequeById> {
                             children: [
                               Container(
                                   margin: const EdgeInsets.only(bottom: 10),
-                                  child: const Text(
-                                    'Баланс: ',
-                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                                  child: Text(
+                                    'balance'.tr + ': ',
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                                   )),
                               Container(
                                   margin: const EdgeInsets.only(bottom: 10),
@@ -303,22 +348,22 @@ class _ChequeByIdState extends State<ChequeById> {
                               });
                             },
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(
                                 Icons.payments_outlined,
                               ),
-                              contentPadding: EdgeInsets.all(12.0),
-                              focusColor: Color(0xFF7D4196),
+                              contentPadding: const EdgeInsets.all(12.0),
+                              focusColor: const Color(0xFF7D4196),
                               filled: true,
                               fillColor: Colors.transparent,
-                              enabledBorder: UnderlineInputBorder(
+                              enabledBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Color(0xFF9C9C9C)),
                               ),
-                              focusedBorder: UnderlineInputBorder(
+                              focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Color(0xFF7D4196)),
                               ),
-                              hintText: 'Сумма возврата',
-                              hintStyle: TextStyle(color: Color(0xFF9C9C9C)),
+                              hintText: 'return_amount'.tr,
+                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                             ),
                             style: const TextStyle(color: Color(0xFF9C9C9C)),
                           ),
@@ -340,7 +385,7 @@ class _ChequeByIdState extends State<ChequeById> {
                           shape: RoundedRectangleBorder(side: BorderSide(color: red, width: 1), borderRadius: BorderRadius.circular(5)),
                         ),
                         child: Text(
-                          'Отмена',
+                          'cancel'.tr,
                           style: TextStyle(color: red),
                         ),
                       ),
@@ -357,7 +402,7 @@ class _ChequeByIdState extends State<ChequeById> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             primary: user['firstName'] != null ? purple : grey,
                             onSurface: Colors.black),
-                        child: const Text('Продолжить'),
+                        child: Text('proceed'.tr),
                       ),
                     )
                   ],

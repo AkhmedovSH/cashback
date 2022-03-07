@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class BottomNavigation extends StatefulWidget {
   final Function changeIndex;
@@ -21,10 +22,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
       selectedItemColor: const Color(0xFF7D4196),
       currentIndex: widget.currentIndex,
       onTap: onSelectMenu,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Главная'),
-        BottomNavigationBarItem(icon: Icon(Icons.add_box), label: 'Продукты'),
-        BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Чеки'),
+      items: [
+        BottomNavigationBarItem(icon: const Icon(Icons.home), label: 'home'.tr),
+        BottomNavigationBarItem(icon: const Icon(Icons.add_box), label: 'products'.tr),
+        BottomNavigationBarItem(icon: const Icon(Icons.list_alt), label: 'cheques'.tr),
       ],
     );
   }

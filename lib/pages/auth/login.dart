@@ -82,7 +82,7 @@ class _LoginState extends State<Login> {
                   Container(
                     width: MediaQuery.of(context).size.width * 0.44,
                     height: 50,
-                    decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 2, color: Color(0xFFECECEC)))),
+                    decoration: const BoxDecoration(border: Border(bottom: BorderSide(width: 2, color: Color(0xFFECECEC)))),
                     // decoration: const ShapeDecoration(
                     //   shape: RoundedRectangleBorder(
                     //     side: BorderSide(width: 1.0, style: BorderStyle.solid, color: Color(0xFFECECEC)),
@@ -110,7 +110,7 @@ class _LoginState extends State<Login> {
                             updateTranslation(newValue);
                           },
                           items: translations.map((item) {
-                            return DropdownMenuItem<String>(
+                            return DropdownMenuItem<String>( 
                               value: '${item['id']}',
                               child: Text(item['name']),
                             );
