@@ -110,7 +110,7 @@ class _LoginState extends State<Login> {
                             updateTranslation(newValue);
                           },
                           items: translations.map((item) {
-                            return DropdownMenuItem<String>( 
+                            return DropdownMenuItem<String>(
                               value: '${item['id']}',
                               child: Text(item['name']),
                             );
@@ -153,6 +153,7 @@ class _LoginState extends State<Login> {
                                 if (value == null || value.isEmpty) {
                                   return 'required_field'.tr;
                                 }
+                                return null;
                               },
                               initialValue: sendData['username'],
                               onChanged: (value) {
@@ -195,6 +196,7 @@ class _LoginState extends State<Login> {
                                 if (value == null || value.isEmpty) {
                                   return 'required_field'.tr;
                                 }
+                                return null;
                               },
                               initialValue: sendData['password'],
                               onChanged: (value) {
@@ -270,7 +272,7 @@ class _LoginState extends State<Login> {
           ),
           child: Text(
             'login'.tr,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
           ),
         ),
       ),

@@ -43,7 +43,6 @@ class _IndexState extends State<Index> {
   }
 
   createCheque() async {
-    print('dasdas');
     if (user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
         int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0) {
       var sendData = Map.from(data);
@@ -51,7 +50,6 @@ class _IndexState extends State<Index> {
       sendData['totalAmount'] = data['totalAmount'].text == '' ? '0' : data['totalAmount'].text;
       sendData['writeOff'] = data['writeOff'].text == '' ? '0' : data['writeOff'].text;
       final response = await post('/services/gocashapi/api/cashbox-create-cheque', sendData);
-      print(response);
       if (response['success']) {
         setState(() {
           data['clientCode'].text = '';
@@ -71,9 +69,6 @@ class _IndexState extends State<Index> {
   }
 
   validateWriteOffField(value) {
-    print('previous value: ' + previousValue);
-    print('current value: ' + data['writeOff'].text);
-    print('user balance: ${user['balance']}');
     if (user['firstName'] != null) {
       if (data['writeOff'].text != '') {
         if (int.parse(data['writeOff'].text) > user['balance']) {
@@ -92,22 +87,24 @@ class _IndexState extends State<Index> {
   getData() async {
     final prefs = await SharedPreferences.getInstance();
     final user = jsonDecode(prefs.getString('user')!);
-    // print(widget.products);
-    // dynamic amount = 0;
-    // for (var i = 0; i < widget.products.length; i++) {
-    //   amount = widget.products[i]['quantity'] * widget.products[i]['amount'];
-    // }
+    dynamic amount = 0;
+    for (var i = 0; i < widget.products.length; i++) {
+      amount = widget.products[i]['quantity'] * widget.products[i]['amount'];
+    }
     setState(() {
       data['posId'] = prefs.getString('posId');
       data['cashierName'] = user['username'];
       data['products'] = widget.products;
-      // totalAmount = amount;
+      totalAmount = amount;
     });
   }
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      data['products'] = widget.products;
+    });
     getData();
   }
 
@@ -141,7 +138,7 @@ class _IndexState extends State<Index> {
                         searchUser(value);
                       },
                       keyboardType: TextInputType.number,
-                      decoration:  InputDecoration(
+                      decoration: InputDecoration(
                         prefixIcon: const Icon(
                           Icons.phone_iphone,
                         ),
@@ -295,7 +292,7 @@ class _IndexState extends State<Index> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${(i + 1).toString() + '. ' + widget.products[i]['name']}',
+                          '${(i + 1)}' '. ' '${data['products'][i]['name']}',
                           style: const TextStyle(fontSize: 16),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -310,13 +307,13 @@ class _IndexState extends State<Index> {
                               children: [
                                 const SizedBox(height: 5),
                                 Text(
-                                  '${formatMoney(widget.products[i]['amount'])}x ${formatMoney(widget.products[i]['quantity'])}',
+                                  '${formatMoney(data['products'][i]['amount'])}x ${formatMoney(data['products'][i]['quantity'])}',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ],
                             ),
                             Text(
-                              '${formatMoney(int.parse(widget.products[i]['quantity']) * int.parse(widget.products[i]['amount']))}So\'m',
+                              '${formatMoney(int.parse(data['products'][i]['quantity']) * int.parse(data['products'][i]['amount']))}So\'m',
                               style: TextStyle(fontWeight: FontWeight.w600, color: purple, fontSize: 16),
                             ),
                           ],
@@ -324,7 +321,8 @@ class _IndexState extends State<Index> {
                       ],
                     ),
                   ),
-                )
+                ),
+              const SizedBox(height: 50)
             ],
           ),
         ),

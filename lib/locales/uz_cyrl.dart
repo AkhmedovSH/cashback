@@ -1,4 +1,4 @@
-final uz_cyrl = {
+final uzCyrl = {
   'welcome_to_moneyback': 'MoneyBek хуш келибсиз',
   'sign_in_to_continue': 'Давом этиш учун тизимга киринг',
   'telephone_number': 'Телефон рақами',

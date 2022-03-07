@@ -31,7 +31,7 @@ class _DashboardState extends State<Dashboard> {
     {'name': 'price'.tr, 'field_name': 'amount', 'inputType': TextInputType.number},
   ];
   dynamic data = {"barcode": "", "name": "", "unit": "шт", "quantity": '0', "amount": '0'};
-  dynamic products = [];
+  dynamic products = [].obs;
   List unitList = [
     {'id': 1, 'name': 'шт'},
     {'id': 2, 'name': 'кг'},
@@ -85,7 +85,7 @@ class _DashboardState extends State<Dashboard> {
           currentIndex == 2
               ? IconButton(
                   onPressed: () {
-                    // globalKey.currentState?.printSample(); 
+                    // globalKey.currentState?.printSample();
                   },
                   icon: Icon(
                     Icons.filter_alt_outlined,
@@ -101,37 +101,7 @@ class _DashboardState extends State<Dashboard> {
           //         ))
           //     : Container()
         ],
-
-        // Icon for Drawer
-
-        // leading: IconButton(
-        //   onPressed: () {
-        //     _scaffoldKey.currentState!.openDrawer();
-        //   },
-        //   icon: const Icon(
-        //     Icons.menu,
-        //     color: Colors.black,
-        //   ),
-        // ),
       ),
-      // drawer: SizedBox(
-      //   width: MediaQuery.of(context).size.width * 0.8,
-      //   child: Drawer(
-      //       child: SafeArea(
-      //     child: Column(
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //         for (var i = 0; i < drawerList.length; i++)
-      //           TextButton(
-      //             onPressed: () {},
-      //             child: Text(
-      //               'Чеки',
-      //             ),
-      //           )
-      //       ],
-      //     ),
-      //   )),
-      // ),
       bottomNavigationBar: BottomNavigation(
         changeIndex: changeIndex,
         currentIndex: currentIndex,
@@ -194,6 +164,7 @@ class _DashboardState extends State<Dashboard> {
                                         if (value == null || value.isEmpty) {
                                           return 'required_field'.tr;
                                         }
+                                        return null;
                                       },
                                       onChanged: (value) {
                                         data[productList[i]['field_name']] = value;
@@ -241,7 +212,6 @@ class _DashboardState extends State<Dashboard> {
                                           setState(() {
                                             data[productList[i]['field_name']] = newValue!;
                                           });
-                                          print(data);
                                         },
                                         items: unitList.map((item) {
                                           return DropdownMenuItem<String>(

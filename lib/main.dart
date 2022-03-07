@@ -7,7 +7,7 @@ import 'helpers/translations.dart';
 import 'pages/splash.dart';
 
 import 'pages/auth/login.dart';
-import 'pages/auth/selectAccessPos.dart';
+import 'pages/auth/select_access_pos.dart';
 
 import 'pages/home/dashboard.dart';
 

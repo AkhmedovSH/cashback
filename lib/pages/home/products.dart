@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import 'package:cashback/helpers/api.dart';
 import 'package:cashback/helpers/helper.dart';
 
 class Products extends StatefulWidget {
@@ -81,7 +79,7 @@ class _ProductsState extends State<Products> {
                 ),
               ),
             ),
-            for (var i = 0; i < products.length; i++)
+            for (var i = 0; i < widget.products.length; i++)
               Container(
                 width: MediaQuery.of(context).size.width,
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -104,7 +102,7 @@ class _ProductsState extends State<Products> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${products[i]['name']}',
+                      '${widget.products[i]['name']}',
                       style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -121,15 +119,15 @@ class _ProductsState extends State<Products> {
                               height: 5,
                             ),
                             Text(
-                              'barcode'.tr + ': ${products[i]['barcode']}',
+                              'barcode'.tr + ': ${widget.products[i]['barcode']}',
                               style: TextStyle(color: lightGrey),
                             ),
                           ],
                         ),
                         SizedBox(
                           child: Text(
-                            '${formatMoney(products[i]['amount']) ?? 0} So\'m',
-                            style: TextStyle(fontWeight: FontWeight.w600, color: blue, fontSize: 16),
+                            '${formatMoney(widget.products[i]['amount']) ?? 0} So\'m',
+                            style: TextStyle(fontWeight: FontWeight.w600, color: purple, fontSize: 16),
                           ),
                         )
                       ],

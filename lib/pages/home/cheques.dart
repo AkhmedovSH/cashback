@@ -59,10 +59,6 @@ class _ChecksState extends State<Checks> {
     }
   }
 
-  void printSample() {
-    print("Sample text");
-  }
-
   getPoses() async {
     final response = await get('/services/gocashapi/api/get-access-pos');
     if (response != null) {
@@ -76,7 +72,6 @@ class _ChecksState extends State<Checks> {
         sendData['posId'] = arr[0]['posId'].toString();
         poses = arr;
       });
-      print(arr);
     }
   }
 

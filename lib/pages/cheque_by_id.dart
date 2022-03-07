@@ -46,9 +46,10 @@ class _ChequeByIdState extends State<ChequeById> {
   returnCheque() async {
     if (user['firstName'] != null && int.parse(data['returnAmount']) > 0) {
       final response = await post('/services/gocashapi/api/cashbox-return-cheque', data);
-      print(response);
-      Navigator.pop(context);
-      Get.back();
+      if (response['success']) {
+        Navigator.pop(context);
+        Get.back();
+      }
     }
   }
 
@@ -68,7 +69,7 @@ class _ChequeByIdState extends State<ChequeById> {
 
   buildRow(text, text2, {fz = 16.0}) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 2),
+      margin: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -112,7 +113,7 @@ class _ChequeByIdState extends State<ChequeById> {
                 width: 200,
               )),
               Container(
-                margin: EdgeInsets.only(bottom: 10),
+                margin: const EdgeInsets.only(bottom: 10),
                 child: Center(
                   child: Text(
                     cheque['posName'] ?? '',
@@ -141,15 +142,15 @@ class _ChequeByIdState extends State<ChequeById> {
                 TableRow(children: [
                   Container(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: Text('№' + 'product'.tr, style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('№' + 'product'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   Container(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: Text('qty'.tr, style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('qty'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   Container(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: Text('price'.tr, textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('price'.tr, textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ]),
                 for (var i = 0; i < products.length; i++)
@@ -238,7 +239,7 @@ class _ChequeByIdState extends State<ChequeById> {
           ),
           child: Text(
             'return'.tr,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
           ),
         ),
       ),
@@ -339,10 +340,9 @@ class _ChequeByIdState extends State<ChequeById> {
                           child: TextField(
                             onChanged: (value) {
                               setState(() {
-                                if (value.length > 0) {
+                                if (value.isNotEmpty) {
                                   data['returnAmount'] = value;
-                                }
-                                if (value.length == 0) {
+                                } else {
                                   data['returnAmount'] = '0';
                                 }
                               });

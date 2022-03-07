@@ -9,7 +9,7 @@ class Messages extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'ru_RU': ru,
-        'uz_cyrl_UZ': uz_cyrl,
-        'uz_latn_UZ': uz_latn,
+        'uz_cyrl_UZ': uzCyrl,
+        'uz_latn_UZ': uzLatn,
       };
 }
