@@ -1,10 +1,12 @@
+import 'package:cashback/helpers/api.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cashback/helpers/helper.dart';
 
 class Products extends StatefulWidget {
   final dynamic products;
-  const Products({Key? key, this.products}) : super(key: key);
+  final Function addToList;
+  const Products({Key? key, this.products, required this.addToList}) : super(key: key);
 
   @override
   State<Products> createState() => _ProductsState();
@@ -16,10 +18,18 @@ class _ProductsState extends State<Products> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      products = widget.products;
-    });
+    getProduts();
   }
+
+  getProduts() async {
+    final response = await get('/services/gocashapi/api/product-list');
+    setState(() {
+      products = response;
+    });
+    print(response);
+  }
+
+  addProductToSell() {}
 
   onSearchTextChanged(String text) async {
     // _searchResult.clear();
@@ -79,7 +89,7 @@ class _ProductsState extends State<Products> {
                 ),
               ),
             ),
-            for (var i = 0; i < widget.products.length; i++)
+            for (var i = 0; i < products.length; i++)
               Container(
                 width: MediaQuery.of(context).size.width,
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -102,7 +112,7 @@ class _ProductsState extends State<Products> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${widget.products[i]['name']}',
+                      '${products[i]['name']}',
                       style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -119,17 +129,22 @@ class _ProductsState extends State<Products> {
                               height: 5,
                             ),
                             Text(
-                              'barcode'.tr + ': ${widget.products[i]['barcode']}',
+                              'barcode'.tr + ': ${products[i]['barcode']}',
                               style: TextStyle(color: lightGrey),
                             ),
                           ],
                         ),
-                        SizedBox(
-                          child: Text(
-                            '${formatMoney(widget.products[i]['amount']) ?? 0} So\'m',
-                            style: TextStyle(fontWeight: FontWeight.w600, color: purple, fontSize: 16),
-                          ),
-                        )
+                        IconButton(
+                            onPressed: () {
+                              // widget.addToList(products[i]);
+                              // addProductToSell();
+                            },
+                            padding: EdgeInsets.zero,
+                            constraints: BoxConstraints(),
+                            icon: Icon(
+                              Icons.add,
+                              color: purple,
+                            ))
                       ],
                     ),
                   ],

@@ -1,7 +1,9 @@
+import 'package:cashback/helpers/api.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:cashback/helpers/helper.dart';
+import 'package:cashback/helpers/productController.dart';
 
 import '../../components/bottom/bottom_navigation.dart';
 import './index.dart';
@@ -17,6 +19,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final _formKey = GlobalKey<FormState>();
+  final Controller productController = Get.put(Controller());
   GlobalKey globalKey = GlobalKey();
   // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentIndex = 0;
@@ -30,7 +33,7 @@ class _DashboardState extends State<Dashboard> {
     {'name': 'quantity'.tr, 'field_name': 'quantity', 'inputType': TextInputType.number},
     {'name': 'price'.tr, 'field_name': 'amount', 'inputType': TextInputType.number},
   ];
-  dynamic data = {"barcode": "", "name": "", "unit": "шт", "quantity": '0', "amount": '0'};
+  dynamic data = {"barcode": "", "name": "", "uomId": "1", "quantity": '0', "amount": '0'};
   dynamic products = [].obs;
   List unitList = [
     {'id': 1, 'name': 'шт'},
@@ -42,6 +45,38 @@ class _DashboardState extends State<Dashboard> {
     {'id': 7, 'name': 'упаковка'},
     {'id': 8, 'name': 'мл'},
   ];
+
+  createProduct() async {
+    dynamic sendData = {};
+    setState(() {
+      data['uomId'] = '1';
+    });
+    final response = await post('/services/gocashapi/api/product', data);
+    print(response);
+  }
+
+  updateProduct() async {
+    dynamic sendData = {};
+    final response = await put('/services/gocashapi/api/product', data);
+    print(response);
+  }
+
+  addProduct() {
+    if (_formKey.currentState!.validate()) {
+      productController.addProduct(data);
+      setState(() {
+        products.add(data);
+        data = {"barcode": "", "name": "", "unit": "шт", "quantity": '0', "amount": '0'};
+      });
+      Get.back();
+    }
+  }
+
+  addToList(item) {
+    setState(() {
+      products.add(item);
+    });
+  }
 
   clearProducts() {
     setState(() {
@@ -118,6 +153,7 @@ class _DashboardState extends State<Dashboard> {
           currentIndex == 1
               ? Products(
                   products: products,
+                  addToList: addToList,
                 )
               : Container(),
           currentIndex == 2 ? Checks(key: globalKey) : Container(),
@@ -231,12 +267,11 @@ class _DashboardState extends State<Dashboard> {
                   width: MediaQuery.of(context).size.width,
                   child: ElevatedButton(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        setState(() {
-                          products.add(data);
-                          data = {"barcode": "", "name": "", "unit": "шт", "quantity": '0', "amount": '0'};
-                        });
-                        Get.back();
+                      if (currentIndex == 0) {
+                        addProduct();
+                      }
+                      if (currentIndex == 1) {
+                        createProduct();
                       }
                     },
                     style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),

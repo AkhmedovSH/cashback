@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cashback/helpers/api.dart';
 import 'package:cashback/helpers/helper.dart';
+import 'package:cashback/helpers/productController.dart';
 
 class Index extends StatefulWidget {
   final dynamic products;
@@ -17,6 +18,7 @@ class Index extends StatefulWidget {
 
 class _IndexState extends State<Index> {
   final focus = FocusNode();
+  final Controller productController = Get.put(Controller());
   dynamic data = {
     'posId': '',
     'clientCode': TextEditingController(),
