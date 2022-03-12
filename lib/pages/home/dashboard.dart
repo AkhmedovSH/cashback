@@ -21,7 +21,6 @@ class _DashboardState extends State<Dashboard> {
   final _formKey = GlobalKey<FormState>();
   final Controller productController = Get.put(Controller());
   GlobalKey globalKey = GlobalKey();
-  // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentIndex = 0;
   dynamic drawerList = [
     {'title': 'Чеки', 'routeName': '/check-create'}
@@ -29,9 +28,7 @@ class _DashboardState extends State<Dashboard> {
   dynamic productList = [
     {'name': 'barcode'.tr, 'field_name': 'barcode', 'inputType': TextInputType.number},
     {'name': 'name'.tr, 'field_name': 'name', 'inputType': TextInputType.text},
-    {'name': 'unit'.tr, 'field_name': 'unit', 'inputType': TextInputType.text},
-    {'name': 'quantity'.tr, 'field_name': 'quantity', 'inputType': TextInputType.number},
-    {'name': 'price'.tr, 'field_name': 'amount', 'inputType': TextInputType.number},
+    {'name': 'unit'.tr, 'field_name': 'uomId', 'inputType': TextInputType.text},
   ];
   dynamic data = {"barcode": "", "name": "", "uomId": "1", "quantity": '0', "amount": '0'};
   dynamic products = [].obs;
@@ -47,16 +44,16 @@ class _DashboardState extends State<Dashboard> {
   ];
 
   createProduct() async {
-    dynamic sendData = {};
     setState(() {
       data['uomId'] = '1';
     });
     final response = await post('/services/gocashapi/api/product', data);
-    print(response);
+    if (response['success']) {
+      Get.back();
+    }
   }
 
   updateProduct() async {
-    dynamic sendData = {};
     final response = await put('/services/gocashapi/api/product', data);
     print(response);
   }
@@ -66,13 +63,15 @@ class _DashboardState extends State<Dashboard> {
       productController.addProduct(data);
       setState(() {
         products.add(data);
-        data = {"barcode": "", "name": "", "unit": "шт", "quantity": '0', "amount": '0'};
+        data = {"barcode": "", "name": "", "uomId": "1", "quantity": '0', "amount": '0'};
       });
       Get.back();
     }
   }
 
   addToList(item) {
+    productController.addProduct(item);
+    print(item);
     setState(() {
       products.add(item);
     });
@@ -178,7 +177,7 @@ class _DashboardState extends State<Dashboard> {
               ),
               scrollable: true,
               content: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.6,
+                  height: MediaQuery.of(context).size.height * 0.35,
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Form(
                     key: _formKey,
@@ -186,7 +185,7 @@ class _DashboardState extends State<Dashboard> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         for (var i = 0; i < productList.length; i++)
-                          productList[i]['field_name'] != 'unit'
+                          productList[i]['field_name'] != 'uomId'
                               ? Container(
                                   margin: const EdgeInsets.only(bottom: 20),
                                   child: Theme(
@@ -232,7 +231,7 @@ class _DashboardState extends State<Dashboard> {
                                     child: ButtonTheme(
                                       alignedDropdown: true,
                                       child: DropdownButton(
-                                        value: data['unit'],
+                                        value: data['uomId'],
                                         isExpanded: true,
                                         hint: Text('${unitList[0]['name']}'),
                                         icon: const Icon(Icons.chevron_right),
@@ -251,7 +250,7 @@ class _DashboardState extends State<Dashboard> {
                                         },
                                         items: unitList.map((item) {
                                           return DropdownMenuItem<String>(
-                                            value: '${item['name']}',
+                                            value: '${item['id']}',
                                             child: Text(item['name']),
                                           );
                                         }).toList(),

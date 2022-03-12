@@ -51,6 +51,7 @@ class _IndexState extends State<Index> {
       sendData['clientCode'] = data['clientCode'].text;
       sendData['totalAmount'] = data['totalAmount'].text == '' ? '0' : data['totalAmount'].text;
       sendData['writeOff'] = data['writeOff'].text == '' ? '0' : data['writeOff'].text;
+      print(sendData);
       final response = await post('/services/gocashapi/api/cashbox-create-cheque', sendData);
       if (response['success']) {
         setState(() {
@@ -91,7 +92,9 @@ class _IndexState extends State<Index> {
     final user = jsonDecode(prefs.getString('user')!);
     dynamic amount = 0;
     for (var i = 0; i < widget.products.length; i++) {
-      amount = widget.products[i]['quantity'] * widget.products[i]['amount'];
+      if (widget.products[i]['quantity'] != null) {
+        amount = widget.products[i]['quantity'] * widget.products[i]['amount'];
+      }
     }
     setState(() {
       data['posId'] = prefs.getString('posId');
@@ -107,6 +110,7 @@ class _IndexState extends State<Index> {
     setState(() {
       data['products'] = widget.products;
     });
+    print(widget.products);
     getData();
   }
 
@@ -268,7 +272,7 @@ class _IndexState extends State<Index> {
                       style: const TextStyle(color: Color(0xFF9C9C9C)),
                     ),
                   )),
-              for (var i = 0; i < widget.products.length; i++)
+              for (var i = 0; i < data['products'].length; i++)
                 Dismissible(
                   key: UniqueKey(),
                   onDismissed: (DismissDirection direction) {
@@ -309,15 +313,15 @@ class _IndexState extends State<Index> {
                               children: [
                                 const SizedBox(height: 5),
                                 Text(
-                                  '${formatMoney(data['products'][i]['amount'])}x ${formatMoney(data['products'][i]['quantity'])}',
+                                  'barcode'.tr + ': ${data['products'][i]['barcode']}',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ],
                             ),
-                            Text(
-                              '${formatMoney(int.parse(data['products'][i]['quantity']) * int.parse(data['products'][i]['amount']))}So\'m',
-                              style: TextStyle(fontWeight: FontWeight.w600, color: purple, fontSize: 16),
-                            ),
+                            // Text(
+                            //   '${data['products'][i]['uomId']}',
+                            //   style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                            // )
                           ],
                         ),
                       ],

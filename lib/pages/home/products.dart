@@ -136,7 +136,8 @@ class _ProductsState extends State<Products> {
                         ),
                         IconButton(
                             onPressed: () {
-                              // widget.addToList(products[i]);
+                              widget.addToList(products[i]);
+                              
                               // addProductToSell();
                             },
                             padding: EdgeInsets.zero,
