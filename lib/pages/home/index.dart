@@ -49,6 +49,7 @@ class _IndexState extends State<Index> {
       widget.showHideLoading!(true);
       final prefs = await SharedPreferences.getInstance();
       final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
+      print('res${response}');
       if (response['firstName'] != null) {
         setState(() {
           user = response;

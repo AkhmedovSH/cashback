@@ -28,9 +28,9 @@ formatDate(date) {
 formatMoney(amount) {
   if (amount != null && amount != "") {
     amount = double.parse(amount.toString());
-    return NumberFormat.currency(symbol: '', decimalDigits: 2, locale: 'UZ').format(amount);
+    return NumberFormat.currency(symbol: '', decimalDigits: 0, locale: 'UZ').format(amount);
   } else {
-    return NumberFormat.currency(symbol: '', decimalDigits: 2, locale: 'UZ').format(0);
+    return NumberFormat.currency(symbol: '', decimalDigits: 0, locale: 'UZ').format(0);
   }
 }
 

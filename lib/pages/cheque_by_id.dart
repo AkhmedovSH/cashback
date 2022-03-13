@@ -380,13 +380,12 @@ class _ChequeByIdState extends State<ChequeById> {
                       child: ElevatedButton(
                         onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(
-                          primary: white,
+                          primary: red,
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(side: BorderSide(color: red, width: 1), borderRadius: BorderRadius.circular(5)),
                         ),
                         child: Text(
                           'cancel'.tr,
-                          style: TextStyle(color: red),
+                          style: TextStyle(color: white),
                         ),
                       ),
                     ),

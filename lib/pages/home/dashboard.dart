@@ -1,5 +1,6 @@
 import 'package:cashback/helpers/api.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -231,13 +232,19 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       children: [
         Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.white,
-            // elevation: 0,
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarIconBrightness: Brightness.dark,
+              statusBarColor: Colors.white, // Status bar
+            ),
+            elevation: 0.0,
+            bottomOpacity: 0.0,
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            iconTheme: const IconThemeData(color: Colors.black),
             title: const Text(
               'moneyBek',
               style: TextStyle(color: Colors.black),
             ),
-            centerTitle: true,
             actions: [
               currentIndex == 0 || currentIndex == 1
                   ? IconButton(

@@ -141,7 +141,7 @@ class _ProductsState extends State<Products> {
                                     height: 5,
                                   ),
                                   Text(
-                                    'price'.tr + ': ${products[i]['price']}',
+                                    'price'.tr + ': ${formatMoney(products[i]['price'])}',
                                     style: TextStyle(color: lightGrey),
                                   ),
                                 ],
