@@ -5,12 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cashback/helpers/api.dart';
 import 'package:cashback/helpers/helper.dart';
-import 'package:cashback/helpers/productController.dart';
+import 'package:cashback/helpers/product_controller.dart';
 
 class Index extends StatefulWidget {
-  final dynamic products;
+  dynamic products;
   final Function? clearProducts;
-  const Index({Key? key, this.products, this.clearProducts}) : super(key: key);
+  final Function? showHideLoading;
+  Index({Key? key, this.products, this.clearProducts, this.showHideLoading}) : super(key: key);
 
   @override
   _IndexState createState() => _IndexState();
@@ -34,19 +35,24 @@ class _IndexState extends State<Index> {
 
   searchUser(value) async {
     if (value.length == 6 || value.length == 12) {
+      widget.showHideLoading!(true);
       final prefs = await SharedPreferences.getInstance();
       final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
-      if (response['firstName']! != null) {
+      if (response['firstName'] != null) {
         setState(() {
           user = response;
         });
+      } else {
+        showErrorToast('Пользователь не найден');
       }
+      widget.showHideLoading!(false);
     }
   }
 
   createCheque() async {
     if (user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
         int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0) {
+      widget.showHideLoading!(true);
       var sendData = Map.from(data);
       sendData['clientCode'] = data['clientCode'].text;
       sendData['totalAmount'] = data['totalAmount'].text == '' ? '0' : data['totalAmount'].text;
@@ -63,12 +69,23 @@ class _IndexState extends State<Index> {
         });
         widget.clearProducts!();
       }
+      widget.showHideLoading!(false);
     }
   }
 
   deleteProduct(i) {
     dynamic productsCopy = widget.products;
+    if (productsCopy.length == 1) {
+      setState(() {
+        widget.products = productsCopy.removeAt(i);
+        data['products'] = [];
+      });
+      return;
+    }
     productsCopy.removeAt(i);
+    setState(() {
+      widget.products = productsCopy;
+    });
   }
 
   validateWriteOffField(value) {
@@ -91,11 +108,6 @@ class _IndexState extends State<Index> {
     final prefs = await SharedPreferences.getInstance();
     final user = jsonDecode(prefs.getString('user')!);
     dynamic amount = 0;
-    for (var i = 0; i < widget.products.length; i++) {
-      if (widget.products[i]['quantity'] != null) {
-        amount = widget.products[i]['quantity'] * widget.products[i]['amount'];
-      }
-    }
     setState(() {
       data['posId'] = prefs.getString('posId');
       data['cashierName'] = user['username'];
@@ -218,8 +230,12 @@ class _IndexState extends State<Index> {
                         contentPadding: const EdgeInsets.all(18.0),
                         focusColor: const Color(0xFF7D4196),
                         filled: true,
+                        enabled: user['firstName'] != null,
                         fillColor: Colors.transparent,
                         enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                        ),
+                        disabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF9C9C9C)),
                         ),
                         focusedBorder: const UnderlineInputBorder(
@@ -232,7 +248,7 @@ class _IndexState extends State<Index> {
                     ),
                   )),
               Container(
-                  margin: const EdgeInsets.only(bottom: 90),
+                  margin: const EdgeInsets.only(bottom: 15),
                   child: Theme(
                     data: Theme.of(context).copyWith(
                       colorScheme: ThemeData().colorScheme.copyWith(
@@ -256,11 +272,15 @@ class _IndexState extends State<Index> {
                         prefixIcon: const Icon(
                           Icons.payments_outlined,
                         ),
+                        enabled: user['firstName'] != null,
                         contentPadding: const EdgeInsets.all(18.0),
                         focusColor: const Color(0xFF7D4196),
                         filled: true,
                         fillColor: Colors.transparent,
                         enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                        ),
+                        disabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF9C9C9C)),
                         ),
                         focusedBorder: const UnderlineInputBorder(
@@ -272,6 +292,29 @@ class _IndexState extends State<Index> {
                       style: const TextStyle(color: Color(0xFF9C9C9C)),
                     ),
                   )),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('paid'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text(
+                        '${formatMoney(int.parse(data['totalAmount'].text != '' ? data['totalAmount'].text : '0') - int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('paid_with_points'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text('${formatMoney(int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
               for (var i = 0; i < data['products'].length; i++)
                 Dismissible(
                   key: UniqueKey(),
@@ -318,17 +361,17 @@ class _IndexState extends State<Index> {
                                 ),
                               ],
                             ),
-                            // Text(
-                            //   '${data['products'][i]['uomId']}',
-                            //   style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                            // )
+                            Text(
+                              '${formatMoney(data['products'][i]['price'])} So\'m',
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                            )
                           ],
                         ),
                       ],
                     ),
                   ),
                 ),
-              const SizedBox(height: 50)
+              const SizedBox(height: 80)
             ],
           ),
         ),

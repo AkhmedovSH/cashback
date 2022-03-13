@@ -7,6 +7,8 @@ final ru = {
   'free_points': 'Свободные точки',
   'select_merchant_to_enter': 'Выберите торговую точку для входа',
   'create_product': 'Создать продукт',
+  'update_product': 'Изменить продукт',
+  'update': 'Изменить',
   'required_field': 'Обязательное поле',
   'home': 'Главная',
   'products': 'Продукты',
@@ -41,5 +43,6 @@ final ru = {
   'sale_amount': 'Сумма продажи',
   'paid_in_soums': 'Оплатили в сумах',
   'paid_with_points': 'Оплатили баллами',
+  'paid': 'Оплатили',
   'status': 'Статус',
 };

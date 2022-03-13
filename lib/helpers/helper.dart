@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_moment/simple_moment.dart';
 
@@ -11,7 +12,6 @@ Color blue = const Color(0xFF17a2b8);
 Color grey = const Color(0xFF838488);
 Color lightGrey = const Color(0xFF9C9C9C);
 Color borderColor = const Color(0xFFF8F8F8);
-
 
 Color success = const Color(0xFF34c38f);
 Color warning = const Color(0xFFf1b44c);
@@ -32,4 +32,15 @@ formatMoney(amount) {
   } else {
     return NumberFormat.currency(symbol: '', decimalDigits: 2, locale: 'UZ').format(0);
   }
+}
+
+showSuccessToast(message) {
+  return Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.TOP,
+      timeInSecForIosWeb: 1,
+      backgroundColor: const Color(0xFF28a745),
+      textColor: Colors.white,
+      fontSize: 16.0);
 }

@@ -7,6 +7,8 @@ final uzLatn = {
   'free_points': '',
   'select_merchant_to_enter': 'Kirish uchun sotuvchini tanlang',
   'create_product': 'Mahsulot yaratish',
+  'update_product': '',
+  'update': '',
   'required_field': 'Majburiy maydon',
   'home': '',
   'products': '',
@@ -41,5 +43,6 @@ final uzLatn = {
   'sale_amount': '',
   'paid_in_soums': '',
   'paid_with_points': '',
+  'paid': '',
   'status': '',
 };

@@ -7,6 +7,8 @@ final uzCyrl = {
   'free_points': '',
   'select_merchant_to_enter': 'Кириш учун сотувчини танланг',
   'create_product': 'Маҳсулот яратиш',
+  'update_product': '',
+  'update': '',
   'required_field': 'Мажбурий майдон',
   'home': '',
   'products': '',
@@ -41,5 +43,6 @@ final uzCyrl = {
   'sale_amount': '',
   'paid_in_soums': '',
   'paid_with_points': '',
+  'paid': '',
   'status': '',
 };
