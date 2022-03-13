@@ -232,9 +232,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       children: [
         Scaffold(
           appBar: AppBar(
-            systemOverlayStyle: const SystemUiOverlayStyle(
+            systemOverlayStyle: SystemUiOverlayStyle(
               statusBarIconBrightness: Brightness.dark,
-              statusBarColor: Colors.white, // Status bar
+              statusBarColor: Colors.grey[50], // Status bar
             ),
             elevation: 0.0,
             bottomOpacity: 0.0,
