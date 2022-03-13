@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +21,7 @@ class Index extends StatefulWidget {
 
 class _IndexState extends State<Index> {
   final focus = FocusNode();
+  Timer? _debounce;
   final Controller productController = Get.put(Controller());
   dynamic data = {
     'posId': '',
@@ -33,7 +36,15 @@ class _IndexState extends State<Index> {
   dynamic previousValue = '';
   bool validate = true;
 
+  debounce(value) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 800), () {
+      searchUser(value);
+    });
+  }
+
   searchUser(value) async {
+    print(value.length);
     if (value.length == 6 || value.length == 12) {
       widget.showHideLoading!(true);
       final prefs = await SharedPreferences.getInstance();
@@ -127,6 +138,12 @@ class _IndexState extends State<Index> {
   }
 
   @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -153,7 +170,7 @@ class _IndexState extends State<Index> {
                       },
                       controller: data['clientCode'],
                       onChanged: (value) {
-                        searchUser(value);
+                        debounce(value);
                       },
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
