@@ -44,12 +44,12 @@ class _IndexState extends State<Index> {
   }
 
   searchUser(value) async {
-    print(value.length);
     if (value.length == 6 || value.length == 12) {
       widget.showHideLoading!(true);
       final prefs = await SharedPreferences.getInstance();
+      //print('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
       final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
-      print('res${response}');
+      //print('res${response}');
       if (response['firstName'] != null) {
         setState(() {
           user = response;
@@ -62,6 +62,7 @@ class _IndexState extends State<Index> {
   }
 
   createCheque() async {
+    print('here');
     if (user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
         int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0) {
       widget.showHideLoading!(true);
@@ -69,8 +70,9 @@ class _IndexState extends State<Index> {
       sendData['clientCode'] = data['clientCode'].text;
       sendData['totalAmount'] = data['totalAmount'].text == '' ? '0' : data['totalAmount'].text;
       sendData['writeOff'] = data['writeOff'].text == '' ? '0' : data['writeOff'].text;
-      print(sendData);
       final response = await post('/services/gocashapi/api/cashbox-create-cheque', sendData);
+      print('sendData${sendData}');
+      print('response${response}');
       if (response['success']) {
         setState(() {
           data['clientCode'].text = '';
@@ -134,7 +136,6 @@ class _IndexState extends State<Index> {
     setState(() {
       data['products'] = widget.products;
     });
-    print(widget.products);
     getData();
   }
 

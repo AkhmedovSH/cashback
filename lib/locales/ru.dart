@@ -8,7 +8,7 @@ final ru = {
   'select_merchant_to_enter': 'Выберите торговую точку для входа',
   'create_product': 'Создать продукт',
   'update_product': 'Изменить продукт',
-  'update': 'Изменить',
+  'update': 'Сохранить',
   'required_field': 'Обязательное поле',
   'home': 'Главная',
   'products': 'Продукты',

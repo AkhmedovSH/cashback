@@ -1,4 +1,4 @@
-package com.example.cashback
+package uz.cashbek.cabinet
 
 import io.flutter.embedding.android.FlutterActivity
 

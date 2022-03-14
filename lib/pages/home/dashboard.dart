@@ -10,7 +10,6 @@ import 'package:cashback/helpers/product_controller.dart';
 
 import '../../components/bottom/bottom_navigation.dart';
 import './index.dart';
-import './products.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);

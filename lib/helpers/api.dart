@@ -32,9 +32,7 @@ Future get(String url, {payload}) async {
 
 Future post(String url, dynamic payload) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  print(url);
   try {
-    print(payload);
     final response = await dio.post(hostUrl + url,
         data: payload,
         options: Options(headers: {
