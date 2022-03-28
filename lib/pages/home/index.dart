@@ -35,7 +35,6 @@ class _IndexState extends State<Index> {
   dynamic totalAmount = 0;
   dynamic previousValue = '';
   bool validate = false;
-  bool enabled = false;
 
   debounce(value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -50,15 +49,16 @@ class _IndexState extends State<Index> {
       final prefs = await SharedPreferences.getInstance();
       final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
       widget.showHideLoading!(false);
-      // clientCodeFocus.unfocus();
       if (response['firstName'] != null) {
         setState(() {
-          enabled = true;
           user = response;
           response['lastName'] = response['lastName'] ?? '';
+          // focus.requestFocus();
         });
-        // FocusScope.of(context).requestFocus(focus);
-        focus.requestFocus();
+        if (_debounce?.isActive ?? false) _debounce!.cancel();
+        _debounce = Timer(const Duration(milliseconds: 100), () {
+          FocusScope.of(context).requestFocus(focus);
+        });
       } else {
         setState(() {
           user = {};
@@ -66,14 +66,6 @@ class _IndexState extends State<Index> {
           data['writeOff'].text = '';
           validate = false;
           clientCodeFocus.requestFocus();
-          // data = {
-          //   'posId': data['posId'],
-          //   // 'clientCode': TextEditingController(),
-          //   'totalAmount': TextEditingController(),
-          //   'writeOff': TextEditingController(),
-          //   'cashierName': data['cashierName'],
-          //   'products': data['products']
-          // };
         });
         showErrorToast('Пользователь не найден');
       }
@@ -109,12 +101,21 @@ class _IndexState extends State<Index> {
       // productController.deleteProducts([]);
       setState(() {
         data['products'] = [];
+        totalAmount = 0;
+        data['totalAmount'].text = '';
+        validate = false;
       });
       return;
     }
     productsCopy.removeAt(i);
+    for (var i = 0; i < data['products'].length; i++) {
+      setState(() {
+        totalAmount = data['products'][i]['totalAmount'];
+      });
+    }
     setState(() {
       data['products'] = productsCopy;
+      data['totalAmount'].text = totalAmount.toString();
     });
     // productController.deleteProducts(productsCopy.removeAt(i));
   }
@@ -124,10 +125,10 @@ class _IndexState extends State<Index> {
       setState(() {
         if (user['balance'].round() < int.parse(data['writeOff'].text)) {
           data['writeOff'].text = previousValue;
+        }
+        if (int.parse(data['writeOff'].text) > int.parse(data['totalAmount'].text)) {
+          // data['writeOff'].text = previousValue;
         } else {
-          // if (value > ) {
-
-          // }
           previousValue = value;
         }
         validate = user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text);
@@ -432,7 +433,7 @@ class _IndexState extends State<Index> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    '${(i + 1)}' '. ' '',
+                                    '${(i + 1)}' '. ' '${data['products'][i]['name']}',
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
@@ -483,8 +484,9 @@ class _IndexState extends State<Index> {
         ),
       )),
       floatingActionButton: Container(
-        margin: const EdgeInsets.only(left: 32),
+        margin: const EdgeInsets.only(left: 32, bottom: 0),
         width: double.infinity,
+        decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(12)),
         child: ElevatedButton(
           onPressed: user['firstName'] != null && validate || int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0
               ? () {
@@ -496,7 +498,6 @@ class _IndexState extends State<Index> {
             elevation: 0,
             onSurface: Colors.black,
             primary: purple,
-            // primary: user['firstName'] != null ? purple : grey,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -547,9 +548,12 @@ class _IndexState extends State<Index> {
         "quantity": productData['quantity'].text,
         "totalAmount": int.parse(productData['quantity'].text) * int.parse(productData['price'].text),
       };
-      // productController.addProduct(product);
+      print(product);
       setState(() {
         data['products'].add(product);
+        totalAmount = product['totalAmount'] + totalAmount;
+        data['totalAmount'].text = totalAmount.toString();
+        validate = true;
         productData = {
           "barcode": TextEditingController(),
           "name": TextEditingController(),
@@ -710,7 +714,12 @@ class _IndexState extends State<Index> {
 
   changeQuantity(i) {
     dynamic item = products[i];
-    return showDialog(
+    setState(() {
+      item['quantity'] = '1';
+    });
+    final quantytyFocus = FocusNode();
+    final controller = TextEditingController(text: '1');
+    showDialog(
         context: context,
         builder: (BuildContext context) {
           return StatefulBuilder(builder: (context, setState) {
@@ -747,6 +756,9 @@ class _IndexState extends State<Index> {
                                 item['quantity'] = value;
                               });
                             },
+                            controller: controller,
+                            focusNode: quantytyFocus,
+                            autofocus: true,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(12.0),
@@ -796,39 +808,41 @@ class _IndexState extends State<Index> {
             );
           });
         });
+    controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
   }
 
-  onSearchTextChanged(String text) async {
+  onSearchTextChanged(String text, productSavedSetSate) async {
     if (text.isEmpty) {
-      setState(() {
+      productSavedSetSate(() {
         products = prevProducts;
       });
+
       return;
     }
     dynamic arr = [];
     products.forEach((userDetail) {
       if (userDetail['name'].contains(text) || userDetail['barcode'].contains(text)) {
-        setState(() {
+        productSavedSetSate(() {
           arr.add(userDetail);
         });
       }
     });
-    setState(() {
+    productSavedSetSate(() {
       products = arr;
     });
   }
 
   addProductFromSaved() {
     for (var i = 0; i < changedProducts.length; i++) {
-      for (var j = 0; j < data['products'].length; j++) {
-        if (data['products'][j]['id'] == changedProducts[i]['id']) {
-          print(data['products'][j]['id']);
-        }
-      }
+      setState(() {
+        totalAmount = changedProducts[i]['totalAmount'] + (totalAmount);
+      });
     }
     setState(() {
       data['products'] = [...data['products'], ...changedProducts];
       changedProducts = [];
+      data['totalAmount'].text = totalAmount.toString();
+      validate = true;
     });
     Get.back();
   }
@@ -837,7 +851,7 @@ class _IndexState extends State<Index> {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, setState) {
+          return StatefulBuilder(builder: (context, productSavedSetSate) {
             return AlertDialog(
               // titlePadding: EdgeInsets.all(0),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -858,7 +872,9 @@ class _IndexState extends State<Index> {
                       margin: const EdgeInsets.symmetric(vertical: 20),
                       height: 40,
                       child: TextField(
-                        onChanged: onSearchTextChanged,
+                        onChanged: (value) {
+                          onSearchTextChanged(value, productSavedSetSate);
+                        },
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.all(2),
                           isDense: true,
@@ -934,7 +950,7 @@ class _IndexState extends State<Index> {
                                               height: 5,
                                             ),
                                             Text(
-                                              'price'.tr + ': ${products[i]['price']}',
+                                              'price'.tr + ': ${products[i]['price'].round()}',
                                               style: TextStyle(color: lightGrey),
                                             ),
                                           ],

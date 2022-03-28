@@ -170,7 +170,7 @@ class _ChequeByIdState extends State<ChequeById> {
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Text(
-                        '${formatMoney(products[i]['amount'])}',
+                        '${formatMoney(products[i]['price'])}',
                         textAlign: TextAlign.end,
                       ),
                     ),

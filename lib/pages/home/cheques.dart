@@ -134,14 +134,26 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
                                 Table(
                                   children: [
                                     TableRow(children: [
-                                      Text(
-                                        'date'.tr,
-                                        textAlign: TextAlign.center,
+                                      Container(
+                                        margin: EdgeInsets.only(bottom: 10),
+                                        child: Text(
+                                          'date'.tr,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                                        ),
                                       ),
-                                      Text(
-                                        'check_amount'.tr,
-                                        textAlign: TextAlign.center,
+                                      Container(
+                                        margin: const EdgeInsets.only(bottom: 10),
+                                        child: Text(
+                                          'check_amount'.tr,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                                        ),
                                       ),
+                                      // Text(
+                                      //   'check_amount'.tr,
+                                      //   textAlign: TextAlign.center,
+                                      // ),
                                     ]),
                                     for (var i = 0; i < checks.length; i++)
                                       TableRow(children: [
@@ -150,11 +162,21 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
                                               Get.toNamed('/cheque-by-id', arguments: checks[i]['id']);
                                             },
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 12),
-                                              // decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(50)),
+                                              padding: const EdgeInsets.symmetric(vertical: 14),
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  bottom: BorderSide(
+                                                    color: borderColor,
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                              ),
                                               child: Text(
                                                 '${formatDate(checks[i]['chequeDate'])}',
-                                                style: TextStyle(color: checks[i]['status'] == 1 ? blue : red),
+                                                style: TextStyle(
+                                                  color: checks[i]['status'] == 1 ? blue : red,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
                                                 textAlign: TextAlign.center,
                                               ),
                                             )),
@@ -163,12 +185,21 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
                                               Get.toNamed('/cheque-by-id', arguments: checks[i]['id']);
                                             },
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                              padding: const EdgeInsets.symmetric(vertical: 14),
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  bottom: BorderSide(
+                                                    color: borderColor,
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                              ),
                                               child: Text(
                                                 '${formatMoney(checks[i]['totalAmount'])}',
                                                 textAlign: TextAlign.center,
+                                                style: const TextStyle(fontWeight: FontWeight.w500),
                                               ),
-                                            ))
+                                            )),
                                       ])
                                   ],
                                 )
