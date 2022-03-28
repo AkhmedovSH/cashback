@@ -4,16 +4,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 import 'package:cashback/helpers/api.dart';
 import 'package:cashback/helpers/helper.dart';
-import 'package:cashback/helpers/product_controller.dart';
+// import 'package:cashback/helpers/product_controller.dart';
 
 class Index extends StatefulWidget {
-  dynamic products;
-  final Function? clearProducts;
   final Function? showHideLoading;
-  Index({Key? key, this.products, this.clearProducts, this.showHideLoading}) : super(key: key);
+  const Index({Key? key, this.showHideLoading}) : super(key: key);
 
   @override
   _IndexState createState() => _IndexState();
@@ -21,8 +20,9 @@ class Index extends StatefulWidget {
 
 class _IndexState extends State<Index> {
   final focus = FocusNode();
+  final clientCodeFocus = FocusNode();
   Timer? _debounce;
-  final Controller productController = Get.put(Controller());
+  // final Controller productController = Get.put(Controller());
   dynamic data = {
     'posId': '',
     'clientCode': TextEditingController(),
@@ -34,7 +34,8 @@ class _IndexState extends State<Index> {
   dynamic user = {};
   dynamic totalAmount = 0;
   dynamic previousValue = '';
-  bool validate = true;
+  bool validate = false;
+  bool enabled = false;
 
   debounce(value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -47,17 +48,35 @@ class _IndexState extends State<Index> {
     if (value.length == 6 || value.length == 12) {
       widget.showHideLoading!(true);
       final prefs = await SharedPreferences.getInstance();
-      //print('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
       final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
-      //print('res${response}');
+      widget.showHideLoading!(false);
+      // clientCodeFocus.unfocus();
       if (response['firstName'] != null) {
         setState(() {
+          enabled = true;
           user = response;
+          response['lastName'] = response['lastName'] ?? '';
         });
+        // FocusScope.of(context).requestFocus(focus);
+        focus.requestFocus();
       } else {
+        setState(() {
+          user = {};
+          data['totalAmount'].text = '';
+          data['writeOff'].text = '';
+          validate = false;
+          clientCodeFocus.requestFocus();
+          // data = {
+          //   'posId': data['posId'],
+          //   // 'clientCode': TextEditingController(),
+          //   'totalAmount': TextEditingController(),
+          //   'writeOff': TextEditingController(),
+          //   'cashierName': data['cashierName'],
+          //   'products': data['products']
+          // };
+        });
         showErrorToast('Пользователь не найден');
       }
-      widget.showHideLoading!(false);
     }
   }
 
@@ -71,8 +90,6 @@ class _IndexState extends State<Index> {
       sendData['totalAmount'] = data['totalAmount'].text == '' ? '0' : data['totalAmount'].text;
       sendData['writeOff'] = data['writeOff'].text == '' ? '0' : data['writeOff'].text;
       final response = await post('/services/gocashapi/api/cashbox-create-cheque', sendData);
-      print('sendData${sendData}');
-      print('response${response}');
       if (response['success']) {
         setState(() {
           data['clientCode'].text = '';
@@ -81,61 +98,82 @@ class _IndexState extends State<Index> {
           data['products'] = [];
           user = {};
         });
-        widget.clearProducts!();
       }
       widget.showHideLoading!(false);
     }
   }
 
   deleteProduct(i) {
-    dynamic productsCopy = widget.products;
+    dynamic productsCopy = data['products'];
     if (productsCopy.length == 1) {
+      // productController.deleteProducts([]);
       setState(() {
-        widget.products = productsCopy.removeAt(i);
         data['products'] = [];
       });
       return;
     }
     productsCopy.removeAt(i);
     setState(() {
-      widget.products = productsCopy;
+      data['products'] = productsCopy;
     });
+    // productController.deleteProducts(productsCopy.removeAt(i));
   }
 
   validateWriteOffField(value) {
-    if (user['firstName'] != null) {
-      if (data['writeOff'].text != '') {
-        if (int.parse(data['writeOff'].text) > user['balance']) {
-          setState(() {
-            data['writeOff'].text = previousValue;
-          });
+    if (user['balance'] != null) {
+      setState(() {
+        if (user['balance'].round() < int.parse(data['writeOff'].text)) {
+          data['writeOff'].text = previousValue;
         } else {
-          setState(() {
-            previousValue = value;
-          });
+          // if (value > ) {
+
+          // }
+          previousValue = value;
         }
-      }
+        validate = user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text);
+      });
     }
+    // if (user['firstName'] != null) {
+    //   if (data['writeOff'].text != '') {
+    //     if (int.parse(data['writeOff'].text) > user['balance']) {
+    //       setState(() {
+    //         data['writeOff'].text = previousValue;
+    //       });
+    //     } else {
+    //       setState(() {
+    //         previousValue = value;
+    //       });
+    //     }
+    //   }
+    // }
   }
 
   getData() async {
     final prefs = await SharedPreferences.getInstance();
+    await getProduts();
     final user = jsonDecode(prefs.getString('user')!);
-    dynamic amount = 0;
     setState(() {
+      data = {
+        'posId': prefs.getString('posId'),
+        'clientCode': TextEditingController(),
+        'totalAmount': TextEditingController(),
+        'writeOff': TextEditingController(),
+        'cashierName': user['username'],
+        'products': data['products']
+      };
       data['posId'] = prefs.getString('posId');
-      data['cashierName'] = user['username'];
-      data['products'] = widget.products;
-      totalAmount = amount;
+      // data['cashierName'] = user['username'];
     });
   }
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      data['products'] = widget.products;
-    });
+    if (data['products'].length == 0) {
+      // setState(() {
+      // data['products'] = productController.products;
+      // });
+    }
     getData();
   }
 
@@ -148,6 +186,39 @@ class _IndexState extends State<Index> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarIconBrightness: Brightness.dark,
+          statusBarColor: Colors.grey[50], // Status bar
+        ),
+        elevation: 0.0,
+        bottomOpacity: 0.0,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text(
+          'moneyBek',
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showSavedProducts();
+              },
+              icon: Icon(
+                Icons.save,
+                color: purple,
+              )),
+          IconButton(
+              onPressed: () {
+                showCreateProductDialog();
+              },
+              icon: Icon(
+                Icons.add,
+                color: purple,
+              )),
+        ],
+      ),
       body: SafeArea(
           child: SingleChildScrollView(
         child: Container(
@@ -171,6 +242,7 @@ class _IndexState extends State<Index> {
                         FocusScope.of(context).requestFocus(focus);
                       },
                       controller: data['clientCode'],
+                      focusNode: clientCodeFocus,
                       onChanged: (value) {
                         debounce(value);
                       },
@@ -249,7 +321,7 @@ class _IndexState extends State<Index> {
                         contentPadding: const EdgeInsets.all(18.0),
                         focusColor: const Color(0xFF7D4196),
                         filled: true,
-                        enabled: user['firstName'] != null,
+                        // enabled: enabled,
                         fillColor: Colors.transparent,
                         enabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xFF9C9C9C)),
@@ -280,18 +352,13 @@ class _IndexState extends State<Index> {
                       keyboardType: TextInputType.number,
                       scrollPadding: const EdgeInsets.only(bottom: 50),
                       onChanged: (value) {
-                        // validateWriteOffField(value);
-                        if (user['balance'] != null) {
-                          setState(() {
-                            validate = user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text);
-                          });
-                        }
+                        validateWriteOffField(value);
                       },
                       decoration: InputDecoration(
                         prefixIcon: const Icon(
                           Icons.payments_outlined,
                         ),
-                        enabled: user['firstName'] != null,
+                        // enabled: user['firstName'] != null,
                         contentPadding: const EdgeInsets.all(18.0),
                         focusColor: const Color(0xFF7D4196),
                         filled: true,
@@ -335,61 +402,81 @@ class _IndexState extends State<Index> {
                 ),
               ),
               for (var i = 0; i < data['products'].length; i++)
-                Dismissible(
-                  key: UniqueKey(),
-                  onDismissed: (DismissDirection direction) {
-                    deleteProduct(i);
-                  },
-                  background: Container(
-                    color: white,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 10, bottom: 10, top: 10),
-                    child: Icon(Icons.delete, color: red),
-                  ),
-                  direction: DismissDirection.endToStart,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: const EdgeInsets.only(bottom: 5),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: Color(0xFFF5F3F5), width: 1),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${(i + 1)}' '. ' '${data['products'][i]['name']}',
-                          style: const TextStyle(fontSize: 16),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          softWrap: false,
+                data['products'].length > 0
+                    ? Dismissible(
+                        key: Key(UniqueKey().toString()),
+                        onDismissed: (DismissDirection direction) {
+                          deleteProduct(i);
+                        },
+                        background: Container(
+                          color: white,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 10, bottom: 10, top: 10),
+                          child: Icon(Icons.delete, color: red),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 5),
-                                Text(
-                                  'barcode'.tr + ': ${data['products'][i]['barcode']}',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ],
+                        direction: DismissDirection.endToStart,
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          margin: const EdgeInsets.only(bottom: 15),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(color: Color(0xFFF5F3F5), width: 1),
                             ),
-                            Text(
-                              '${formatMoney(data['products'][i]['price'])} So\'m',
-                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                            )
-                          ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '${(i + 1)}' '. ' '',
+                                    style: const TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                  // Text(
+                                  //   'quantity'.tr + ': ${data['products'][i]['quantity']}',
+                                  //   overflow: TextOverflow.ellipsis,
+                                  //   maxLines: 1,
+                                  //   softWrap: false,
+                                  // ),
+                                  Text(
+                                    '${data['products'][i]['price']}' ' So\'m x ' '${data['products'][i]['quantity']}',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        'barcode'.tr + ': ${data['products'][i]['barcode'].toString()}',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    '${formatMoney(data['products'][i]['totalAmount']).toString()} So\'m',
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      )
+                    : Container(),
               const SizedBox(height: 80)
             ],
           ),
@@ -399,8 +486,7 @@ class _IndexState extends State<Index> {
         margin: const EdgeInsets.only(left: 32),
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
-                  int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0
+          onPressed: user['firstName'] != null && validate || int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0
               ? () {
                   createCheque();
                 }
@@ -422,5 +508,496 @@ class _IndexState extends State<Index> {
         ),
       ),
     );
+  }
+
+  final _formKey = GlobalKey<FormState>();
+  dynamic productList = [
+    {'name': 'barcode'.tr, 'field_name': 'barcode', 'inputType': TextInputType.number},
+    {'name': 'name'.tr, 'field_name': 'name', 'inputType': TextInputType.text},
+    {'name': 'unit'.tr, 'field_name': 'uomId', 'inputType': TextInputType.text},
+    {'name': 'price'.tr, 'field_name': 'price', 'inputType': TextInputType.number},
+    {'name': 'quantity'.tr, 'field_name': 'quantity', 'inputType': TextInputType.number},
+  ];
+  dynamic productData = {
+    "barcode": TextEditingController(),
+    "name": TextEditingController(),
+    "uomId": TextEditingController(text: '1'),
+    "price": TextEditingController(),
+    "quantity": TextEditingController(),
+    'id': 0
+  };
+  List unitList = [
+    {'id': 1, 'name': 'шт'},
+    {'id': 2, 'name': 'кг'},
+    {'id': 3, 'name': 'литр'},
+    {'id': 4, 'name': 'м'},
+    {'id': 5, 'name': 'гр'},
+    {'id': 6, 'name': 'блок'},
+    {'id': 7, 'name': 'упаковка'},
+    {'id': 8, 'name': 'мл'},
+  ];
+
+  addProduct() {
+    if (_formKey.currentState!.validate()) {
+      var product = {
+        "barcode": productData['barcode'].text,
+        "name": productData['name'].text,
+        "uomId": productData['uomId'].text,
+        "price": productData['price'].text,
+        "quantity": productData['quantity'].text,
+        "totalAmount": int.parse(productData['quantity'].text) * int.parse(productData['price'].text),
+      };
+      // productController.addProduct(product);
+      setState(() {
+        data['products'].add(product);
+        productData = {
+          "barcode": TextEditingController(),
+          "name": TextEditingController(),
+          "uomId": TextEditingController(text: '1'),
+          "quantity": TextEditingController(),
+          "price": TextEditingController(),
+          'id': 0
+        };
+      });
+      Get.back();
+    }
+  }
+
+  showCreateProductDialog() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              // titlePadding: EdgeInsets.all(0),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+              title: Text(
+                'create_product'.tr,
+                textAlign: TextAlign.center,
+              ),
+              scrollable: true,
+              content: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (var i = 0; i < productList.length; i++)
+                          productList[i]['field_name'] != 'uomId'
+                              ? Container(
+                                  margin: const EdgeInsets.only(bottom: 20),
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: ThemeData().colorScheme.copyWith(
+                                            primary: purple,
+                                          ),
+                                    ),
+                                    child: TextFormField(
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'required_field'.tr;
+                                        }
+                                        return null;
+                                      },
+                                      scrollPadding: i == 1 || i == 3 ? const EdgeInsets.only(bottom: 200) : EdgeInsets.zero,
+                                      controller: productData[productList[i]['field_name']],
+                                      onChanged: (value) {},
+                                      keyboardType: productList[i]['inputType'],
+                                      decoration: InputDecoration(
+                                        contentPadding: const EdgeInsets.all(12.0),
+                                        focusColor: const Color(0xFF7D4196),
+                                        filled: true,
+                                        fillColor: Colors.transparent,
+                                        enabledBorder: const UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                                        ),
+                                        focusedBorder: const UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Color(0xFF7D4196)),
+                                        ),
+                                        hintText: productList[i]['name'],
+                                        hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                                      ),
+                                      style: const TextStyle(color: Color(0xFF9C9C9C)),
+                                    ),
+                                  ))
+                              : Container(
+                                  // height: 50,
+                                  margin: const EdgeInsets.only(bottom: 20),
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: const BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Color(0xFF9C9C9C)))),
+                                  child: DropdownButtonHideUnderline(
+                                    child: ButtonTheme(
+                                      alignedDropdown: true,
+                                      child: DropdownButton(
+                                        value: productData['uomId'].text,
+                                        isExpanded: true,
+                                        hint: Text('${unitList[0]['name']}'),
+                                        icon: const Icon(Icons.chevron_right),
+                                        iconSize: 24,
+                                        iconEnabledColor: purple,
+                                        elevation: 16,
+                                        style: const TextStyle(color: Color(0xFF313131)),
+                                        underline: Container(
+                                          height: 2,
+                                          color: purple,
+                                        ),
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            productData[productList[i]['field_name']].text = newValue!;
+                                          });
+                                        },
+                                        items: unitList.map((item) {
+                                          return DropdownMenuItem<String>(
+                                            value: '${item['id']}',
+                                            child: Text(item['name']),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                        // const SizedBox(height: 100)
+                      ],
+                    ),
+                  )),
+              actions: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      addProduct();
+                    },
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                    child: Text('proceed'.tr),
+                  ),
+                )
+              ],
+            );
+          });
+        });
+  }
+
+  final quantityFormKey = GlobalKey<FormState>();
+  dynamic products = [];
+  dynamic prevProducts = [];
+  dynamic selectedProduct = [];
+  dynamic changedProducts = [];
+
+  getProduts() async {
+    setState(() {
+      widget.showHideLoading!(true);
+    });
+    final response = await get('/services/gocashapi/api/product-list');
+    setState(() {
+      products = response;
+      prevProducts = List.from(response);
+      widget.showHideLoading!(false);
+    });
+  }
+
+  continueChangeQuantity(item) {
+    if (quantityFormKey.currentState!.validate()) {
+      setState(() {
+        item['totalAmount'] = int.parse(item['quantity']) * item['price'].round();
+        changedProducts.add(item);
+      });
+      Get.back();
+    }
+  }
+
+  changeQuantity(i) {
+    dynamic item = products[i];
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+              title: Text(
+                'quantity'.tr,
+                textAlign: TextAlign.center,
+              ),
+              content: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Center(
+                      child: Form(
+                    key: quantityFormKey,
+                    child: SizedBox(
+                        height: 60,
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ThemeData().colorScheme.copyWith(
+                                  primary: purple,
+                                ),
+                          ),
+                          child: TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'required_field'.tr;
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                item['quantity'] = value;
+                              });
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(12.0),
+                              focusColor: const Color(0xFF7D4196),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF7D4196)),
+                              ),
+                              hintText: 'quantity'.tr,
+                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                            ),
+                            style: const TextStyle(color: Color(0xFF9C9C9C)),
+                          ),
+                        )),
+                  ))),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), primary: red),
+                        child: Text('cancel'.tr),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          continueChangeQuantity(item);
+                        },
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                        child: Text('proceed'.tr),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            );
+          });
+        });
+  }
+
+  onSearchTextChanged(String text) async {
+    if (text.isEmpty) {
+      setState(() {
+        products = prevProducts;
+      });
+      return;
+    }
+    dynamic arr = [];
+    products.forEach((userDetail) {
+      if (userDetail['name'].contains(text) || userDetail['barcode'].contains(text)) {
+        setState(() {
+          arr.add(userDetail);
+        });
+      }
+    });
+    setState(() {
+      products = arr;
+    });
+  }
+
+  addProductFromSaved() {
+    for (var i = 0; i < changedProducts.length; i++) {
+      for (var j = 0; j < data['products'].length; j++) {
+        if (data['products'][j]['id'] == changedProducts[i]['id']) {
+          print(data['products'][j]['id']);
+        }
+      }
+    }
+    setState(() {
+      data['products'] = [...data['products'], ...changedProducts];
+      changedProducts = [];
+    });
+    Get.back();
+  }
+
+  showSavedProducts() async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              // titlePadding: EdgeInsets.all(0),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+              title: Text(
+                'products'.tr,
+                textAlign: TextAlign.center,
+              ),
+              scrollable: true,
+              content: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.7,
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 20),
+                      height: 40,
+                      child: TextField(
+                        onChanged: onSearchTextChanged,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(2),
+                          isDense: true,
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: grey,
+                            size: 20,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: borderColor),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(18),
+                            ),
+                          ),
+                          focusColor: purple,
+                          hintText: 'search_by_name'.tr + ', QR code ...',
+                          hintStyle: TextStyle(
+                            color: lightGrey,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.52,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            for (var i = 0; i < products.length; i++)
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                                margin: const EdgeInsets.only(bottom: 10),
+                                decoration: BoxDecoration(
+                                  color: white,
+                                  border: Border.all(color: borderColor),
+                                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black,
+                                      spreadRadius: -6,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '${products[i]['name']}',
+                                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      softWrap: false,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              'barcode'.tr + ': ${products[i]['barcode']}',
+                                              style: TextStyle(color: lightGrey),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              'price'.tr + ': ${products[i]['price']}',
+                                              style: TextStyle(color: lightGrey),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            IconButton(
+                                                onPressed: () {
+                                                  changeQuantity(i);
+                                                },
+                                                padding: EdgeInsets.zero,
+                                                constraints: const BoxConstraints(),
+                                                icon: Icon(
+                                                  Icons.add,
+                                                  color: purple,
+                                                  size: 28,
+                                                )),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), primary: red),
+                        child: Text('cancel'.tr),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          addProductFromSaved();
+                        },
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                        child: Text('proceed'.tr),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            );
+          });
+        });
   }
 }

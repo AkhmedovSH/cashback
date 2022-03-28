@@ -106,12 +106,12 @@ class _ChequeByIdState extends State<ChequeById> {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
             children: [
-              Center(
-                  child: Image.asset(
-                'images/cashback_logo.png',
-                height: 64,
-                width: 200,
-              )),
+              // Center(
+              //     child: Image.asset(
+              //   'images/cashback_icon.png',
+              //   height: 64,
+              //   width: 200,
+              // )),
               Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 child: Center(

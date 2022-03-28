@@ -20,7 +20,7 @@ Future get(String url, {payload}) async {
         queryParameters: payload,
         options: Options(headers: {
           // "authorization":
-          //     "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJ0ZXN0bWQiLCJzY29wZSI6WyJvcGVuaWQiXSwiZXhwIjoxNjQ2MjY5NDExLCJpYXQiOjE2NDYxODMwMTEsImF1dGhvcml0aWVzIjpbIlJPTEVfQlVTSU5FU1NfT1dORVIiXSwianRpIjoiTGpaeWRaY3RrYW9za2J6UXBuY2N3bHBRNVJVIiwiY2xpZW50X2lkIjoid2ViX2FwcCJ9.Gg2AIXgkHpDB_UZEnTtP3hWeeR5M3fddrgpTaC18OcoPvgNTnxXddiM1q40J89yfQbB70kkihOFlxxhwdaTRToP0tFZU7RXNAxggAk2VFp7zJ5O6gMtiKwc276trqJsdasRWANFIYv3ouOy3t6x4Rr-ivzGYYHmgdXaeSnTAWcaVuDYGYd-gqliWlYO09mXRpOTNq71JATJBnKbo2ZNjWWZcKZDlvTsHSKIIgyuj9Oe_5yZKHC_Q4uBHbXsSV3mPFnTEtJTpxFHkyufRZFgmgLuwFjvecYMf13Qmer1Iy_6QUshYvaoPeVdhTFxU3Tiw9D_w_zhLXVMQt_gL9A59JQ"
+          //     "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJ0ZXN0bWQiLCJzY29wZSI6WyJvcGVuaWQiXSwibGFzdF9uYW1lIjpudWxsLCJleHAiOjE2NDg1MjI2OTIsImlhdCI6MTY0ODQzNjI5MiwiZmlyc3RfbmFtZSI6bnVsbCwiYXV0aG9yaXRpZXMiOlsiUk9MRV9CVVNJTkVTU19PV05FUiJdLCJqdGkiOiJzNXRiV0dyTEhLUFd4OENwa01BLWRSMTI1enMiLCJjbGllbnRfaWQiOiJ3ZWJfYXBwIiwib3duZXJMb2dpbiI6bnVsbH0.c1Oyl3ZBCkPXxX_i2x9fDUDnwAw89qRwZ6BCnO_wYtFke4z5sdsTWBeCYamNglSsZccSrhZMkqGj1L5nok60JZP1DagHGpHJ7yQW3VWlr6NQpjjhbcifwirfv_RC4uadl3OUWMh9JZlHUv8txEre_o8EZVOyUdj_mXLq0MSH9FQdOdoPL-04zoej_2HOLTDhIq4F5Ckabwt3-qKY2HDEhjJhxQR-Arm-JZzEPM89HCIPmw5cQEXUmm1xQ6VlTjXcQJvmec24Rv9n9zH4zgjALS9g34NQtReDx0PG-J24LXmxAovsGKgrODs1wTHq_mkd2IQqfqNpmvBclIetsAiu2g"
           "authorization": "Bearer ${prefs.getString('access_token')}",
         }));
     return response.data;
@@ -56,14 +56,12 @@ Future guestPost(String url, dynamic payload) async {
 
 Future put(String url, dynamic payload) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  print(url);
   try {
     final response = await dio.put(hostUrl + url,
         data: payload,
         options: Options(headers: {
           "authorization": "Bearer ${prefs.getString('access_token')}",
         }));
-    print(response.data);
     return response.data;
   } on DioError catch (e) {
     statuscheker(e);
@@ -72,14 +70,11 @@ Future put(String url, dynamic payload) async {
 
 Future delete(String url) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  print(url);
   try {
     final response = await dio.delete(hostUrl + url,
         options: Options(headers: {
           "authorization": "Bearer ${prefs.getString('access_token')}",
         }));
-    print(response.statusCode);
-    print(response.data);
     return response.data;
   } on DioError catch (e) {
     print(e.response?.statusCode);

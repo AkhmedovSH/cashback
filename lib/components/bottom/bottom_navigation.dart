@@ -11,7 +11,7 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  void onSelectMenu(int index) async {
+  void onSelectMenu(int index) {
     widget.changeIndex(index);
   }
 
