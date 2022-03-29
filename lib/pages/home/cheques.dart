@@ -135,11 +135,11 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
                                   children: [
                                     TableRow(children: [
                                       Container(
-                                        margin: EdgeInsets.only(bottom: 10),
+                                        margin: const EdgeInsets.only(bottom: 10),
                                         child: Text(
                                           'date'.tr,
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                                         ),
                                       ),
                                       Container(

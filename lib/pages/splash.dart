@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:get/get.dart';
+
+import 'package:new_version/new_version.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -13,7 +17,20 @@ class _SplashState extends State<Splash> {
   @override
   void initState() {
     super.initState();
+    // checkVersion();
     startTimer();
+  }
+
+  void checkVersion() async {
+    // Navigator.of(context).push(RequiredUpdatePage('status.appStoreLink.toString()'));
+    final newVersion = NewVersion(androidId: 'uz.cashbek.kassa');
+    final status = await newVersion.getVersionStatus();
+    // if (status!.storeVersion != status.localVersion) {
+    //   Navigator.of(context).push(RequiredUpdatePage(status.appStoreLink.toString()));
+    //   return;
+    // } else {
+    //   startTimer();
+    // }
   }
 
   startTimer() {
@@ -29,13 +46,130 @@ class _SplashState extends State<Splash> {
   Widget build(BuildContext context) {
     // bool lightMode =
     //     MediaQuery.of(context).platformBrightness == Brightness.light;
-    return const Scaffold(
-      backgroundColor: Color(0xFF7D4196),
-      body: Center(
+    return Scaffold(
+      backgroundColor: const Color(0xFF7D4196),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        systemOverlayStyle: const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light),
+        elevation: 0,
+      ),
+      body: const Center(
           child: Text(
         'moneyBek',
         style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
       )),
+    );
+  }
+}
+
+class RequiredUpdatePage extends ModalRoute<void> {
+  final String url;
+
+  RequiredUpdatePage(this.url);
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 200);
+
+  @override
+  bool get opaque => false;
+
+  @override
+  bool get barrierDismissible => false;
+
+  @override
+  Color get barrierColor => Colors.black.withOpacity(0.5);
+
+  @override
+  String get barrierLabel => '';
+
+  @override
+  bool get maintainState => true;
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    // This makes sure that text and other content follows the material style
+    return Material(
+      type: MaterialType.transparency,
+      // make sure that the overlay content is not cut off
+      child: SafeArea(
+        child: _buildOverlayContent(context),
+      ),
+    );
+  }
+
+  Widget _buildOverlayContent(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'images/splash_logo.png',
+                height: 50,
+                // width: 50,
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                child: const Text(
+                  'Чтобы использовать mDokon, загрузите последнюю версию',
+                  style: TextStyle(fontSize: 16, color: Color(0xFF7b8190), fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                    onPressed: () {
+                      launch(url);
+                    },
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
+                    child: const Text(
+                      'Обновить',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    )),
+              ),
+              const SizedBox(
+                height: 20,
+              )
+            ],
+          ),
+        ),
+        Positioned(
+            top: 10,
+            right: 10,
+            child: IconButton(
+                onPressed: () {
+                  SystemNavigator.pop();
+                },
+                icon: const Icon(
+                  Icons.close,
+                  size: 32,
+                )))
+      ],
+    );
+  }
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+    // You can add your own animations for the overlay content
+    return FadeTransition(
+      opacity: animation,
+      child: ScaleTransition(
+        scale: animation,
+        child: child,
+      ),
     );
   }
 }

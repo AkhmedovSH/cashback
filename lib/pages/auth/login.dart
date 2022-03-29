@@ -16,7 +16,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  dynamic sendData = {'username': 'cashier', 'password': '123123'};
+  dynamic sendData = {'username': '', 'password': ''}; // cashier 123123
   bool showPassword = true;
   List translations = [
     {'id': 1, 'name': 'Русский', 'locale': const Locale('ru', 'RU')},
