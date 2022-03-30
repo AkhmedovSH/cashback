@@ -19,8 +19,8 @@ class _LoginState extends State<Login> {
   dynamic sendData = {'username': '', 'password': ''}; // cashier 123123
   bool showPassword = true;
   List translations = [
-    {'id': 1, 'name': 'Русский', 'locale': const Locale('ru', 'RU')},
     {'id': 3, 'name': 'Узбекский(лат)', 'locale': const Locale('uz_latn', 'UZ')},
+    {'id': 1, 'name': 'Русский', 'locale': const Locale('ru', 'RU')},
     {'id': 4, 'name': 'Узбекский(кир)', 'locale': const Locale('uz_cyrl', 'UZ')},
   ];
   dynamic currentLocale = '1';

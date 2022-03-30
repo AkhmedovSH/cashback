@@ -122,32 +122,25 @@ class _IndexState extends State<Index> {
 
   validateWriteOffField(value) {
     if (user['balance'] != null) {
+      // print(int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > int.parse(value));
+      if (value.length == previousValue.length) {
+        setState(() {
+          data['writeOff'].text = '';
+          data['writeOff'].selection = TextSelection.fromPosition(TextPosition(offset: data['writeOff'].text.length));
+        });
+        return;
+      }
       setState(() {
         if (user['balance'].round() < int.parse(data['writeOff'].text)) {
-          data['writeOff'].text = previousValue;
+          data['writeOff'] = TextEditingController(text: user['balance'].round().toString());
+          data['writeOff'].selection = TextSelection.fromPosition(TextPosition(offset: data['writeOff'].text.length));
         }
-        if (int.parse(data['writeOff'].text) > int.parse(data['totalAmount'].text != '' ? data['totalAmount'].text : '')) {
-          // data['writeOff'].text = previousValue;
+        if (int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) < int.parse(data['writeOff'].text)) {
+          data['writeOff'] = TextEditingController(text: data['totalAmount'].text);
+          data['writeOff'].selection = TextSelection.fromPosition(TextPosition(offset: data['writeOff'].text.length));
         }
-        if (user['balance'].round() > int.parse(data['writeOff'].text)) {
-          previousValue = value;
-        }
-        validate = user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text);
       });
     }
-    // if (user['firstName'] != null) {
-    //   if (data['writeOff'].text != '') {
-    //     if (int.parse(data['writeOff'].text) > user['balance']) {
-    //       setState(() {
-    //         data['writeOff'].text = previousValue;
-    //       });
-    //     } else {
-    //       setState(() {
-    //         previousValue = value;
-    //       });
-    //     }
-    //   }
-    // }
   }
 
   getData() async {
@@ -349,6 +342,9 @@ class _IndexState extends State<Index> {
                           ),
                     ),
                     child: TextFormField(
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                      ],
                       textInputAction: TextInputAction.done,
                       controller: data['writeOff'],
                       keyboardType: TextInputType.number,
@@ -360,7 +356,7 @@ class _IndexState extends State<Index> {
                         prefixIcon: const Icon(
                           Icons.payments_outlined,
                         ),
-                        // enabled: user['firstName'] != null,
+                        enabled: int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0 && user['firstName'] != null,
                         contentPadding: const EdgeInsets.all(18.0),
                         focusColor: const Color(0xFF7D4196),
                         filled: true,
@@ -982,7 +978,7 @@ class _IndexState extends State<Index> {
                                 child: Center(
                                   child: Text(
                                     'no_products'.tr,
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                                   ),
                                 ),
                               ),
