@@ -45,4 +45,6 @@ final ru = {
   'paid_with_points': 'Оплатили баллами',
   'paid': 'Оплатили',
   'status': 'Статус',
+  'update_1': 'Обновить',
+  'use_moneyBek_please_download_the_latest_version': 'Чтобы использовать moneyBek, загрузите последнюю версию'
 };

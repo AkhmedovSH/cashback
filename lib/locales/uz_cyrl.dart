@@ -45,4 +45,6 @@ final uzCyrl = {
   'paid_with_points': 'Балларда тўланган',
   'paid': 'Тўланган',
   'status': 'Ҳолат',
+  'update_1': 'Янгилаш',
+  'use_moneyBek_please_download_the_latest_version': 'МонейБек-дан фойдаланиш учун аввалги версиясини юклаб олинг'
 };

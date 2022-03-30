@@ -45,4 +45,6 @@ final uzLatn = {
   'paid_with_points': 'Ballarda to\'langan',
   'paid': 'To\'langan',
   'status': 'Holat',
+  'update_1': 'Yangilash',
+  'use_moneyBek_please_download_the_latest_version': 'MoneyBek-dan foydalanish uchun avvalgi versiyasini yuklab oling'
 };

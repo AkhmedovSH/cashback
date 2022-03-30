@@ -22,15 +22,14 @@ class _SplashState extends State<Splash> {
   }
 
   void checkVersion() async {
-    // Navigator.of(context).push(RequiredUpdatePage('status.appStoreLink.toString()'));
     final newVersion = NewVersion(androidId: 'uz.cashbek.kassa');
     final status = await newVersion.getVersionStatus();
-    // if (status!.storeVersion != status.localVersion) {
-    //   Navigator.of(context).push(RequiredUpdatePage(status.appStoreLink.toString()));
-    //   return;
-    // } else {
-    //   startTimer();
-    // }
+    if (status!.storeVersion != status.localVersion) {
+      Navigator.of(context).push(RequiredUpdatePage(status.appStoreLink.toString()));
+      return;
+    } else {
+      startTimer();
+    }
   }
 
   startTimer() {
@@ -121,9 +120,9 @@ class RequiredUpdatePage extends ModalRoute<void> {
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 10),
-                child: const Text(
-                  'Чтобы использовать moneyBek, загрузите последнюю версию',
-                  style: TextStyle(fontSize: 16, color: Color(0xFF7b8190), fontWeight: FontWeight.w500),
+                child: Text(
+                  'use_moneyBek_please_download_the_latest_version'.tr,
+                  style: const TextStyle(fontSize: 16, color: Color(0xFF7b8190), fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                   softWrap: true,
                 ),
@@ -135,9 +134,9 @@ class RequiredUpdatePage extends ModalRoute<void> {
                       launch(url);
                     },
                     style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
-                    child: const Text(
-                      'Обновить',
-                      style: TextStyle(fontWeight: FontWeight.w700),
+                    child: Text(
+                      'update_1'.tr,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
                     )),
               ),
               const SizedBox(
