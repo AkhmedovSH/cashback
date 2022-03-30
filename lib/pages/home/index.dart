@@ -126,9 +126,10 @@ class _IndexState extends State<Index> {
         if (user['balance'].round() < int.parse(data['writeOff'].text)) {
           data['writeOff'].text = previousValue;
         }
-        if (int.parse(data['writeOff'].text) > int.parse(data['totalAmount'].text)) {
+        if (int.parse(data['writeOff'].text) > int.parse(data['totalAmount'].text != '' ? data['totalAmount'].text : '')) {
           // data['writeOff'].text = previousValue;
-        } else {
+        }
+        if (user['balance'].round() > int.parse(data['writeOff'].text)) {
           previousValue = value;
         }
         validate = user['balance'] > int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text);
@@ -691,14 +692,10 @@ class _IndexState extends State<Index> {
   dynamic changedProducts = [];
 
   getProduts() async {
-    setState(() {
-      widget.showHideLoading!(true);
-    });
     final response = await get('/services/gocashapi/api/product-list');
     setState(() {
       products = response;
       prevProducts = List.from(response);
-      widget.showHideLoading!(false);
     });
   }
 
@@ -901,85 +898,94 @@ class _IndexState extends State<Index> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.52,
                       child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            for (var i = 0; i < products.length; i++)
-                              Container(
-                                width: MediaQuery.of(context).size.width,
-                                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                                margin: const EdgeInsets.only(bottom: 10),
-                                decoration: BoxDecoration(
-                                  color: white,
-                                  border: Border.all(color: borderColor),
-                                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black,
-                                      spreadRadius: -6,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 4),
+                        child: products.length > 0
+                            ? Column(
+                                children: [
+                                  for (var i = 0; i < products.length; i++)
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      decoration: BoxDecoration(
+                                        color: white,
+                                        border: Border.all(color: borderColor),
+                                        borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.black,
+                                            spreadRadius: -6,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            '${products[i]['name']}',
+                                            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            softWrap: false,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Text(
+                                                    'barcode'.tr + ': ${products[i]['barcode']}',
+                                                    style: TextStyle(color: lightGrey),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Text(
+                                                    'price'.tr + ': ${products[i]['price'].round()}',
+                                                    style: TextStyle(color: lightGrey),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  IconButton(
+                                                      onPressed: () {
+                                                        changeQuantity(i);
+                                                      },
+                                                      padding: EdgeInsets.zero,
+                                                      constraints: const BoxConstraints(),
+                                                      icon: Icon(
+                                                        Icons.add,
+                                                        color: purple,
+                                                        size: 28,
+                                                      )),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      '${products[i]['name']}',
-                                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      softWrap: false,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Text(
-                                              'barcode'.tr + ': ${products[i]['barcode']}',
-                                              style: TextStyle(color: lightGrey),
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Text(
-                                              'price'.tr + ': ${products[i]['price'].round()}',
-                                              style: TextStyle(color: lightGrey),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                            IconButton(
-                                                onPressed: () {
-                                                  changeQuantity(i);
-                                                },
-                                                padding: EdgeInsets.zero,
-                                                constraints: const BoxConstraints(),
-                                                icon: Icon(
-                                                  Icons.add,
-                                                  color: purple,
-                                                  size: 28,
-                                                )),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ],
+                                ],
+                              )
+                            : SizedBox(
+                                child: Center(
+                                  child: Text(
+                                    'no_products'.tr,
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                                  ),
                                 ),
                               ),
-                          ],
-                        ),
                       ),
                     )
                   ],

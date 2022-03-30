@@ -122,7 +122,7 @@ class RequiredUpdatePage extends ModalRoute<void> {
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 10),
                 child: const Text(
-                  'Чтобы использовать mDokon, загрузите последнюю версию',
+                  'Чтобы использовать moneyBek, загрузите последнюю версию',
                   style: TextStyle(fontSize: 16, color: Color(0xFF7b8190), fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                   softWrap: true,

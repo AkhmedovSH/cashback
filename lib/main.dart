@@ -29,8 +29,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp( 
       translations: Messages(),
-      locale: const Locale('ru', 'RU'),
-      fallbackLocale: const Locale('en', 'EN'),
+      locale: const Locale('uz_latn', 'UZ'),
+      fallbackLocale: const Locale('ru', 'RU'),
       debugShowCheckedModeBanner: false,
       popGesture: true,
       defaultTransition: Transition.leftToRight,
