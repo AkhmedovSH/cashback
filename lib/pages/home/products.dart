@@ -395,7 +395,7 @@ class _ProductsState extends State<Products> {
                       }
                     },
                     style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                    child: Text(!update ? 'proceed'.tr : 'update'.tr),
+                    child: Text(!update ? 'proceed'.tr : 'save'.tr),
                   ),
                 )
               ],

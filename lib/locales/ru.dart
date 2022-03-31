@@ -3,12 +3,12 @@ final ru = {
   'sign_in_to_continue': 'Войдите в систему чтобы продолжить',
   'telephone_number': 'Телефонный номер',
   'password': 'Пароль',
-  'login': 'Войти',
+  'enter': 'Войти',
   'free_points': 'Свободные точки',
   'select_merchant_to_enter': 'Выберите торговую точку для входа',
   'create_product': 'Создать продукт',
   'update_product': 'Изменить продукт',
-  'update': 'Сохранить',
+  'save': 'Сохранить',
   'required_field': 'Обязательное поле',
   'home': 'Главная',
   'products': 'Продукты',
@@ -46,5 +46,6 @@ final ru = {
   'paid': 'Оплатили',
   'status': 'Статус',
   'update_1': 'Обновить',
-  'use_moneyBek_please_download_the_latest_version': 'Чтобы использовать moneyBek, загрузите последнюю версию'
+  'use_moneyBek_please_download_the_latest_version': 'Чтобы использовать moneyBek, загрузите последнюю версию',
+  'login': 'Логин'
 };

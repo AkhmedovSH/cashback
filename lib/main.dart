@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp( 
+    return GetMaterialApp(
       translations: Messages(),
       locale: const Locale('uz_latn', 'UZ'),
       fallbackLocale: const Locale('ru', 'RU'),

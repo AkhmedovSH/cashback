@@ -3,12 +3,12 @@ final uzLatn = {
   'sign_in_to_continue': 'Davom etish uchun tizimga kiring',
   'telephone_number': 'Telefon raqami',
   'password': 'Parol',
-  'login': 'Tizimga kirish',
+  'enter': 'Tizimga kirish',
   'free_points': 'Ochiq savdo nuqtalari',
   'select_merchant_to_enter': 'Kirish uchun savdo nuqtasini tanlang',
   'create_product': 'Mahsulot yaratish',
   'update_product': 'Mahsulotni tahrirlash',
-  'update': 'Saqlash',
+  'save': 'Saqlash',
   'required_field': 'Majburiy maydon',
   'home': 'Asosiy',
   'products': 'Mahsulotlar',
@@ -46,5 +46,6 @@ final uzLatn = {
   'paid': 'To\'langan',
   'status': 'Holat',
   'update_1': 'Yangilash',
-  'use_moneyBek_please_download_the_latest_version': 'MoneyBek-dan foydalanish uchun avvalgi versiyasini yuklab oling'
+  'use_moneyBek_please_download_the_latest_version': 'MoneyBek-dan foydalanish uchun avvalgi versiyasini yuklab oling',
+  'login': 'Login',
 };

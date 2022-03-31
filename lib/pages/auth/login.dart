@@ -177,7 +177,7 @@ class _LoginState extends State<Login> {
                                 focusedBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(color: Color(0xFF7D4196)),
                                 ),
-                                hintText: 'telephone_number'.tr + '(9* *** ** **)',
+                                hintText: 'login'.tr,
                                 hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                               ),
                               style: const TextStyle(color: Color(0xFF9C9C9C)),
@@ -242,7 +242,7 @@ class _LoginState extends State<Login> {
                                 focusedBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(color: Color(0xFF7D4196)),
                                 ),
-                                hintText: 'Пароль',
+                                hintText: 'password'.tr,
                                 hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                               ),
                               style: const TextStyle(color: Color(0xFF9C9C9C)),
@@ -271,7 +271,7 @@ class _LoginState extends State<Login> {
             ),
           ),
           child: Text(
-            'login'.tr,
+            'enter'.tr,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
           ),
         ),
