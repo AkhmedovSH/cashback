@@ -1,3 +1,4 @@
+import 'package:cashback/helpers/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
@@ -14,18 +15,25 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
+  dynamic systemOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light);
   @override
   void initState() {
     super.initState();
-    // checkVersion();
-    startTimer();
+    checkVersion();
+    // startTimer();
   }
 
   void checkVersion() async {
     final newVersion = NewVersion(androidId: 'uz.cashbek.kassa');
     final status = await newVersion.getVersionStatus();
-    if (status!.storeVersion != status.localVersion) {
-      Navigator.of(context).push(RequiredUpdatePage(status.appStoreLink.toString()));
+    print(status!.storeVersion);
+    print(status.localVersion);
+    if (status.storeVersion != '1.0.3') {
+      setState(() {
+        systemOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.white, statusBarIconBrightness: Brightness.dark);
+      });
+      await Navigator.of(context).push(RequiredUpdatePage(status.appStoreLink.toString()));
+      SystemNavigator.pop();
       return;
     } else {
       startTimer();
@@ -50,7 +58,7 @@ class _SplashState extends State<Splash> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        systemOverlayStyle: const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light),
+        systemOverlayStyle: systemOverlayStyle,
         elevation: 0,
       ),
       body: const Center(
@@ -113,13 +121,25 @@ class RequiredUpdatePage extends ModalRoute<void> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'images/splash_logo.png',
-                height: 50,
-                // width: 50,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'images/cashback_icon.png',
+                    height: 50,
+                    // width: 50,
+                  ),
+                  Container(
+                    child: Text(
+                      'moneyBek',
+                      style: TextStyle(color: purple, fontSize: 28, fontFamily: 'Lobster', fontWeight: FontWeight.w600),
+                    ),
+                  )
+                ],
               ),
               Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                margin: const EdgeInsets.only(top: 15, bottom: 15),
                 child: Text(
                   'use_moneyBek_please_download_the_latest_version'.tr,
                   style: const TextStyle(fontSize: 16, color: Color(0xFF7b8190), fontWeight: FontWeight.w500),
@@ -133,7 +153,7 @@ class RequiredUpdatePage extends ModalRoute<void> {
                     onPressed: () {
                       launch(url);
                     },
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 15)),
                     child: Text(
                       'update_1'.tr,
                       style: const TextStyle(fontWeight: FontWeight.w700),
