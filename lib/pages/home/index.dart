@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import 'package:cashback/helpers/api.dart';
 import 'package:cashback/helpers/helper.dart';
@@ -49,16 +50,18 @@ class _IndexState extends State<Index> {
       final prefs = await SharedPreferences.getInstance();
       final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
       widget.showHideLoading!(false);
-      if (response['firstName'] != null) {
+      if (response['id'] != null) {
         setState(() {
           user = response;
           response['lastName'] = response['lastName'] ?? '';
+          response['firtsName'] = response['firtsName'] ?? '';
           // focus.requestFocus();
         });
         if (_debounce?.isActive ?? false) _debounce!.cancel();
         _debounce = Timer(const Duration(milliseconds: 100), () {
           FocusScope.of(context).requestFocus(focus);
         });
+        return true;
       } else {
         setState(() {
           user = {};
@@ -68,13 +71,14 @@ class _IndexState extends State<Index> {
           clientCodeFocus.requestFocus();
         });
         showErrorToast('Пользователь не найден');
+        return false;
       }
     }
   }
 
   createCheque() async {
     print('here');
-    if (user['firstName'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
+    if (user['id'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
         int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0) {
       widget.showHideLoading!(true);
       var sendData = Map.from(data);
@@ -198,6 +202,14 @@ class _IndexState extends State<Index> {
         actions: [
           IconButton(
               onPressed: () {
+                showCreateProductDialog();
+              },
+              icon: Icon(
+                Icons.add,
+                color: purple,
+              )),
+          IconButton(
+              onPressed: () {
                 showSavedProducts();
               },
               icon: Icon(
@@ -206,10 +218,10 @@ class _IndexState extends State<Index> {
               )),
           IconButton(
               onPressed: () {
-                showCreateProductDialog();
+                showCreateUserDialog();
               },
               icon: Icon(
-                Icons.add,
+                Icons.person,
                 color: purple,
               )),
         ],
@@ -264,14 +276,14 @@ class _IndexState extends State<Index> {
                   )),
               Container(
                 margin: const EdgeInsets.only(bottom: 10),
-                child: user['firstName'] != null
+                child: user['id'] != null
                     ? Text(
-                        '${user['firstName'] + ' ' + user['lastName']}',
+                        '${user['firtsName'] + ' ' + user['lastName']}',
                         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                       )
                     : null,
               ),
-              user['firstName'] != null
+              user['id'] != null
                   ? Row(
                       children: [
                         Container(
@@ -356,7 +368,7 @@ class _IndexState extends State<Index> {
                         prefixIcon: const Icon(
                           Icons.payments_outlined,
                         ),
-                        enabled: int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0 && user['firstName'] != null,
+                        enabled: int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0 && user['id'] != null,
                         contentPadding: const EdgeInsets.all(18.0),
                         focusColor: const Color(0xFF7D4196),
                         filled: true,
@@ -443,7 +455,7 @@ class _IndexState extends State<Index> {
                                   //   softWrap: false,
                                   // ),
                                   Text(
-                                    '${data['products'][i]['price']}' ' So\'m x ' '${data['products'][i]['quantity']}',
+                                    '${formatMoney(data['products'][i]['price'].round())}' ' So\'m x ' '${data['products'][i]['quantity']}',
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                     softWrap: false,
@@ -485,7 +497,7 @@ class _IndexState extends State<Index> {
         width: double.infinity,
         decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(12)),
         child: ElevatedButton(
-          onPressed: user['firstName'] != null && validate || int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0
+          onPressed: user['id'] != null && validate || int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0
               ? () {
                   createCheque();
                 }
@@ -1017,5 +1029,133 @@ class _IndexState extends State<Index> {
             );
           });
         });
+  }
+
+  createUser() async {
+    dynamic sendData = {'phone': '998' + maskFormatter.getUnmaskedText()};
+    final response = await post('/services/gocashapi/api/register-client', sendData);
+    if (response['success']) {
+      final search = await searchUser('998' + maskFormatter.getUnmaskedText());
+      if (search) {
+        data['clientCode'].text = '998' + maskFormatter.getUnmaskedText();
+      }
+    }
+    Get.back();
+  }
+
+  dynamic maskFormatter = MaskTextInputFormatter(
+    mask: '+998 ## ### ## ##',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
+  final controller = TextEditingController(text: '+998 ');
+
+  showCreateUserDialog() async {
+    dynamic sendData = {
+      'phone': '',
+    };
+    final _formKey = GlobalKey<FormState>();
+    final userFocus = FocusNode();
+
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+              title: Text(
+                'quantity'.tr,
+                textAlign: TextAlign.center,
+              ),
+              content: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Center(
+                      child: Form(
+                    key: _formKey,
+                    child: SizedBox(
+                        height: 60,
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ThemeData().colorScheme.copyWith(
+                                  primary: purple,
+                                ),
+                          ),
+                          child: TextFormField(
+                            inputFormatters: [maskFormatter],
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'required_field'.tr;
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                sendData['phone'] = value;
+                              });
+                            },
+                            controller: controller,
+                            focusNode: userFocus,
+                            autofocus: true,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(12.0),
+                              focusColor: const Color(0xFF7D4196),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF7D4196)),
+                              ),
+                              hintText: 'quantity'.tr,
+                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                            ),
+                            style: const TextStyle(color: Color(0xFF9C9C9C)),
+                          ),
+                        )),
+                  ))),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), primary: red),
+                        child: Text('cancel'.tr),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            createUser();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                        child: Text('proceed'.tr),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            );
+          });
+        });
+    setState(() {
+      controller.text = '+998';
+      maskFormatter = MaskTextInputFormatter(
+        mask: '+998 ## ### ## ##',
+        filter: {"#": RegExp(r'[0-9]')},
+        type: MaskAutoCompletionType.lazy,
+      );
+    });
   }
 }

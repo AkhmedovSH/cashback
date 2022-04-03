@@ -23,7 +23,7 @@ class _LoginState extends State<Login> {
     {'id': 1, 'name': 'Русский', 'locale': const Locale('ru', 'RU')},
     {'id': 4, 'name': 'Узбекский(кир)', 'locale': const Locale('uz_cyrl', 'UZ')},
   ];
-  dynamic currentLocale = '1';
+  dynamic currentLocale = '3';
 
   login() async {
     final response = await guestPost('/auth/login', sendData);
@@ -41,20 +41,30 @@ class _LoginState extends State<Login> {
     }
   }
 
-  updateTranslation(newValue) {
+  updateTranslation(newValue) async {
+    final prefs = await SharedPreferences.getInstance();
     for (var i = 0; i < translations.length; i++) {
       if (translations[i]['id'].toString() == newValue) {
         Get.updateLocale(translations[i]['locale']);
       }
     }
     setState(() {
+      prefs.setString('currentLocale', newValue);
       currentLocale = newValue;
     });
+  }
+
+  getCurrentLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('currentLocale') != null) {
+      updateTranslation(prefs.getString('currentLocale'));
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    getCurrentLocale();
   }
 
   @override

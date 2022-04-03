@@ -26,9 +26,7 @@ class _SplashState extends State<Splash> {
   void checkVersion() async {
     final newVersion = NewVersion(androidId: 'uz.cashbek.kassa');
     final status = await newVersion.getVersionStatus();
-    print(status!.storeVersion);
-    print(status.localVersion);
-    if (status.storeVersion != '1.0.3') {
+    if (status!.storeVersion !=status.localVersion) {
       setState(() {
         systemOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.white, statusBarIconBrightness: Brightness.dark);
       });
