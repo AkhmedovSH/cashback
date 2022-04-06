@@ -16,6 +16,7 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
   dynamic systemOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light);
+  dynamic vesrion = '';
   @override
   void initState() {
     super.initState();
@@ -26,7 +27,12 @@ class _SplashState extends State<Splash> {
   void checkVersion() async {
     final newVersion = NewVersion(androidId: 'uz.cashbek.kassa');
     final status = await newVersion.getVersionStatus();
-    if (status!.storeVersion !=status.localVersion) {
+    print(status!.storeVersion);
+    print(status.localVersion);
+    setState(() {
+      vesrion = status.localVersion;
+    });
+    if (status.storeVersion != status.localVersion) {
       setState(() {
         systemOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.white, statusBarIconBrightness: Brightness.dark);
       });
@@ -52,19 +58,28 @@ class _SplashState extends State<Splash> {
     // bool lightMode =
     //     MediaQuery.of(context).platformBrightness == Brightness.light;
     return Scaffold(
-      backgroundColor: const Color(0xFF7D4196),
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        systemOverlayStyle: systemOverlayStyle,
-        elevation: 0,
-      ),
-      body: const Center(
-          child: Text(
-        'moneyBek',
-        style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
-      )),
-    );
+        backgroundColor: const Color(0xFF7D4196),
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          systemOverlayStyle: systemOverlayStyle,
+          elevation: 0,
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Center(
+                child: Text(
+              'moneyBek',
+              style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
+            )),
+            Center(
+                child: Text(
+              vesrion,
+              style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+            )),
+          ],
+        ));
   }
 }
 
@@ -128,7 +143,7 @@ class RequiredUpdatePage extends ModalRoute<void> {
                     height: 50,
                     // width: 50,
                   ),
-                  Container(
+                  SizedBox(
                     child: Text(
                       'moneyBek',
                       style: TextStyle(color: purple, fontSize: 28, fontFamily: 'Lobster', fontWeight: FontWeight.w600),

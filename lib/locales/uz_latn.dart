@@ -31,7 +31,7 @@ final uzLatn = {
   'qr_code_or_phone_number': 'QR kod yoki Telefon raqam',
   'balance': 'Balans',
   'payment_amount': 'To\'lov summasi',
-  'accumulated_points': 'Yig\'ilgan ballar',
+  'accumulated_points': 'Ballar orqali to\'lov',
   'pay': 'To\'lash',
   'search_by_name': 'Nom bo\'yicha qidirish',
   'return': 'Qaytarish',
@@ -46,6 +46,6 @@ final uzLatn = {
   'paid': 'To\'langan',
   'status': 'Holat',
   'update_1': 'Yangilash',
-  'use_moneyBek_please_download_the_latest_version': 'MoneyBek-dan foydalanish uchun avvalgi versiyasini yuklab oling',
+  'use_moneyBek_please_download_the_latest_version': 'MoneyBek-dan foydalanish uchun oxirgi versiyani yuklab oling',
   'login': 'Login',
 };

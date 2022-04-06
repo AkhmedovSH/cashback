@@ -31,7 +31,7 @@ final uzCyrl = {
   'qr_code_or_phone_number': 'QR код ёки Телефон рақам',
   'balance': 'Баланс',
   'payment_amount': 'Тўлов суммаси',
-  'accumulated_points': 'Йиғилган баллар',
+  'accumulated_points': 'Баллар орқали тоълов',
   'pay': 'Тўлаш',
   'search_by_name': 'Ном бўйича қидириш',
   'return': 'Қайтариш',
@@ -46,6 +46,6 @@ final uzCyrl = {
   'paid': 'Тўланган',
   'status': 'Ҳолат',
   'update_1': 'Янгилаш',
-  'use_moneyBek_please_download_the_latest_version': 'МонейБек-дан фойдаланиш учун аввалги версиясини юклаб олинг',
+  'use_moneyBek_please_download_the_latest_version': 'МонейБек-дан фойдаланиш учун охирги версияни юклаб олинг',
   'login': 'Логин',
 };

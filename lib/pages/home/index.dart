@@ -54,7 +54,7 @@ class _IndexState extends State<Index> {
         setState(() {
           user = response;
           response['lastName'] = response['lastName'] ?? '';
-          response['firtsName'] = response['firtsName'] ?? '';
+          response['firstName'] = response['firstName'] ?? '';
           // focus.requestFocus();
         });
         if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -67,8 +67,9 @@ class _IndexState extends State<Index> {
           user = {};
           data['totalAmount'].text = '';
           data['writeOff'].text = '';
+          // data['clientCode'].text = '';
           validate = false;
-          clientCodeFocus.requestFocus();
+          // data['clientCode'].selection = TextSelection.fromPosition(TextPosition(offset: data['writeOff'].text.length));
         });
         showErrorToast('Пользователь не найден');
         return false;
@@ -93,6 +94,7 @@ class _IndexState extends State<Index> {
           data['writeOff'].text = '';
           data['products'] = [];
           user = {};
+          clientCodeFocus.requestFocus();
         });
       }
       widget.showHideLoading!(false);
@@ -278,7 +280,7 @@ class _IndexState extends State<Index> {
                 margin: const EdgeInsets.only(bottom: 10),
                 child: user['id'] != null
                     ? Text(
-                        '${user['firtsName'] + ' ' + user['lastName']}',
+                        '${user['firstName'] + ' ' + user['lastName']}',
                         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                       )
                     : null,
@@ -455,7 +457,7 @@ class _IndexState extends State<Index> {
                                   //   softWrap: false,
                                   // ),
                                   Text(
-                                    '${formatMoney(data['products'][i]['price'].round())}' ' So\'m x ' '${data['products'][i]['quantity']}',
+                                    '${formatMoney(data['products'][i]['price'])}' ' So\'m x ' '${data['products'][i]['quantity']}',
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                     softWrap: false,
@@ -717,14 +719,15 @@ class _IndexState extends State<Index> {
     }
   }
 
-  changeQuantity(i) {
+  changeQuantity(i) async {
     dynamic item = products[i];
     setState(() {
       item['quantity'] = '1';
     });
     final quantytyFocus = FocusNode();
     final controller = TextEditingController(text: '1');
-    showDialog(
+    controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+    await showDialog(
         context: context,
         builder: (BuildContext context) {
           return StatefulBuilder(builder: (context, setState) {
@@ -813,7 +816,7 @@ class _IndexState extends State<Index> {
             );
           });
         });
-    controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+    item = {};
   }
 
   onSearchTextChanged(String text, productSavedSetSate) async {
