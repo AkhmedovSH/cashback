@@ -96,6 +96,7 @@ class _IndexState extends State<Index> {
           user = {};
           clientCodeFocus.requestFocus();
         });
+        showSuccessToast('payment_was_successful'.tr);
       }
       widget.showHideLoading!(false);
     }

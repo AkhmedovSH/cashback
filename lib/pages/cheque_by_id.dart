@@ -21,18 +21,6 @@ class _ChequeByIdState extends State<ChequeById> {
   dynamic data = {'id': '', 'posId': '', 'clientCode': '', 'cashierName': '', 'returnAmount': '0'};
   dynamic user = {};
 
-  searchUser(value) async {
-    if (value.length == 6 || value.length == 12) {
-      final prefs = await SharedPreferences.getInstance();
-      final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
-      if (response['firstName']! != null) {
-        setState(() {
-          user = response;
-        });
-      }
-    }
-  }
-
   getData() async {
     final prefs = await SharedPreferences.getInstance();
     final cashier = jsonDecode(prefs.getString('user')!);
@@ -41,16 +29,6 @@ class _ChequeByIdState extends State<ChequeById> {
       data['posId'] = prefs.getString('posId');
       data['cashierName'] = cashier['username'];
     });
-  }
-
-  returnCheque() async {
-    if (user['firstName'] != null && int.parse(data['returnAmount']) > 0) {
-      final response = await post('/services/gocashapi/api/cashbox-return-cheque', data);
-      if (response['success']) {
-        Navigator.pop(context);
-        Get.back();
-      }
-    }
   }
 
   @override
@@ -246,12 +224,39 @@ class _ChequeByIdState extends State<ChequeById> {
     );
   }
 
+  dynamic returnUser = {};
+
+  searchUser(value, returnSetState) async {
+    if (value.length == 6 || value.length == 12) {
+      final prefs = await SharedPreferences.getInstance();
+      final response = await get('/services/gocashapi/api/cashbox-user-balance/${prefs.getString('posId')}/$value');
+      if (response['id'] != null) {
+        returnSetState(() {
+          response['lastName'] = response['lastName'] ?? '';
+          response['firstName'] = response['firstName'] ?? '';
+          returnUser = response;
+        });
+      }
+    }
+  }
+
+  returnCheque() async {
+    if (returnUser['id'] != null && int.parse(data['returnAmount']) > 0) {
+      final response = await post('/services/gocashapi/api/cashbox-return-cheque', data);
+      if (response['success']) {
+        showSuccessToast('successfully'.tr);
+        Get.back();
+        getCheq();
+      }
+    }
+  }
+
   showReturnModal(context) async {
     getData();
     final result = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, setState) {
+          return StatefulBuilder(builder: (context, returnSetState) {
             return AlertDialog(
               // titlePadding: EdgeInsets.all(0),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -276,10 +281,10 @@ class _ChequeByIdState extends State<ChequeById> {
                           ),
                           child: TextField(
                             onChanged: (value) {
-                              setState(() {
+                              returnSetState(() {
                                 data['clientCode'] = value;
                               });
-                              searchUser(value);
+                              searchUser(value, returnSetState);
                             },
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -304,14 +309,14 @@ class _ChequeByIdState extends State<ChequeById> {
                         )),
                     Container(
                       margin: const EdgeInsets.only(bottom: 10),
-                      child: user['firstName'] != null
+                      child: returnUser['firstName'] != null
                           ? Text(
-                              '${user['firstName'] + ' ' + user['lastName']}',
+                              '${returnUser['firstName'] + ' ' + returnUser['lastName']}',
                               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                             )
                           : null,
                     ),
-                    user['firstName'] != null
+                    returnUser['firstName'] != null
                         ? Row(
                             children: [
                               Container(
@@ -323,7 +328,7 @@ class _ChequeByIdState extends State<ChequeById> {
                               Container(
                                   margin: const EdgeInsets.only(bottom: 10),
                                   child: Text(
-                                    '${formatMoney(user['balance'])}',
+                                    '${formatMoney(returnUser['balance'])}',
                                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: purple),
                                   ))
                             ],
@@ -339,7 +344,7 @@ class _ChequeByIdState extends State<ChequeById> {
                           ),
                           child: TextField(
                             onChanged: (value) {
-                              setState(() {
+                              returnSetState(() {
                                 if (value.isNotEmpty) {
                                   data['returnAmount'] = value;
                                 } else {
@@ -392,14 +397,14 @@ class _ChequeByIdState extends State<ChequeById> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.35,
                       child: ElevatedButton(
-                        onPressed: user['firstName'] != null && int.parse(data['returnAmount']) > 0
+                        onPressed: returnUser['firstName'] != null && int.parse(data['returnAmount']) > 0
                             ? () {
                                 returnCheque();
                               }
                             : null,
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 12),
-                            primary: user['firstName'] != null ? purple : grey,
+                            primary: returnUser['id'] != null ? purple : grey,
                             onSurface: Colors.black),
                         child: Text('proceed'.tr),
                       ),
@@ -412,7 +417,7 @@ class _ChequeByIdState extends State<ChequeById> {
         });
     if (result == null) {
       setState(() {
-        user = {};
+        returnUser = {};
         data = {'id': '', 'posId': '', 'clientCode': '', 'cashierName': '', 'returnAmount': '0'};
       });
     }

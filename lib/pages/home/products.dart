@@ -257,6 +257,7 @@ class _ProductsState extends State<Products> {
     final response = await post('/services/gocashapi/api/product', sendData);
     if (response['success']) {
       getProduts();
+      showSuccessToast('product_created_successfully'.tr);
       Get.back();
     }
   }
@@ -279,6 +280,7 @@ class _ProductsState extends State<Products> {
         data['uomId'].text = '1';
         data['price'].text = '';
       });
+      showSuccessToast('product_updated_successfully'.tr);
       getProduts();
     }
   }

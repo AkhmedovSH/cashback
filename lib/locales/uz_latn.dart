@@ -48,4 +48,8 @@ final uzLatn = {
   'update_1': 'Yangilash',
   'use_moneyBek_please_download_the_latest_version': 'MoneyBek-dan foydalanish uchun oxirgi versiyani yuklab oling',
   'login': 'Login',
+  'payment_was_successful': 'To\'lov muvaffaqiyatli bo\'ldi',
+  'product_created_successfully': 'Mahsulot muvaffaqiyatli yaratildi',
+  'product_updated_successfully': 'Mahsulot muvaffaqiyatli yangilandi',
+  'successfully': 'Muvaffaqiyatli',
 };

@@ -47,5 +47,9 @@ final ru = {
   'status': 'Статус',
   'update_1': 'Обновить',
   'use_moneyBek_please_download_the_latest_version': 'Чтобы использовать moneyBek, загрузите последнюю версию',
-  'login': 'Логин'
+  'login': 'Логин',
+  'payment_was_successful': 'Оплата прошла успешно',
+  'product_created_successfully': 'Продукт успешно создан',
+  'product_updated_successfully': 'Продукт успешно обновлен',
+  'successfully': 'Успешно',
 };

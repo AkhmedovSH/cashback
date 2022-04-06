@@ -48,4 +48,8 @@ final uzCyrl = {
   'update_1': 'Янгилаш',
   'use_moneyBek_please_download_the_latest_version': 'МонейБек-дан фойдаланиш учун охирги версияни юклаб олинг',
   'login': 'Логин',
+  'payment_was_successful': 'Тўлов муваффақиятли бўлди',
+  'product_created_successfully': 'Маҳсулот муваффақиятли яратилди',
+  'product_updated_successfully': 'Маҳсулот муваффақиятли янгиланди',
+  'successfully': 'Муваффақиятли',
 };
