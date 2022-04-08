@@ -29,6 +29,7 @@ final uzLatn = {
   'price': 'Narhi',
   'proceed': 'Davom etish',
   'qr_code_or_phone_number': 'QR kod yoki Telefon raqam',
+  'qr_code': 'QR kod',
   'balance': 'Balans',
   'payment_amount': 'To\'lov summasi',
   'accumulated_points': 'Ballar orqali to\'lov',

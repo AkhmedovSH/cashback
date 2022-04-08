@@ -81,7 +81,7 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
       dynamic arr = [];
       for (var i = 0; i < response.length; i++) {
         for (var j = 0; j < response[i]['posList'].length; j++) {
-          arr.add(response[i]['posList'][i]);
+          arr.add(response[i]['posList'][j]);
         }
       }
       setState(() {

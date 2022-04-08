@@ -29,6 +29,7 @@ final ru = {
   'price': 'Цена',
   'proceed': 'Продолжить',
   'qr_code_or_phone_number': 'QR Code или Телефон номер',
+  'qr_code': 'QR Code',
   'balance': 'Баланс',
   'payment_amount': 'Сумма оплаты',
   'accumulated_points': 'Накопленные баллы',

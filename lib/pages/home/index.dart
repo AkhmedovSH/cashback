@@ -612,6 +612,11 @@ class _IndexState extends State<Index> {
                                           ),
                                     ),
                                     child: TextFormField(
+                                      inputFormatters: i == 3 || i == 4
+                                          ? [
+                                              FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                                            ]
+                                          : [],
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return 'required_field'.tr;
@@ -754,6 +759,9 @@ class _IndexState extends State<Index> {
                                 ),
                           ),
                           child: TextFormField(
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                            ],
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'required_field'.tr;

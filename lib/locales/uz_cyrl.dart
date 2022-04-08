@@ -29,6 +29,7 @@ final uzCyrl = {
   'price': 'Нарҳи',
   'proceed': 'Давом етиш',
   'qr_code_or_phone_number': 'QR код ёки Телефон рақам',
+  'qr_code': 'QR код',
   'balance': 'Баланс',
   'payment_amount': 'Тўлов суммаси',
   'accumulated_points': 'Баллар орқали тоълов',

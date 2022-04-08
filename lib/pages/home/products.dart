@@ -318,6 +318,11 @@ class _ProductsState extends State<Products> {
                                           ),
                                     ),
                                     child: TextFormField(
+                                      inputFormatters: i == 3
+                                          ? [
+                                              FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                                            ]
+                                          : [],
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return 'required_field'.tr;

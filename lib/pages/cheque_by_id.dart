@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -236,6 +237,12 @@ class _ChequeByIdState extends State<ChequeById> {
           response['firstName'] = response['firstName'] ?? '';
           returnUser = response;
         });
+      } else {
+        returnSetState(() {
+          returnUser = {};
+        });
+        showErrorToast('Пользователь не найден');
+        return false;
       }
     }
   }
@@ -252,6 +259,8 @@ class _ChequeByIdState extends State<ChequeById> {
   }
 
   showReturnModal(context) async {
+    final clientCodeController = TextEditingController();
+
     getData();
     final result = await showDialog(
         context: context,
@@ -280,11 +289,20 @@ class _ChequeByIdState extends State<ChequeById> {
                                 ),
                           ),
                           child: TextField(
+                            controller: clientCodeController,
                             onChanged: (value) {
-                              returnSetState(() {
-                                data['clientCode'] = value;
-                              });
-                              searchUser(value, returnSetState);
+                              if (value.length <= 6) {
+                                returnSetState(() {
+                                  data['clientCode'] = value;
+                                });
+                                searchUser(value, returnSetState);
+                              } else {
+                                clientCodeController.text = value.substring(0, value.length - 1);
+                                clientCodeController.selection = TextSelection.fromPosition(
+                                  TextPosition(offset: clientCodeController.text.length),
+                                );
+                                searchUser(value, returnSetState);
+                              }
                             },
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -301,7 +319,7 @@ class _ChequeByIdState extends State<ChequeById> {
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Color(0xFF7D4196)),
                               ),
-                              hintText: 'qr_code_or_phone_number'.tr,
+                              hintText: 'qr_code'.tr,
                               hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                             ),
                             style: const TextStyle(color: Color(0xFF9C9C9C)),
@@ -342,7 +360,10 @@ class _ChequeByIdState extends State<ChequeById> {
                                   primary: const Color(0xFF7D4196),
                                 ),
                           ),
-                          child: TextField(
+                          child: TextFormField(
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                            ],
                             onChanged: (value) {
                               returnSetState(() {
                                 if (value.isNotEmpty) {
