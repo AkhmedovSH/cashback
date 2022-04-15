@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers/translations.dart';
 
@@ -19,8 +20,57 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  final prefs = await SharedPreferences.getInstance();
+  dynamic locale = const Locale('uz_latn', 'UZ');
 
-  runApp(const MyApp());
+  if (prefs.getString('currentLocale') != null) {
+    if (prefs.getString('currentLocale') == '1') {
+      locale = const Locale('ru', 'RU');
+    }
+    if (prefs.getString('currentLocale') == '3') {
+      locale = const Locale('uz_latn', 'UZ');
+    }
+    if (prefs.getString('currentLocale') == '4') {
+      locale = const Locale('uz_cyrl', 'UZ');
+    }
+  }
+
+  runApp(GetMaterialApp(
+    translations: Messages(),
+    locale: locale,
+    fallbackLocale: const Locale('uz_latn', 'UZ'),
+    debugShowCheckedModeBanner: false,
+    popGesture: true,
+    defaultTransition: Transition.leftToRight,
+    // transitionDuration: Duration(milliseconds: 250),
+    theme: ThemeData(
+      backgroundColor: const Color(0xFFFFFFFF),
+      scaffoldBackgroundColor: const Color(0xFFFFFFFF),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          primary: const Color(0xFF7D4196),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+        primary: const Color(0xFF7D4196),
+      )),
+    ),
+    initialRoute: '/splash',
+    getPages: [
+      GetPage(name: '/splash', page: () => const Splash()),
+      GetPage(name: '/login', page: () => const Login(), transition: Transition.fade),
+      GetPage(name: '/select-access-pos', page: () => const SelectAccessPos(), transition: Transition.fade),
+
+      GetPage(name: '/dashboard', page: () => const Dashboard(), transition: Transition.fade),
+
+      GetPage(name: '/cheque-by-id', page: () => const ChequeById(), transition: Transition.fade),
+
+      // GetPage(name: '/', page: () => const Index(), transition: Transition.fade),
+      // GetPage(name: '/reports', page: () => const Reports(), transition: Transition.fade),
+      // GetPage(name: '/checks', page: () => const Checks(), transition: Transition.fade),
+    ],
+  ));
 }
 
 class MyApp extends StatelessWidget {

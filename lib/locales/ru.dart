@@ -53,4 +53,9 @@ final ru = {
   'product_created_successfully': 'Продукт успешно создан',
   'product_updated_successfully': 'Продукт успешно обновлен',
   'successfully': 'Успешно',
+  'update_app': 'Обновить приложение',
+  'we_recommend_installing_the_latest_version_of_the_application': 'Рекомендуем установить последнюю версию приложения',
+  'while_downloading_updates_you_can_still_use_it': 'Во время скачивания обновлений вы по-прежнему сможете им пользоваться',
+  'no_thanks': 'НЕТ, СПАСИБО',
+  'update': 'ОБНОВИТЬ',
 };

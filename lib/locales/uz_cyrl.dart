@@ -53,4 +53,9 @@ final uzCyrl = {
   'product_created_successfully': 'Маҳсулот муваффақиятли яратилди',
   'product_updated_successfully': 'Маҳсулот муваффақиятли янгиланди',
   'successfully': 'Муваффақиятли',
+  'update_app': 'Иловани янгилаш',
+  'we_recommend_installing_the_latest_version_of_the_application': 'Илованинг соънгги версиясини оърнатишни тавсия қиламиз',
+  'while_downloading_updates_you_can_still_use_it': 'Янгиланишларни юклаб олаётганда сиз ундан фойдаланишингиз мумкин',
+  'no_thanks': 'ЁҚ, РАҲМАТ',
+  'update': 'ЯНГИЛАНИШ',
 };

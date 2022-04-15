@@ -34,7 +34,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     });
     final response = await guestPost('/auth/login', sendData);
 
-    if (response['access_token'] != null) {
+    if (response != null) {
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('access_token', response['access_token'].toString());
       prefs.setString('user', jsonEncode(sendData));

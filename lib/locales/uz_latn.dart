@@ -53,4 +53,9 @@ final uzLatn = {
   'product_created_successfully': 'Mahsulot muvaffaqiyatli yaratildi',
   'product_updated_successfully': 'Mahsulot muvaffaqiyatli yangilandi',
   'successfully': 'Muvaffaqiyatli',
+  'update_app': 'Ilovani yangilash',
+  'we_recommend_installing_the_latest_version_of_the_application': 'Ilovaning so\'nggi versiyasini o\'rnatishni tavsiya qilamiz',
+  'while_downloading_updates_you_can_still_use_it': 'Yangilanishlarni yuklab olayotganda siz undan foydalanishingiz mumkin',
+  'no_thanks': 'YO\'Q, RAHMAT',
+  'update': 'YANGILANISH',
 };
