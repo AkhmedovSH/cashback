@@ -31,7 +31,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   login() async {
     setState(() {
       loading = true;
-    });
+    });   
     final response = await guestPost('/auth/login', sendData);
 
     if (response != null) {

@@ -29,16 +29,13 @@ class _SplashState extends State<Splash> {
   void checkVersion() async {
     final newVersion = NewVersion(androidId: 'uz.cashbek.kassa');
     final status = await newVersion.getVersionStatus();
-    print('store: ' + status!.storeVersion);
-    print('local: ' + status.localVersion);
     setState(() {
-      vesrion = status.localVersion;
+      vesrion = status!.localVersion;
       url = status.appStoreLink.toString();
     });
-    if (status.storeVersion != status.localVersion) {
-      if (status.storeVersion.substring(status.storeVersion.length - 1) == '3' ||
-          status.storeVersion.substring(status.storeVersion.length - 1) == '6' ||
-          status.storeVersion.substring(status.storeVersion.length - 1) == '9') {
+    if (status!.storeVersion != status.localVersion) {
+      final lastVersion = status.storeVersion.split('.')[2];
+      if ((int.parse(lastVersion) % 3).round() == 0) {
         setState(() {
           isRequired = true;
         });
@@ -67,28 +64,32 @@ class _SplashState extends State<Splash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFF7D4196),
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          systemOverlayStyle: systemOverlayStyle,
-          elevation: 0,
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Center(
-                child: Text(
-              'moneyBek',
-              style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
-            )),
-            Center(
-                child: Text(
-              vesrion,
-              style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
-            )),
-          ],
-        ));
+      backgroundColor: const Color(0xFF7D4196),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        systemOverlayStyle: systemOverlayStyle,
+        elevation: 0,
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Center(
+              child: Text(
+            'moneyBek',
+            style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
+          )),
+          const SizedBox(
+            height: 5,
+          ),
+          Center(
+              child: Text(
+            vesrion,
+            style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+          )),
+        ],
+      ),
+    );
   }
 
   showUpdateDialog() async {
