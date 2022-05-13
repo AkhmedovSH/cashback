@@ -3,9 +3,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:intl/intl.dart';
 
 import 'package:cashback/helpers/api.dart';
 import 'package:cashback/helpers/helper.dart';
@@ -1044,31 +1046,47 @@ class _IndexState extends State<Index> {
   }
 
   createUser() async {
-    dynamic sendData = {'phone': '998' + maskFormatter.getUnmaskedText()};
+    dynamic data = {};
+    data = sendData;
+    data['phone'] = '998' + maskFormatter.getUnmaskedText();
+    print(data);
     final response = await post('/services/gocashapi/api/register-client', sendData);
-    if (response['success']) {
-      final search = await searchUser('998' + maskFormatter.getUnmaskedText());
-      if (search) {
-        data['clientCode'].text = '998' + maskFormatter.getUnmaskedText();
+    if (response != null) {
+      if (response['reason'] == 'user.already.registered') {
+        showErrorToast('user_already_registered'.tr);
       }
+      if (response['success']) {
+        final search = await searchUser('998' + maskFormatter.getUnmaskedText());
+        if (search) {
+          data['clientCode'].text = '998' + maskFormatter.getUnmaskedText();
+        }
+      }
+      Get.back();
     }
-    Get.back();
   }
+
+  dynamic sendData = {
+    'phone': '',
+    'firstName': '',
+    'lastName': '',
+    'gender': '',
+    'birthDate': '',
+  };
 
   dynamic maskFormatter = MaskTextInputFormatter(
     mask: '+998 ## ### ## ##',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
+
   final controller = TextEditingController(text: '+998 ');
+  TextEditingController genderController = TextEditingController(text: 'male'.tr);
+  TextEditingController birthDateController = TextEditingController();
 
   showCreateUserDialog() async {
-    dynamic sendData = {
-      'phone': '',
-    };
     final _formKey = GlobalKey<FormState>();
     final userFocus = FocusNode();
-
+    final genderFocus = FocusNode();
     await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -1080,55 +1098,207 @@ class _IndexState extends State<Index> {
                 'quantity'.tr,
                 textAlign: TextAlign.center,
               ),
+              scrollable: true,
               content: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: Center(
-                      child: Form(
+                // height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Center(
+                  child: Form(
                     key: _formKey,
-                    child: SizedBox(
-                        height: 60,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: ThemeData().colorScheme.copyWith(
-                                  primary: purple,
-                                ),
-                          ),
-                          child: TextFormField(
-                            inputFormatters: [maskFormatter],
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'required_field'.tr;
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              setState(() {
-                                sendData['phone'] = value;
-                              });
-                            },
-                            controller: controller,
-                            focusNode: userFocus,
-                            autofocus: true,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.all(12.0),
-                              focusColor: const Color(0xFF7D4196),
-                              filled: true,
-                              fillColor: Colors.transparent,
-                              enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                              ),
-                              focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFF7D4196)),
-                              ),
-                              hintText: 'quantity'.tr,
-                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 60,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ThemeData().colorScheme.copyWith(
+                                    primary: purple,
+                                  ),
                             ),
-                            style: const TextStyle(color: Color(0xFF9C9C9C)),
+                            child: TextFormField(
+                              inputFormatters: [maskFormatter],
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'required_field'.tr;
+                                }
+                                if (value.length < 16) {
+                                  return 'min_18_characters'.tr;
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                setState(() {
+                                  sendData['phone'] = value;
+                                });
+                              },
+                              controller: controller,
+                              focusNode: userFocus,
+                              autofocus: true,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(12.0),
+                                focusColor: const Color(0xFF7D4196),
+                                filled: true,
+                                fillColor: Colors.transparent,
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF7D4196)),
+                                ),
+                                hintText: 'telephone_number'.tr,
+                                hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                              ),
+                              style: const TextStyle(color: Color(0xFF9C9C9C)),
+                            ),
                           ),
-                        )),
-                  ))),
+                        ),
+                        Container(
+                          height: 60,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ThemeData().colorScheme.copyWith(
+                                    primary: purple,
+                                  ),
+                            ),
+                            child: TextFormField(
+                              onChanged: (value) {
+                                setState(() {
+                                  sendData['firstName'] = value;
+                                });
+                              },
+                              scrollPadding: const EdgeInsets.only(bottom: 100),
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(12.0),
+                                focusColor: const Color(0xFF7D4196),
+                                filled: true,
+                                fillColor: Colors.transparent,
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF7D4196)),
+                                ),
+                                hintText: 'first_name'.tr,
+                                hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                              ),
+                              style: const TextStyle(color: Color(0xFF9C9C9C)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 60,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ThemeData().colorScheme.copyWith(
+                                    primary: purple,
+                                  ),
+                            ),
+                            child: TextFormField(
+                              onChanged: (value) {
+                                setState(() {
+                                  sendData['firstName'] = value;
+                                });
+                              },
+                              scrollPadding: const EdgeInsets.only(bottom: 200),
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(12.0),
+                                focusColor: const Color(0xFF7D4196),
+                                filled: true,
+                                fillColor: Colors.transparent,
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF7D4196)),
+                                ),
+                                hintText: 'last_name'.tr,
+                                hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                              ),
+                              style: const TextStyle(color: Color(0xFF9C9C9C)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 60,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: GestureDetector(
+                            onTap: () {
+                              genderFocus.unfocus();
+                              showSelectGenger();
+                            },
+                            child: TextFormField(
+                              controller: genderController,
+                              decoration: InputDecoration(
+                                enabled: false,
+                                prefixIcon: IconButton(
+                                  onPressed: () {},
+                                  icon: sendData['gender'] == '0'
+                                      ? const Icon(
+                                          Icons.male,
+                                        )
+                                      : const Icon(
+                                          Icons.female,
+                                        ),
+                                ),
+                                contentPadding: const EdgeInsets.all(18.0),
+                                focusColor: purple,
+                                filled: true,
+                                fillColor: Colors.transparent,
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                                ),
+                                disabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: purple),
+                                ),
+                                hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 60,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: GestureDetector(
+                            onTap: () {
+                              selectDate(context);
+                            },
+                            child: TextFormField(
+                              controller: birthDateController,
+                              decoration: InputDecoration(
+                                enabled: false,
+                                contentPadding: const EdgeInsets.all(18.0),
+                                focusColor: purple,
+                                filled: true,
+                                fillColor: Colors.transparent,
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                                ),
+                                disabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: purple),
+                                ),
+                                hintText: 'birth_date'.tr,
+                                hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               actions: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1169,5 +1339,105 @@ class _IndexState extends State<Index> {
         type: MaskAutoCompletionType.lazy,
       );
     });
+  }
+
+  DateTime selectedDate = DateTime.now();
+
+  selectDate(BuildContext context) async {
+    DateTime date = DateTime.now();
+    final year = DateFormat('yyyy').format(date);
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(1950),
+      lastDate: DateTime(int.parse(year) + 1),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                primary: Colors.lightBlue[800], // button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        birthDateController.text = DateFormat('yyyy-MM-dd').format(picked);
+        sendData['birthDate'] = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
+  dynamic selectedButton = '0';
+
+  showSelectGenger() async {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: ((context, genderSetState) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Container(
+                //   child: Row(
+                //     children: [
+                //       Radio(
+                //         value: sendData['gender'] == '0',
+                //         groupValue: SingingCharacter.lafayette,
+                //         onChanged: (value) {},
+                //       )
+                //     ],
+                //   ),
+                // ),
+                ListTile(
+                  leading: Radio(
+                    value: '0',
+                    groupValue: selectedButton,
+                    onChanged: (value) {
+                      genderSetState(() {
+                        selectedButton = '0';
+                        sendData['gender'] = '0';
+                      });
+                      Get.back();
+                    },
+                    activeColor: purple,
+                  ),
+                  title: Text('male'.tr),
+                  onTap: () => genderSetState(() {
+                    selectedButton = '0';
+                    sendData['gender'] = '0';
+                    genderController.text = 'male'.tr;
+                    Get.back();
+                  }),
+                ),
+                ListTile(
+                  leading: Radio(
+                    value: '1',
+                    groupValue: selectedButton,
+                    onChanged: (value) {
+                      genderSetState(() {
+                        selectedButton = '1';
+                        sendData['gender'] = '1';
+                      });
+                      Get.back();
+                    },
+                    activeColor: purple,
+                  ),
+                  title: Text('female'.tr),
+                  onTap: () => genderSetState(() {
+                    selectedButton = '1';
+                    sendData['gender'] = '1';
+                    genderController.text = 'female'.tr;
+                    Get.back();
+                  }),
+                ),
+              ],
+            )),
+      ),
+    );
   }
 }

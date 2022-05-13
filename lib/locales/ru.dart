@@ -58,4 +58,12 @@ final ru = {
   'while_downloading_updates_you_can_still_use_it': 'Во время скачивания обновлений вы по-прежнему сможете им пользоваться',
   'no_thanks': 'НЕТ, СПАСИБО',
   'update': 'ОБНОВИТЬ',
+  'first_name': 'Имя',
+  'last_name': 'Фамилия',
+  'birth_date': 'День рождения',
+  'male': 'Мужчина',
+  'female': 'Женщина',
+  'gender': 'Пол',
+  'min_18_characters': 'Минимум 18 символов',
+  'user_already_registered': 'Пользователь уже зарегистрирован',
 };

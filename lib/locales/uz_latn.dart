@@ -58,4 +58,12 @@ final uzLatn = {
   'while_downloading_updates_you_can_still_use_it': 'Yangilanishlarni yuklab olayotganda siz undan foydalanishingiz mumkin',
   'no_thanks': 'YO\'Q, RAHMAT',
   'update': 'YANGILANISH',
+  'first_name': 'Ism',
+  'last_name': 'Familiya',
+  'birth_date': 'Tugilgan kuningiz',
+  'male': 'Erkak',
+  'female': 'Ayol',
+  'gender': 'Qavat',
+  'min_18_characters': 'Kamida 18 belgi',
+  'user_already_registered': 'Foydalanuvchi allaqachon ro\'yxatdan o\'tgan',
 };

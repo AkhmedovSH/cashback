@@ -1,4 +1,5 @@
-import 'package:cashback/helpers/helper.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 
 import 'package:new_version/new_version.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -34,18 +36,43 @@ class _SplashState extends State<Splash> {
       url = status.appStoreLink.toString();
     });
     if (status!.storeVersion != status.localVersion) {
+      dynamic showAgain = true;
+      final prefs = await SharedPreferences.getInstance();
+
       final lastVersion = status.storeVersion.split('.')[2];
       if ((int.parse(lastVersion) % 3).round() == 0) {
         setState(() {
           isRequired = true;
         });
       }
-      await showUpdateDialog();
+      if (!isRequired) {
+        if (prefs.getString('lastShow') != null) {
+          dynamic lastShow = jsonDecode(prefs.getString('lastShow')!);
+          if (lastShow['storeVersion'] == status.storeVersion) {
+            if ((DateTime.fromMillisecondsSinceEpoch(int.parse(lastShow['time'])).difference(DateTime.now()).inHours / 24).round() > 2) {
+              setState(() {
+                showAgain = true;
+              });
+            }
+            if ((DateTime.fromMillisecondsSinceEpoch(int.parse(lastShow['time'])).difference(DateTime.now()).inHours / 24).round() <= 2) {
+              setState(() {
+                showAgain = false;
+              });
+            }
+          }
+        }
+      }
+      if (showAgain || isRequired) {
+        await showUpdateDialog();
+      }
       if (isRequired) {
         SystemNavigator.pop();
+        prefs.remove('lastShow');
       } else {
         startTimer();
+        prefs.setString('lastShow', jsonEncode({'storeVersion': status.storeVersion, 'time': DateTime.now().millisecondsSinceEpoch.toString()}));
       }
+
       return;
     } else {
       startTimer();
@@ -83,10 +110,11 @@ class _SplashState extends State<Splash> {
             height: 5,
           ),
           Center(
-              child: Text(
-            vesrion,
-            style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
-          )),
+            child: Text(
+              vesrion,
+              style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
         ],
       ),
     );

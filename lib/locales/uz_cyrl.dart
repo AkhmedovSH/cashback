@@ -58,4 +58,12 @@ final uzCyrl = {
   'while_downloading_updates_you_can_still_use_it': 'Янгиланишларни юклаб олаётганда сиз ундан фойдаланишингиз мумкин',
   'no_thanks': 'ЁҚ, РАҲМАТ',
   'update': 'ЯНГИЛАНИШ',
+  'first_name': 'Исм',
+  'last_name': 'Фамилия',
+  'birth_date': 'Тугилган кунингиз',
+  'male': 'Эркак',
+  'female': 'Аёл',
+  'gender': 'Қават',
+  'min_18_characters': 'Камида 18 белги',
+  'user_already_registered': 'Фойдаланувчи аллақачон рўйхатдан ўтган',
 };
