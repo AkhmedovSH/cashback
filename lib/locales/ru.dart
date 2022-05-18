@@ -66,4 +66,9 @@ final ru = {
   'gender': 'Пол',
   'min_18_characters': 'Минимум 18 символов',
   'user_already_registered': 'Пользователь уже зарегистрирован',
+  'scan_your_fingerprint_for_authentication': 'Отсканируйте свой отпечаток пальца для аутентификации',
+  'sign_in_with_your_fingerprint': 'Вход с помощью отпечатка пальца',
+  'use_another_way': 'Использовать другой способ',
+  'register_user': 'Зарегистрировать юзера',
+  'login_with_fingerprint': 'Вход с помощью отпечатка пальца',
 };

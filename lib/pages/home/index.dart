@@ -1095,7 +1095,7 @@ class _IndexState extends State<Index> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
               title: Text(
-                'quantity'.tr,
+                'register_user'.tr,
                 textAlign: TextAlign.center,
               ),
               scrollable: true,

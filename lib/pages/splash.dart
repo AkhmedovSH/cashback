@@ -45,26 +45,7 @@ class _SplashState extends State<Splash> {
           isRequired = true;
         });
       }
-      if (!isRequired) {
-        if (prefs.getString('lastShow') != null) {
-          dynamic lastShow = jsonDecode(prefs.getString('lastShow')!);
-          if (lastShow['storeVersion'] == status.storeVersion) {
-            if ((DateTime.fromMillisecondsSinceEpoch(int.parse(lastShow['time'])).difference(DateTime.now()).inHours / 24).round() > 2) {
-              setState(() {
-                showAgain = true;
-              });
-            }
-            if ((DateTime.fromMillisecondsSinceEpoch(int.parse(lastShow['time'])).difference(DateTime.now()).inHours / 24).round() <= 2) {
-              setState(() {
-                showAgain = false;
-              });
-            }
-          }
-        }
-      }
-      if (showAgain || isRequired) {
-        await showUpdateDialog();
-      }
+      await showUpdateDialog();
       if (isRequired) {
         SystemNavigator.pop();
         prefs.remove('lastShow');

@@ -66,4 +66,9 @@ final uzLatn = {
   'gender': 'Qavat',
   'min_18_characters': 'Kamida 18 belgi',
   'user_already_registered': 'Foydalanuvchi allaqachon ro\'yxatdan o\'tgan',
+  'scan_your_fingerprint_for_authentication': 'Autentifikatsiya qilish uchun barmoq izini skanerlang',
+  'sign_in_with_your_fingerprint': 'Barmoq izingiz bilan kiring',
+  'use_another_way': 'Boshqa usuldan foydalaning',
+  'register_user': 'Foydalanuvchini ro\'yxatdan o\'tkazish',
+  'login_with_fingerprint': 'Barmoq izi bilan kirish',
 };

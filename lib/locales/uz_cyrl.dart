@@ -66,4 +66,9 @@ final uzCyrl = {
   'gender': 'Қават',
   'min_18_characters': 'Камида 18 белги',
   'user_already_registered': 'Фойдаланувчи аллақачон рўйхатдан ўтган',
+  'scan_your_fingerprint_for_authentication': 'Аутентификатсия қилиш учун бармоқ изини сканерланг',
+  'sign_in_with_your_fingerprint': 'Бармоқ изингиз билан киринг',
+  'use_another_way': 'Бошқа усулдан фойдаланинг',
+  'register_user': 'Фойдаланувчини рўйхатдан ўтказиш',
+  'login_with_fingerprint': 'Бармоқ изи билан кириш',
 };
