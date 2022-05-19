@@ -25,10 +25,9 @@ class Index extends StatefulWidget {
 }
 
 class _IndexState extends State<Index> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  final focus = FocusNode();
+  final totalAmountfocus = FocusNode();
   final clientCodeFocus = FocusNode();
-  QRViewController? qrController;
+
   Timer? _debounce;
   // final Controller productController = Get.put(Controller());
   dynamic data = {
@@ -52,6 +51,23 @@ class _IndexState extends State<Index> {
     });
   }
 
+  getQrCode() async {
+    print(111);
+    final permission = await getCameraPermission();
+    if (permission == PermissionStatus.permanentlyDenied) {
+      return;
+    }
+    final result = await Get.to(const QrScanner());
+    print(result);
+    if (result != null) {
+      setState(() {
+        data['clientCode'].text = result.code.toString();
+        totalAmountfocus.requestFocus();
+        searchUser(result.code.toString());
+      });
+    }
+  }
+
   searchUser(value) async {
     if (value.length == 6 || value.length == 12) {
       widget.showHideLoading!(true);
@@ -67,7 +83,7 @@ class _IndexState extends State<Index> {
         });
         if (_debounce?.isActive ?? false) _debounce!.cancel();
         _debounce = Timer(const Duration(milliseconds: 100), () {
-          FocusScope.of(context).requestFocus(focus);
+          FocusScope.of(context).requestFocus(totalAmountfocus);
         });
         return true;
       } else {
@@ -158,18 +174,6 @@ class _IndexState extends State<Index> {
     }
   }
 
-  void _onQRViewCreated(QRViewController controller) {
-    setState(() {
-      // this.controller = controller;
-    });
-    controller.scannedDataStream.listen((scanData) {
-      print(scanData);
-      // setState(() {
-      //   result = scanData;
-      // });
-    });
-  }
-
   getData() async {
     final prefs = await SharedPreferences.getInstance();
     await getProduts();
@@ -196,7 +200,6 @@ class _IndexState extends State<Index> {
       // data['products'] = productController.products;
       // });
     }
-    getCameraPermission();
     getData();
   }
 
@@ -211,19 +214,8 @@ class _IndexState extends State<Index> {
   }
 
   @override
-  void reassemble() {
-    super.reassemble();
-    if (Platform.isAndroid) {
-      qrController!.pauseCamera();
-    } else if (Platform.isIOS) {
-      qrController!.resumeCamera();
-    }
-  }
-
-  @override
   void dispose() {
     _debounce?.cancel();
-    qrController?.dispose();
     super.dispose();
   }
 
@@ -231,9 +223,9 @@ class _IndexState extends State<Index> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
+        systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.grey[50], // Status bar
+          statusBarColor: Colors.transparent, // Status bar
         ),
         elevation: 0.0,
         bottomOpacity: 0.0,
@@ -272,295 +264,285 @@ class _IndexState extends State<Index> {
         ],
       ),
       body: SafeArea(
-          child: SingleChildScrollView(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  showQrScanner
-                      ? Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height,
-                          child: QRView(
-                            key: qrKey,
-                            onQRViewCreated: _onQRViewCreated,
+        child: SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ThemeData().colorScheme.copyWith(
+                                  primary: purple,
+                                ),
                           ),
-                        )
-                      : Container(),
-                  Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: ThemeData().colorScheme.copyWith(
-                                primary: purple,
-                              ),
-                        ),
-                        child: TextFormField(
-                          textInputAction: TextInputAction.next,
-                          onFieldSubmitted: (v) {
-                            FocusScope.of(context).requestFocus(focus);
-                          },
-                          controller: data['clientCode'],
-                          focusNode: clientCodeFocus,
-                          onChanged: (value) {
-                            debounce(value);
-                          },
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              Icons.phone_iphone,
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  showQrScanner = true;
-                                });
-                              },
-                              icon: const Icon(
-                                Icons.qr_code_scanner,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.all(18.0),
-                            focusColor: purple,
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            enabledBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                            ),
-                            focusedBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF7D4196)),
-                            ),
-                            hintText: 'qr_code_or_phone_number'.tr,
-                            hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
-                          ),
-                          style: const TextStyle(color: Color(0xFF9C9C9C)),
-                        ),
-                      )),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    child: user['id'] != null
-                        ? Text(
-                            '${user['firstName'] + ' ' + user['lastName']}',
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                          )
-                        : null,
-                  ),
-                  user['id'] != null
-                      ? Row(
-                          children: [
-                            Container(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                child: Text(
-                                  'balance'.tr + ': ',
-                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                                )),
-                            Container(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                child: Text(
-                                  '${formatMoney(user['balance'])}',
-                                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: purple),
-                                ))
-                          ],
-                        )
-                      : Container(),
-                  Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: ThemeData().colorScheme.copyWith(
-                                primary: purple,
-                              ),
-                        ),
-                        child: TextFormField(
-                          textInputAction: TextInputAction.next,
-                          focusNode: focus,
-                          controller: data['totalAmount'],
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            setState(() {
-                              validate = int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            prefixIcon: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.credit_card,
-                                )),
-                            contentPadding: const EdgeInsets.all(18.0),
-                            focusColor: purple,
-                            filled: true,
-                            // enabled: enabled,
-                            fillColor: Colors.transparent,
-                            enabledBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                            ),
-                            disabledBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                            ),
-                            focusedBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF7D4196)),
-                            ),
-                            hintText: 'payment_amount'.tr,
-                            hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
-                          ),
-                          style: const TextStyle(color: Color(0xFF9C9C9C)),
-                        ),
-                      )),
-                  Container(
-                      margin: const EdgeInsets.only(bottom: 15),
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: ThemeData().colorScheme.copyWith(
-                                primary: purple,
-                              ),
-                        ),
-                        child: TextFormField(
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-                          ],
-                          textInputAction: TextInputAction.done,
-                          controller: data['writeOff'],
-                          keyboardType: TextInputType.number,
-                          scrollPadding: const EdgeInsets.only(bottom: 50),
-                          onChanged: (value) {
-                            validateWriteOffField(value);
-                          },
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              Icons.payments_outlined,
-                            ),
-                            enabled: int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0 && user['id'] != null,
-                            contentPadding: const EdgeInsets.all(18.0),
-                            focusColor: purple,
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            enabledBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                            ),
-                            disabledBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                            ),
-                            focusedBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF7D4196)),
-                            ),
-                            hintText: 'accumulated_points'.tr,
-                            hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
-                          ),
-                          style: const TextStyle(color: Color(0xFF9C9C9C)),
-                        ),
-                      )),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('paid'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                        Text(
-                            '${formatMoney(int.parse(data['totalAmount'].text != '' ? data['totalAmount'].text : '0') - int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('paid_with_points'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                        Text('${formatMoney(int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                  ),
-                  for (var i = 0; i < data['products'].length; i++)
-                    data['products'].length > 0
-                        ? Dismissible(
-                            key: Key(UniqueKey().toString()),
-                            onDismissed: (DismissDirection direction) {
-                              deleteProduct(i);
+                          child: TextFormField(
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (v) {
+                              FocusScope.of(context).requestFocus(totalAmountfocus);
                             },
-                            background: Container(
-                              color: white,
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 10, bottom: 10, top: 10),
-                              child: Icon(Icons.delete, color: red),
-                            ),
-                            direction: DismissDirection.endToStart,
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin: const EdgeInsets.only(bottom: 15),
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(color: Color(0xFFF5F3F5), width: 1),
+                            controller: data['clientCode'],
+                            focusNode: clientCodeFocus,
+                            onChanged: (value) {
+                              debounce(value);
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(
+                                Icons.phone_iphone,
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  print(111);
+                                  getQrCode();
+                                },
+                                icon: const Icon(
+                                  Icons.qr_code_scanner,
                                 ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        '${(i + 1)}' '. ' '${data['products'][i]['name']}',
-                                        style: const TextStyle(fontSize: 16),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        softWrap: false,
-                                      ),
-                                      // Text(
-                                      //   'quantity'.tr + ': ${data['products'][i]['quantity']}',
-                                      //   overflow: TextOverflow.ellipsis,
-                                      //   maxLines: 1,
-                                      //   softWrap: false,
-                                      // ),
-                                      Text(
-                                        '${formatMoney(data['products'][i]['price'])}' ' So\'m x ' '${data['products'][i]['quantity']}',
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        softWrap: false,
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 5),
-                                          Text(
-                                            'barcode'.tr + ': ${data['products'][i]['barcode'].toString()}',
-                                            style: const TextStyle(fontSize: 16),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        '${formatMoney(data['products'][i]['totalAmount']).toString()} So\'m',
-                                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                                      )
-                                    ],
-                                  ),
-                                ],
+                              contentPadding: const EdgeInsets.all(18.0),
+                              focusColor: purple,
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
                               ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF7D4196)),
+                              ),
+                              hintText: 'qr_code_or_phone_number'.tr,
+                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
                             ),
+                            style: const TextStyle(color: Color(0xFF9C9C9C)),
+                          ),
+                        )),
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: user['id'] != null
+                          ? Text(
+                              '${user['firstName'] + ' ' + user['lastName']}',
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                            )
+                          : null,
+                    ),
+                    user['id'] != null
+                        ? Row(
+                            children: [
+                              Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    'balance'.tr + ': ',
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                                  )),
+                              Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    '${formatMoney(user['balance'])}',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: purple),
+                                  ))
+                            ],
                           )
                         : Container(),
-                  const SizedBox(height: 80)
-                ],
-              ),
-            ],
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ThemeData().colorScheme.copyWith(
+                                  primary: purple,
+                                ),
+                          ),
+                          child: TextFormField(
+                            textInputAction: TextInputAction.next,
+                            focusNode: totalAmountfocus,
+                            controller: data['totalAmount'],
+                            keyboardType: TextInputType.number,
+                            onChanged: (value) {
+                              setState(() {
+                                validate = int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              prefixIcon: IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.credit_card,
+                                  )),
+                              contentPadding: const EdgeInsets.all(18.0),
+                              focusColor: purple,
+                              filled: true,
+                              // enabled: enabled,
+                              fillColor: Colors.transparent,
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                              ),
+                              disabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF7D4196)),
+                              ),
+                              hintText: 'payment_amount'.tr,
+                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                            ),
+                            style: const TextStyle(color: Color(0xFF9C9C9C)),
+                          ),
+                        )),
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 15),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ThemeData().colorScheme.copyWith(
+                                  primary: purple,
+                                ),
+                          ),
+                          child: TextFormField(
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                            ],
+                            textInputAction: TextInputAction.done,
+                            controller: data['writeOff'],
+                            keyboardType: TextInputType.number,
+                            scrollPadding: const EdgeInsets.only(bottom: 50),
+                            onChanged: (value) {
+                              validateWriteOffField(value);
+                            },
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(
+                                Icons.payments_outlined,
+                              ),
+                              enabled: int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0 && user['id'] != null,
+                              contentPadding: const EdgeInsets.all(18.0),
+                              focusColor: purple,
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                              ),
+                              disabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF7D4196)),
+                              ),
+                              hintText: 'accumulated_points'.tr,
+                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                            ),
+                            style: const TextStyle(color: Color(0xFF9C9C9C)),
+                          ),
+                        )),
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('paid'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text(
+                              '${formatMoney(int.parse(data['totalAmount'].text != '' ? data['totalAmount'].text : '0') - int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('paid_with_points'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text('${formatMoney(int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                    for (var i = 0; i < data['products'].length; i++)
+                      data['products'].length > 0
+                          ? Dismissible(
+                              key: Key(UniqueKey().toString()),
+                              onDismissed: (DismissDirection direction) {
+                                deleteProduct(i);
+                              },
+                              background: Container(
+                                color: white,
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.only(right: 10, bottom: 10, top: 10),
+                                child: Icon(Icons.delete, color: red),
+                              ),
+                              direction: DismissDirection.endToStart,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: const EdgeInsets.only(bottom: 15),
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: Color(0xFFF5F3F5), width: 1),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          '${(i + 1)}' '. ' '${data['products'][i]['name']}',
+                                          style: const TextStyle(fontSize: 16),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                        // Text(
+                                        //   'quantity'.tr + ': ${data['products'][i]['quantity']}',
+                                        //   overflow: TextOverflow.ellipsis,
+                                        //   maxLines: 1,
+                                        //   softWrap: false,
+                                        // ),
+                                        Text(
+                                          '${formatMoney(data['products'][i]['price'])}' ' So\'m x ' '${data['products'][i]['quantity']}',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 5),
+                                            Text(
+                                              'barcode'.tr + ': ${data['products'][i]['barcode'].toString()}',
+                                              style: const TextStyle(fontSize: 16),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          '${formatMoney(data['products'][i]['totalAmount']).toString()} So\'m',
+                                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : Container(),
+                    const SizedBox(height: 80)
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      )),
+      ),
       floatingActionButton: Container(
         margin: const EdgeInsets.only(left: 32, bottom: 0),
         width: double.infinity,
@@ -1502,6 +1484,123 @@ class _IndexState extends State<Index> {
               ],
             )),
       ),
+    );
+  }
+}
+
+class QrScanner extends StatefulWidget {
+  const QrScanner({Key? key}) : super(key: key);
+
+  @override
+  State<QrScanner> createState() => _QrScannerState();
+}
+
+class _QrScannerState extends State<QrScanner> {
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  QRViewController? qrController;
+
+  void onQRViewCreated(QRViewController controller) async {
+    setState(() {
+      // this.controller = controller;
+    });
+    controller.scannedDataStream.listen((scanData) async {
+      print(scanData);
+      Get.back(result: scanData);
+      // result = await BarcodeScanner.scan();
+    });
+  }
+
+  flash() async {
+    await qrController?.toggleFlash();
+    setState(() {});
+  }
+
+  switchCamera() async {
+    await qrController?.flipCamera();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print(qrController?.getFlashStatus());
+  }
+
+  // @override
+  // void reassemble() {
+  //   super.reassemble();
+  //   print(111);
+  //   if (Platform.isAndroid) {
+  //     qrController!.pauseCamera();
+  //   } else if (Platform.isIOS) {
+  //     qrController!.resumeCamera();
+  //   }
+  // }
+
+  @override
+  void dispose() {
+    super.dispose();
+    qrController?.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: QRView(
+            key: qrKey,
+            onQRViewCreated: onQRViewCreated,
+            overlay: QrScannerOverlayShape(
+              cutOutSize: MediaQuery.of(context).size.width * 0.7,
+              borderWidth: 10,
+              borderRadius: 10,
+              borderColor: purple,
+            ),
+          ),
+        ),
+        // Positioned(
+        //   top: 100,
+        //   right: MediaQuery.of(context).size.width * 0.4,
+        //   child: Container(
+        //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.circular(8),
+        //       color: Colors.white.withOpacity(0.5),
+        //     ),
+        //     child: Row(
+        //       mainAxisSize: MainAxisSize.max,
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       crossAxisAlignment: CrossAxisAlignment.center,
+        //       children: [
+        //         Container(
+        //           margin: EdgeInsets.only(right: 10),
+        //           child: GestureDetector(
+        //             onTap: () {
+        //               flash();
+        //             },
+        //             child: Icon(
+        //               Icons.flash_off,
+        //               color: Colors.white,
+        //             ),
+        //           ),
+        //         ),
+        //         GestureDetector(
+        //           onTap: () {
+        //             switchCamera();
+        //           },
+        //           child: Icon(
+        //             Icons.switch_camera,
+        //             color: Colors.white,
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+      ],
     );
   }
 }

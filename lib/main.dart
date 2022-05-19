@@ -24,7 +24,7 @@ void main() async {
   dynamic locale = const Locale('uz_latn', 'UZ');
 
   if (prefs.getString('currentLocale') != null) {
-    if (prefs.getString('currentLocale') == '1') {  
+    if (prefs.getString('currentLocale') == '1') {
       locale = const Locale('ru', 'RU');
     }
     if (prefs.getString('currentLocale') == '3') {
@@ -41,7 +41,7 @@ void main() async {
     fallbackLocale: const Locale('uz_latn', 'UZ'),
     debugShowCheckedModeBanner: false,
     popGesture: true,
-    defaultTransition: Transition.leftToRight,
+    defaultTransition: Transition.fade,
     // transitionDuration: Duration(milliseconds: 250),
     theme: ThemeData(
       backgroundColor: const Color(0xFFFFFFFF),

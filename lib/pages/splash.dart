@@ -33,34 +33,35 @@ class _SplashState extends State<Splash> {
     dynamic status;
     try {
       status = await newVersion.getVersionStatus();
-    } catch (e) {
-      print(e);
-    }
-    setState(() {
-      vesrion = status!.localVersion;
-      url = status.appStoreLink.toString();
-    });
-    if (status!.storeVersion != status.localVersion) {
-      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        vesrion = status!.localVersion;
+        url = status.appStoreLink.toString();
+      });
+      if (status!.storeVersion != status.localVersion) {
+        final prefs = await SharedPreferences.getInstance();
 
-      final lastVersion = status.storeVersion.split('.')[2];
-      if ((int.parse(lastVersion) % 3).round() == 0) {
-        setState(() {
-          isRequired = true;
-        });
-      }
-      await showUpdateDialog();
-      if (isRequired) {
-        SystemNavigator.pop();
-        prefs.remove('lastShow');
+        final lastVersion = status.storeVersion.split('.')[2];
+        if ((int.parse(lastVersion) % 3).round() == 0) {
+          setState(() {
+            isRequired = true;
+          });
+        }
+        await showUpdateDialog();
+        if (isRequired) {
+          SystemNavigator.pop();
+          prefs.remove('lastShow');
+        } else {
+          startTimer();
+          prefs.setString('lastShow', jsonEncode({'storeVersion': status.storeVersion, 'time': DateTime.now().millisecondsSinceEpoch.toString()}));
+        }
+
+        return;
       } else {
         startTimer();
-        prefs.setString('lastShow', jsonEncode({'storeVersion': status.storeVersion, 'time': DateTime.now().millisecondsSinceEpoch.toString()}));
       }
-
-      return;
-    } else {
-      startTimer();
+    } catch (e) {
+      checkVersion();
+      print(e);
     }
   }
 
