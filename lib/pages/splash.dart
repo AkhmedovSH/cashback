@@ -30,13 +30,17 @@ class _SplashState extends State<Splash> {
 
   void checkVersion() async {
     final newVersion = NewVersion(androidId: 'uz.cashbek.kassa');
-    final status = await newVersion.getVersionStatus();
+    dynamic status;
+    try {
+      status = await newVersion.getVersionStatus();
+    } catch (e) {
+      print(e);
+    }
     setState(() {
       vesrion = status!.localVersion;
       url = status.appStoreLink.toString();
     });
     if (status!.storeVersion != status.localVersion) {
-      dynamic showAgain = true;
       final prefs = await SharedPreferences.getInstance();
 
       final lastVersion = status.storeVersion.split('.')[2];

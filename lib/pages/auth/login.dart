@@ -24,10 +24,20 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   static dynamic auth = LocalAuthentication();
   final _formKey = GlobalKey<FormState>();
   AnimationController? animationController;
-  dynamic sendData = {'username': '', 'password': ''}; // cashier 123123
+  dynamic sendData = {
+    'username': '',
+    'password': '',
+    'isRemember': false,
+    'signWithFingerPrint': false,
+  }; //
+  dynamic data = {
+    'username': TextEditingController(),
+    'password': TextEditingController(),
+    'isRemember': false,
+    'signWithFingerPrint': false,
+  }; // cashier 123123
   bool showPassword = true;
   bool loading = false;
-  bool signWithFingerPrint = false;
   List translations = [
     {'id': 3, 'name': 'Узбекский(лат)', 'locale': const Locale('uz_latn', 'UZ')},
     {'id': 1, 'name': 'Русский', 'locale': const Locale('ru', 'RU')},
@@ -74,7 +84,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     if (prefs.getString('user') != null) {
       final user = jsonDecode(prefs.getString('user')!);
       setState(() {
-        user['signWithFingerPrint'] = signWithFingerPrint;
+        user['signWithFingerPrint'] = sendData['signWithFingerPrint'];
       });
       prefs.setString('user', jsonEncode(user));
     }
@@ -94,10 +104,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     if (prefs.getString('user') != null) {
       final user = jsonDecode(prefs.getString('user')!);
       setState(() {
-        signWithFingerPrint = user['signWithFingerPrint'];
+        sendData['signWithFingerPrint'] = user['signWithFingerPrint'];
       });
     }
-    if (prefs.getString('access_token') != null && signWithFingerPrint) {
+    if (prefs.getString('access_token') != null && sendData['signWithFingerPrint']) {
       final isAvailable = await hasBiometrics();
       if (!isAvailable) return false;
       try {
@@ -149,6 +159,22 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     }
   }
 
+  checkIsRemember() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('user') != null) {
+      final user = jsonDecode(prefs.getString('user')!);
+      if (user['isRemember']) {
+        setState(() {
+          sendData['isRemember'] = user['isRemember'];
+          sendData['username'] = user['username'];
+          sendData['password'] = user['password'];
+          data['username'].text = user['username'];
+          data['password'].text = user['password'];
+        });
+      }
+    }
+  }
+
   getCurrentLocale() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString('currentLocale') != null) {
@@ -164,6 +190,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     });
     getFingerprint();
     getCurrentLocale();
+    checkIsRemember();
   }
 
   @override
@@ -272,7 +299,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                 }
                                 return null;
                               },
-                              initialValue: sendData['username'],
+                              controller: data['username'],
                               onChanged: (value) {
                                 setState(() {
                                   sendData['username'] = value;
@@ -280,10 +307,11 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               },
                               decoration: InputDecoration(
                                 prefixIcon: IconButton(
-                                    onPressed: () {},
-                                    icon: const Icon(
-                                      Icons.phone_iphone,
-                                    )),
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.phone_iphone,
+                                  ),
+                                ),
                                 contentPadding: const EdgeInsets.all(18.0),
                                 focusColor: purple,
                                 filled: true,
@@ -316,7 +344,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                 }
                                 return null;
                               },
-                              initialValue: sendData['password'],
+                              controller: data['password'],
                               onChanged: (value) {
                                 setState(() {
                                   sendData['password'] = value;
@@ -339,7 +367,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                         icon: const Icon(
                                           Icons.visibility_off,
                                           // color: Color(0xFF7D4196),
-                                        ))
+                                        ),
+                                      )
                                     : IconButton(
                                         onPressed: () {
                                           setState(() {
@@ -371,6 +400,27 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                     ),
                   ),
                   Container(
+                    margin: const EdgeInsets.only(bottom: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'remember_me'.tr,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                        Switch(
+                          value: sendData['isRemember'],
+                          activeColor: purple,
+                          onChanged: (bool value) {
+                            setState(() {
+                              sendData['isRemember'] = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
                     margin: const EdgeInsets.only(top: 5),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -383,11 +433,11 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           ),
                         ),
                         Switch(
-                          value: signWithFingerPrint,
+                          value: sendData['signWithFingerPrint'],
                           activeColor: purple,
                           onChanged: (bool value) {
                             setState(() {
-                              signWithFingerPrint = value;
+                              sendData['signWithFingerPrint'] = value;
                             });
                             changeRemember();
                           },

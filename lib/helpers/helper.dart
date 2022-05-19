@@ -34,6 +34,14 @@ formatMoney(amount) {
   }
 }
 
+formatPhone(phone) {
+  var y = phone.substring(3, 5);
+  var z = phone.substring(5, 8);
+  var d = phone.substring(8, 10);
+  var q = phone.substring(10, 12);
+  return y + ' ' + z + ' ' + d + ' ' + q;
+}
+
 showSuccessToast(message) {
   return Fluttertoast.showToast(
       msg: message,

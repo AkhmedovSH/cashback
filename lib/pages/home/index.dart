@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/services.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:cashback/helpers/api.dart';
 import 'package:cashback/helpers/helper.dart';
@@ -22,8 +25,10 @@ class Index extends StatefulWidget {
 }
 
 class _IndexState extends State<Index> {
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   final focus = FocusNode();
   final clientCodeFocus = FocusNode();
+  QRViewController? qrController;
   Timer? _debounce;
   // final Controller productController = Get.put(Controller());
   dynamic data = {
@@ -38,6 +43,7 @@ class _IndexState extends State<Index> {
   dynamic totalAmount = 0;
   dynamic previousValue = '';
   bool validate = false;
+  bool showQrScanner = false;
 
   debounce(value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -152,6 +158,18 @@ class _IndexState extends State<Index> {
     }
   }
 
+  void _onQRViewCreated(QRViewController controller) {
+    setState(() {
+      // this.controller = controller;
+    });
+    controller.scannedDataStream.listen((scanData) {
+      print(scanData);
+      // setState(() {
+      //   result = scanData;
+      // });
+    });
+  }
+
   getData() async {
     final prefs = await SharedPreferences.getInstance();
     await getProduts();
@@ -178,12 +196,34 @@ class _IndexState extends State<Index> {
       // data['products'] = productController.products;
       // });
     }
+    getCameraPermission();
     getData();
+  }
+
+  Future<PermissionStatus> getCameraPermission() async {
+    var status = await Permission.camera.status;
+    if (!status.isGranted) {
+      final result = await Permission.camera.request();
+      return result;
+    } else {
+      return status;
+    }
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    if (Platform.isAndroid) {
+      qrController!.pauseCamera();
+    } else if (Platform.isIOS) {
+      qrController!.resumeCamera();
+    }
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
+    qrController?.dispose();
     super.dispose();
   }
 
@@ -236,263 +276,287 @@ class _IndexState extends State<Index> {
         child: Container(
           width: MediaQuery.of(context).size.width,
           margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
             children: [
-              Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                      colorScheme: ThemeData().colorScheme.copyWith(
-                            primary: const Color(0xFF7D4196),
-                          ),
-                    ),
-                    child: TextFormField(
-                      textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (v) {
-                        FocusScope.of(context).requestFocus(focus);
-                      },
-                      controller: data['clientCode'],
-                      focusNode: clientCodeFocus,
-                      onChanged: (value) {
-                        debounce(value);
-                      },
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(
-                          Icons.phone_iphone,
-                        ),
-                        contentPadding: const EdgeInsets.all(18.0),
-                        focusColor: const Color(0xFF7D4196),
-                        filled: true,
-                        fillColor: Colors.transparent,
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                        ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF7D4196)),
-                        ),
-                        hintText: 'qr_code_or_phone_number'.tr,
-                        hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
-                      ),
-                      style: const TextStyle(color: Color(0xFF9C9C9C)),
-                    ),
-                  )),
-              Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                child: user['id'] != null
-                    ? Text(
-                        '${user['firstName'] + ' ' + user['lastName']}',
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                      )
-                    : null,
-              ),
-              user['id'] != null
-                  ? Row(
-                      children: [
-                        Container(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              'balance'.tr + ': ',
-                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                            )),
-                        Container(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              '${formatMoney(user['balance'])}',
-                              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: purple),
-                            ))
-                      ],
-                    )
-                  : Container(),
-              Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                      colorScheme: ThemeData().colorScheme.copyWith(
-                            primary: const Color(0xFF7D4196),
-                          ),
-                    ),
-                    child: TextFormField(
-                      textInputAction: TextInputAction.next,
-                      focusNode: focus,
-                      controller: data['totalAmount'],
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          validate = int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        prefixIcon: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.credit_card,
-                            )),
-                        contentPadding: const EdgeInsets.all(18.0),
-                        focusColor: const Color(0xFF7D4196),
-                        filled: true,
-                        // enabled: enabled,
-                        fillColor: Colors.transparent,
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                        ),
-                        disabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                        ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF7D4196)),
-                        ),
-                        hintText: 'payment_amount'.tr,
-                        hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
-                      ),
-                      style: const TextStyle(color: Color(0xFF9C9C9C)),
-                    ),
-                  )),
-              Container(
-                  margin: const EdgeInsets.only(bottom: 15),
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                      colorScheme: ThemeData().colorScheme.copyWith(
-                            primary: const Color(0xFF7D4196),
-                          ),
-                    ),
-                    child: TextFormField(
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-                      ],
-                      textInputAction: TextInputAction.done,
-                      controller: data['writeOff'],
-                      keyboardType: TextInputType.number,
-                      scrollPadding: const EdgeInsets.only(bottom: 50),
-                      onChanged: (value) {
-                        validateWriteOffField(value);
-                      },
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(
-                          Icons.payments_outlined,
-                        ),
-                        enabled: int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0 && user['id'] != null,
-                        contentPadding: const EdgeInsets.all(18.0),
-                        focusColor: const Color(0xFF7D4196),
-                        filled: true,
-                        fillColor: Colors.transparent,
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                        ),
-                        disabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                        ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF7D4196)),
-                        ),
-                        hintText: 'accumulated_points'.tr,
-                        hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
-                      ),
-                      style: const TextStyle(color: Color(0xFF9C9C9C)),
-                    ),
-                  )),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('paid'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                    Text(
-                        '${formatMoney(int.parse(data['totalAmount'].text != '' ? data['totalAmount'].text : '0') - int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(bottom: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('paid_with_points'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                    Text('${formatMoney(int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
-              for (var i = 0; i < data['products'].length; i++)
-                data['products'].length > 0
-                    ? Dismissible(
-                        key: Key(UniqueKey().toString()),
-                        onDismissed: (DismissDirection direction) {
-                          deleteProduct(i);
-                        },
-                        background: Container(
-                          color: white,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 10, bottom: 10, top: 10),
-                          child: Icon(Icons.delete, color: red),
-                        ),
-                        direction: DismissDirection.endToStart,
-                        child: Container(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  showQrScanner
+                      ? Container(
                           width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.only(bottom: 15),
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(color: Color(0xFFF5F3F5), width: 1),
-                            ),
+                          height: MediaQuery.of(context).size.height,
+                          child: QRView(
+                            key: qrKey,
+                            onQRViewCreated: _onQRViewCreated,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    '${(i + 1)}' '. ' '${data['products'][i]['name']}',
-                                    style: const TextStyle(fontSize: 16),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    softWrap: false,
-                                  ),
-                                  // Text(
-                                  //   'quantity'.tr + ': ${data['products'][i]['quantity']}',
-                                  //   overflow: TextOverflow.ellipsis,
-                                  //   maxLines: 1,
-                                  //   softWrap: false,
-                                  // ),
-                                  Text(
-                                    '${formatMoney(data['products'][i]['price'])}' ' So\'m x ' '${data['products'][i]['quantity']}',
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    softWrap: false,
-                                  ),
-                                ],
+                        )
+                      : Container(),
+                  Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ThemeData().colorScheme.copyWith(
+                                primary: purple,
                               ),
-                              Row(
+                        ),
+                        child: TextFormField(
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (v) {
+                            FocusScope.of(context).requestFocus(focus);
+                          },
+                          controller: data['clientCode'],
+                          focusNode: clientCodeFocus,
+                          onChanged: (value) {
+                            debounce(value);
+                          },
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.phone_iphone,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  showQrScanner = true;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.qr_code_scanner,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.all(18.0),
+                            focusColor: purple,
+                            filled: true,
+                            fillColor: Colors.transparent,
+                            enabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                            ),
+                            focusedBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF7D4196)),
+                            ),
+                            hintText: 'qr_code_or_phone_number'.tr,
+                            hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                          ),
+                          style: const TextStyle(color: Color(0xFF9C9C9C)),
+                        ),
+                      )),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: user['id'] != null
+                        ? Text(
+                            '${user['firstName'] + ' ' + user['lastName']}',
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                          )
+                        : null,
+                  ),
+                  user['id'] != null
+                      ? Row(
+                          children: [
+                            Container(
+                                margin: const EdgeInsets.only(bottom: 10),
+                                child: Text(
+                                  'balance'.tr + ': ',
+                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                                )),
+                            Container(
+                                margin: const EdgeInsets.only(bottom: 10),
+                                child: Text(
+                                  '${formatMoney(user['balance'])}',
+                                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: purple),
+                                ))
+                          ],
+                        )
+                      : Container(),
+                  Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ThemeData().colorScheme.copyWith(
+                                primary: purple,
+                              ),
+                        ),
+                        child: TextFormField(
+                          textInputAction: TextInputAction.next,
+                          focusNode: focus,
+                          controller: data['totalAmount'],
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            setState(() {
+                              validate = int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: IconButton(
+                                onPressed: () {},
+                                icon: const Icon(
+                                  Icons.credit_card,
+                                )),
+                            contentPadding: const EdgeInsets.all(18.0),
+                            focusColor: purple,
+                            filled: true,
+                            // enabled: enabled,
+                            fillColor: Colors.transparent,
+                            enabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                            ),
+                            disabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                            ),
+                            focusedBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF7D4196)),
+                            ),
+                            hintText: 'payment_amount'.tr,
+                            hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                          ),
+                          style: const TextStyle(color: Color(0xFF9C9C9C)),
+                        ),
+                      )),
+                  Container(
+                      margin: const EdgeInsets.only(bottom: 15),
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ThemeData().colorScheme.copyWith(
+                                primary: purple,
+                              ),
+                        ),
+                        child: TextFormField(
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                          ],
+                          textInputAction: TextInputAction.done,
+                          controller: data['writeOff'],
+                          keyboardType: TextInputType.number,
+                          scrollPadding: const EdgeInsets.only(bottom: 50),
+                          onChanged: (value) {
+                            validateWriteOffField(value);
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.payments_outlined,
+                            ),
+                            enabled: int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0 && user['id'] != null,
+                            contentPadding: const EdgeInsets.all(18.0),
+                            focusColor: purple,
+                            filled: true,
+                            fillColor: Colors.transparent,
+                            enabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                            ),
+                            disabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                            ),
+                            focusedBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF7D4196)),
+                            ),
+                            hintText: 'accumulated_points'.tr,
+                            hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                          ),
+                          style: const TextStyle(color: Color(0xFF9C9C9C)),
+                        ),
+                      )),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('paid'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                        Text(
+                            '${formatMoney(int.parse(data['totalAmount'].text != '' ? data['totalAmount'].text : '0') - int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('paid_with_points'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                        Text('${formatMoney(int.parse(data['writeOff'].text != '' ? data['writeOff'].text : '0'))} So\'m',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                  for (var i = 0; i < data['products'].length; i++)
+                    data['products'].length > 0
+                        ? Dismissible(
+                            key: Key(UniqueKey().toString()),
+                            onDismissed: (DismissDirection direction) {
+                              deleteProduct(i);
+                            },
+                            background: Container(
+                              color: white,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 10, bottom: 10, top: 10),
+                              child: Icon(Icons.delete, color: red),
+                            ),
+                            direction: DismissDirection.endToStart,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.only(bottom: 15),
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(color: Color(0xFFF5F3F5), width: 1),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      const SizedBox(height: 5),
                                       Text(
-                                        'barcode'.tr + ': ${data['products'][i]['barcode'].toString()}',
+                                        '${(i + 1)}' '. ' '${data['products'][i]['name']}',
                                         style: const TextStyle(fontSize: 16),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: false,
+                                      ),
+                                      // Text(
+                                      //   'quantity'.tr + ': ${data['products'][i]['quantity']}',
+                                      //   overflow: TextOverflow.ellipsis,
+                                      //   maxLines: 1,
+                                      //   softWrap: false,
+                                      // ),
+                                      Text(
+                                        '${formatMoney(data['products'][i]['price'])}' ' So\'m x ' '${data['products'][i]['quantity']}',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: false,
                                       ),
                                     ],
                                   ),
-                                  Text(
-                                    '${formatMoney(data['products'][i]['totalAmount']).toString()} So\'m',
-                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                                  )
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            'barcode'.tr + ': ${data['products'][i]['barcode'].toString()}',
+                                            style: const TextStyle(fontSize: 16),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        '${formatMoney(data['products'][i]['totalAmount']).toString()} So\'m',
+                                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                                      )
+                                    ],
+                                  ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : Container(),
-              const SizedBox(height: 80)
+                            ),
+                          )
+                        : Container(),
+                  const SizedBox(height: 80)
+                ],
+              ),
             ],
           ),
         ),
@@ -631,7 +695,7 @@ class _IndexState extends State<Index> {
                                       keyboardType: productList[i]['inputType'],
                                       decoration: InputDecoration(
                                         contentPadding: const EdgeInsets.all(12.0),
-                                        focusColor: const Color(0xFF7D4196),
+                                        focusColor: purple,
                                         filled: true,
                                         fillColor: Colors.transparent,
                                         enabledBorder: const UnderlineInputBorder(
@@ -781,7 +845,7 @@ class _IndexState extends State<Index> {
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(12.0),
-                              focusColor: const Color(0xFF7D4196),
+                              focusColor: purple,
                               filled: true,
                               fillColor: Colors.transparent,
                               enabledBorder: const UnderlineInputBorder(
@@ -1138,7 +1202,7 @@ class _IndexState extends State<Index> {
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.all(12.0),
-                                focusColor: const Color(0xFF7D4196),
+                                focusColor: purple,
                                 filled: true,
                                 fillColor: Colors.transparent,
                                 enabledBorder: const UnderlineInputBorder(
@@ -1173,7 +1237,7 @@ class _IndexState extends State<Index> {
                               keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.all(12.0),
-                                focusColor: const Color(0xFF7D4196),
+                                focusColor: purple,
                                 filled: true,
                                 fillColor: Colors.transparent,
                                 enabledBorder: const UnderlineInputBorder(
@@ -1208,7 +1272,7 @@ class _IndexState extends State<Index> {
                               keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.all(12.0),
-                                focusColor: const Color(0xFF7D4196),
+                                focusColor: purple,
                                 filled: true,
                                 fillColor: Colors.transparent,
                                 enabledBorder: const UnderlineInputBorder(

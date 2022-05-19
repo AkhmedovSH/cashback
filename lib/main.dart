@@ -24,7 +24,7 @@ void main() async {
   dynamic locale = const Locale('uz_latn', 'UZ');
 
   if (prefs.getString('currentLocale') != null) {
-    if (prefs.getString('currentLocale') == '1') {
+    if (prefs.getString('currentLocale') == '1') {  
       locale = const Locale('ru', 'RU');
     }
     if (prefs.getString('currentLocale') == '3') {
