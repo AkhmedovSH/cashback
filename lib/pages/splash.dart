@@ -9,6 +9,8 @@ import 'package:new_version/new_version.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:cashback/helpers/helper.dart';
+
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
 
@@ -61,7 +63,6 @@ class _SplashState extends State<Splash> {
       }
     } catch (e) {
       checkVersion();
-      print(e);
     }
   }
 
@@ -77,7 +78,7 @@ class _SplashState extends State<Splash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF7D4196),
+      backgroundColor: purple,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

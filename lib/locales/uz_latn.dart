@@ -71,4 +71,5 @@ final uzLatn = {
   'use_another_way': 'Boshqa usuldan foydalaning',
   'register_user': 'Foydalanuvchini ro\'yxatdan o\'tkazish',
   'login_with_fingerprint': 'Barmoq izi bilan kirish',
+  'remember_me': 'Eslab qolish',
 };

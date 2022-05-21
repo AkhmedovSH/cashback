@@ -285,7 +285,7 @@ class _ChequeByIdState extends State<ChequeById> {
                         child: Theme(
                           data: Theme.of(context).copyWith(
                             colorScheme: ThemeData().colorScheme.copyWith(
-                                  primary: const Color(0xFF7D4196),
+                                  primary: purple,
                                 ),
                           ),
                           child: TextField(
@@ -310,7 +310,7 @@ class _ChequeByIdState extends State<ChequeById> {
                                 Icons.phone_iphone,
                               ),
                               contentPadding: const EdgeInsets.all(12.0),
-                              focusColor: const Color(0xFF7D4196),
+                              focusColor: purple,
                               filled: true,
                               fillColor: Colors.transparent,
                               enabledBorder: const UnderlineInputBorder(
@@ -357,7 +357,7 @@ class _ChequeByIdState extends State<ChequeById> {
                         child: Theme(
                           data: Theme.of(context).copyWith(
                             colorScheme: ThemeData().colorScheme.copyWith(
-                                  primary: const Color(0xFF7D4196),
+                                  primary: purple,
                                 ),
                           ),
                           child: TextFormField(
@@ -379,7 +379,7 @@ class _ChequeByIdState extends State<ChequeById> {
                                 Icons.payments_outlined,
                               ),
                               contentPadding: const EdgeInsets.all(12.0),
-                              focusColor: const Color(0xFF7D4196),
+                              focusColor: purple,
                               filled: true,
                               fillColor: Colors.transparent,
                               enabledBorder: const UnderlineInputBorder(

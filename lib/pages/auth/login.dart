@@ -9,6 +9,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_android/local_auth_android.dart';
 import 'package:local_auth_ios/local_auth_ios.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:app_settings/app_settings.dart';
 
 import '../../helpers/api.dart';
 import '../../helpers/helper.dart';
@@ -79,7 +80,15 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     });
   }
 
-  changeRemember() async {
+  changeRemember(value) async {
+    final isDeviceSupported = await auth.isDeviceSupported();
+    if (!isDeviceSupported) {
+      AppSettings.openSecuritySettings();
+      return;
+    }
+    setState(() {
+      sendData['signWithFingerPrint'] = value;
+    });
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString('user') != null) {
       final user = jsonDecode(prefs.getString('user')!);
@@ -94,7 +103,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     try {
       return await auth.canCheckBiometrics;
     } on PlatformException catch (e) {
-      print(e);
       return false;
     }
   }
@@ -114,7 +122,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         final result = await auth.authenticate(
             localizedReason: 'scan_your_fingerprint_for_authentication'.tr,
             options: const AuthenticationOptions(
-              useErrorDialogs: false,
+              useErrorDialogs: true,
               stickyAuth: true,
             ),
             authMessages: <AuthMessages>[
@@ -153,7 +161,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
           }
         }
       } on PlatformException catch (e) {
-        print(e);
         return false;
       }
     }
@@ -399,51 +406,42 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'remember_me'.tr,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
-                        Switch(
-                          value: sendData['isRemember'],
-                          activeColor: purple,
-                          onChanged: (bool value) {
-                            setState(() {
-                              sendData['isRemember'] = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'remember_me'.tr,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                      Switch(
+                        value: sendData['isRemember'],
+                        activeColor: purple,
+                        onChanged: (bool value) {
+                          setState(() {
+                            sendData['isRemember'] = value;
+                          });
+                        },
+                      ),
+                    ],
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            'login_with_fingerprint'.tr,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          'login_with_fingerprint'.tr,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Switch(
-                          value: sendData['signWithFingerPrint'],
-                          activeColor: purple,
-                          onChanged: (bool value) {
-                            setState(() {
-                              sendData['signWithFingerPrint'] = value;
-                            });
-                            changeRemember();
-                          },
-                        ),
-                      ],
-                    ),
+                      ),
+                      Switch(
+                        value: sendData['signWithFingerPrint'],
+                        activeColor: purple,
+                        onChanged: (bool value) {
+                          changeRemember(value);
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),

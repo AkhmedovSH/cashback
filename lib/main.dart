@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers/translations.dart';
 
+import 'package:cashback/helpers/helper.dart';
+
 import 'pages/splash.dart';
 
 import 'pages/auth/login.dart';
@@ -48,12 +50,12 @@ void main() async {
       scaffoldBackgroundColor: const Color(0xFFFFFFFF),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: const Color(0xFF7D4196),
+          primary: purple,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-        primary: const Color(0xFF7D4196),
+        primary: purple,
       )),
     ),
     initialRoute: '/splash',
@@ -61,14 +63,8 @@ void main() async {
       GetPage(name: '/splash', page: () => const Splash()),
       GetPage(name: '/login', page: () => const Login(), transition: Transition.fade),
       GetPage(name: '/select-access-pos', page: () => const SelectAccessPos(), transition: Transition.fade),
-
       GetPage(name: '/dashboard', page: () => const Dashboard(), transition: Transition.fade),
-
       GetPage(name: '/cheque-by-id', page: () => const ChequeById(), transition: Transition.fade),
-
-      // GetPage(name: '/', page: () => const Index(), transition: Transition.fade),
-      // GetPage(name: '/reports', page: () => const Reports(), transition: Transition.fade),
-      // GetPage(name: '/checks', page: () => const Checks(), transition: Transition.fade),
     ],
   ));
 }
@@ -90,12 +86,12 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFFFFFFF),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: const Color(0xFF7D4196),
+            primary: purple,
           ),
         ),
         textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
-          primary: const Color(0xFF7D4196),
+          primary: purple,
         )),
       ),
       initialRoute: '/splash',

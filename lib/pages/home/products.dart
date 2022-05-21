@@ -336,7 +336,7 @@ class _ProductsState extends State<Products> {
                                       keyboardType: productList[i]['inputType'],
                                       decoration: InputDecoration(
                                         contentPadding: const EdgeInsets.all(12.0),
-                                        focusColor: const Color(0xFF7D4196),
+                                        focusColor: purple,
                                         filled: true,
                                         fillColor: Colors.transparent,
                                         enabledBorder: const UnderlineInputBorder(

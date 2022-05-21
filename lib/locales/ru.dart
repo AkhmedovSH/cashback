@@ -71,4 +71,5 @@ final ru = {
   'use_another_way': 'Использовать другой способ',
   'register_user': 'Зарегистрировать юзера',
   'login_with_fingerprint': 'Вход с помощью отпечатка пальца',
+  'remember_me': 'Запомнить меня',
 };

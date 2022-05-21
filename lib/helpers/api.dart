@@ -25,7 +25,6 @@ Future get(String url, {payload}) async {
         }));
     return response.data;
   } on DioError catch (e) {
-    print(e.response?.statusCode);
     statuscheker(e);
   }
 }
@@ -77,7 +76,6 @@ Future delete(String url) async {
         }));
     return response.data;
   } on DioError catch (e) {
-    print(e.response?.statusCode);
     statuscheker(e);
   }
 }

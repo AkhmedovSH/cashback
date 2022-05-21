@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,13 +51,11 @@ class _IndexState extends State<Index> {
   }
 
   getQrCode() async {
-    print(111);
     final permission = await getCameraPermission();
     if (permission == PermissionStatus.permanentlyDenied) {
       return;
     }
     final result = await Get.to(const QrScanner());
-    print(result);
     if (result != null) {
       setState(() {
         data['clientCode'].text = result.code.toString();
@@ -102,7 +99,6 @@ class _IndexState extends State<Index> {
   }
 
   createCheque() async {
-    print('here');
     if (user['id'] != null && validate && int.parse(data['writeOff'].text == '' ? '0' : data['writeOff'].text) > 0 ||
         int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0) {
       widget.showHideLoading!(true);
@@ -153,7 +149,6 @@ class _IndexState extends State<Index> {
 
   validateWriteOffField(value) {
     if (user['balance'] != null) {
-      // print(int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > int.parse(value));
       if (value.length == previousValue.length) {
         setState(() {
           data['writeOff'].text = '';
@@ -299,7 +294,6 @@ class _IndexState extends State<Index> {
                               ),
                               suffixIcon: IconButton(
                                 onPressed: () {
-                                  print(111);
                                   getQrCode();
                                 },
                                 icon: const Icon(
@@ -608,7 +602,6 @@ class _IndexState extends State<Index> {
         "quantity": productData['quantity'].text,
         "totalAmount": int.parse(productData['quantity'].text) * int.parse(productData['price'].text),
       };
-      print(product);
       setState(() {
         data['products'].add(product);
         totalAmount = product['totalAmount'] + totalAmount;
@@ -1095,7 +1088,6 @@ class _IndexState extends State<Index> {
     dynamic data = {};
     data = sendData;
     data['phone'] = '998' + maskFormatter.getUnmaskedText();
-    print(data);
     final response = await post('/services/gocashapi/api/register-client', sendData);
     if (response != null) {
       if (response['reason'] == 'user.already.registered') {
@@ -1384,6 +1376,15 @@ class _IndexState extends State<Index> {
         filter: {"#": RegExp(r'[0-9]')},
         type: MaskAutoCompletionType.lazy,
       );
+      sendData = {
+        'phone': '',
+        'firstName': '',
+        'lastName': '',
+        'gender': '0',
+        'birthDate': '',
+      };
+      birthDateController.text = '';
+      genderController.text = 'male'.tr;
     });
   }
 
@@ -1504,7 +1505,6 @@ class _QrScannerState extends State<QrScanner> {
       // this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) async {
-      print(scanData);
       Get.back(result: scanData);
       // result = await BarcodeScanner.scan();
     });
@@ -1523,13 +1523,11 @@ class _QrScannerState extends State<QrScanner> {
   @override
   void initState() {
     super.initState();
-    print(qrController?.getFlashStatus());
   }
 
   // @override
   // void reassemble() {
   //   super.reassemble();
-  //   print(111);
   //   if (Platform.isAndroid) {
   //     qrController!.pauseCamera();
   //   } else if (Platform.isIOS) {

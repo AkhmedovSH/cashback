@@ -71,4 +71,5 @@ final uzCyrl = {
   'use_another_way': 'Бошқа усулдан фойдаланинг',
   'register_user': 'Фойдаланувчини рўйхатдан ўтказиш',
   'login_with_fingerprint': 'Бармоқ изи билан кириш',
+  'remember_me': 'Эслаб қолиш',
 };
