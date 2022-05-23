@@ -232,30 +232,33 @@ class _IndexState extends State<Index> {
           style: TextStyle(color: Colors.black),
         ),
         actions: [
+          // IconButton(
+          //   onPressed: () {
+          //     showCreateProductDialog();
+          //   },
+          //   icon: Icon(
+          //     Icons.add,
+          //     color: purple,
+          //   ),
+          // ),
           IconButton(
-              onPressed: () {
-                showCreateProductDialog();
-              },
-              icon: Icon(
-                Icons.add,
-                color: purple,
-              )),
+            onPressed: () {
+              showSavedProducts();
+            },
+            icon: Icon(
+              Icons.save,
+              color: purple,
+            ),
+          ),
           IconButton(
-              onPressed: () {
-                showSavedProducts();
-              },
-              icon: Icon(
-                Icons.save,
-                color: purple,
-              )),
-          IconButton(
-              onPressed: () {
-                showCreateUserDialog();
-              },
-              icon: Icon(
-                Icons.person,
-                color: purple,
-              )),
+            onPressed: () {
+              showCreateUserDialog();
+            },
+            icon: Icon(
+              Icons.person,
+              color: purple,
+            ),
+          ),
         ],
       ),
       body: SafeArea(
@@ -620,127 +623,127 @@ class _IndexState extends State<Index> {
     }
   }
 
-  showCreateProductDialog() {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, setState) {
-            return AlertDialog(
-              // titlePadding: EdgeInsets.all(0),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
-              title: Text(
-                'create_product'.tr,
-                textAlign: TextAlign.center,
-              ),
-              scrollable: true,
-              content: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (var i = 0; i < productList.length; i++)
-                          productList[i]['field_name'] != 'uomId'
-                              ? Container(
-                                  margin: const EdgeInsets.only(bottom: 20),
-                                  child: Theme(
-                                    data: Theme.of(context).copyWith(
-                                      colorScheme: ThemeData().colorScheme.copyWith(
-                                            primary: purple,
-                                          ),
-                                    ),
-                                    child: TextFormField(
-                                      inputFormatters: i == 3 || i == 4
-                                          ? [
-                                              FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-                                            ]
-                                          : [],
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'required_field'.tr;
-                                        }
-                                        return null;
-                                      },
-                                      scrollPadding: i == 1 || i == 3 ? const EdgeInsets.only(bottom: 200) : EdgeInsets.zero,
-                                      controller: productData[productList[i]['field_name']],
-                                      onChanged: (value) {},
-                                      keyboardType: productList[i]['inputType'],
-                                      decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.all(12.0),
-                                        focusColor: purple,
-                                        filled: true,
-                                        fillColor: Colors.transparent,
-                                        enabledBorder: const UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                                        ),
-                                        focusedBorder: const UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Color(0xFF7D4196)),
-                                        ),
-                                        hintText: productList[i]['name'],
-                                        hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
-                                      ),
-                                      style: const TextStyle(color: Color(0xFF9C9C9C)),
-                                    ),
-                                  ))
-                              : Container(
-                                  // height: 50,
-                                  margin: const EdgeInsets.only(bottom: 20),
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: const BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Color(0xFF9C9C9C)))),
-                                  child: DropdownButtonHideUnderline(
-                                    child: ButtonTheme(
-                                      alignedDropdown: true,
-                                      child: DropdownButton(
-                                        value: productData['uomId'].text,
-                                        isExpanded: true,
-                                        hint: Text('${unitList[0]['name']}'),
-                                        icon: const Icon(Icons.chevron_right),
-                                        iconSize: 24,
-                                        iconEnabledColor: purple,
-                                        elevation: 16,
-                                        style: const TextStyle(color: Color(0xFF313131)),
-                                        underline: Container(
-                                          height: 2,
-                                          color: purple,
-                                        ),
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            productData[productList[i]['field_name']].text = newValue!;
-                                          });
-                                        },
-                                        items: unitList.map((item) {
-                                          return DropdownMenuItem<String>(
-                                            value: '${item['id']}',
-                                            child: Text(item['name']),
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                        // const SizedBox(height: 100)
-                      ],
-                    ),
-                  )),
-              actions: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      addProduct();
-                    },
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                    child: Text('proceed'.tr),
-                  ),
-                )
-              ],
-            );
-          });
-        });
-  }
+  // showCreateProductDialog() {
+  //   return showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return StatefulBuilder(builder: (context, setState) {
+  //           return AlertDialog(
+  //             // titlePadding: EdgeInsets.all(0),
+  //             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+  //             insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+  //             title: Text(
+  //               'create_product'.tr,
+  //               textAlign: TextAlign.center,
+  //             ),
+  //             scrollable: true,
+  //             content: SizedBox(
+  //                 height: MediaQuery.of(context).size.height * 0.5,
+  //                 width: MediaQuery.of(context).size.width * 0.8,
+  //                 child: Form(
+  //                   key: _formKey,
+  //                   child: Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children: [
+  //                       for (var i = 0; i < productList.length; i++)
+  //                         productList[i]['field_name'] != 'uomId'
+  //                             ? Container(
+  //                                 margin: const EdgeInsets.only(bottom: 20),
+  //                                 child: Theme(
+  //                                   data: Theme.of(context).copyWith(
+  //                                     colorScheme: ThemeData().colorScheme.copyWith(
+  //                                           primary: purple,
+  //                                         ),
+  //                                   ),
+  //                                   child: TextFormField(
+  //                                     inputFormatters: i == 3 || i == 4
+  //                                         ? [
+  //                                             FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+  //                                           ]
+  //                                         : [],
+  //                                     validator: (value) {
+  //                                       if (value == null || value.isEmpty) {
+  //                                         return 'required_field'.tr;
+  //                                       }
+  //                                       return null;
+  //                                     },
+  //                                     scrollPadding: i == 1 || i == 3 ? const EdgeInsets.only(bottom: 200) : EdgeInsets.zero,
+  //                                     controller: productData[productList[i]['field_name']],
+  //                                     onChanged: (value) {},
+  //                                     keyboardType: productList[i]['inputType'],
+  //                                     decoration: InputDecoration(
+  //                                       contentPadding: const EdgeInsets.all(12.0),
+  //                                       focusColor: purple,
+  //                                       filled: true,
+  //                                       fillColor: Colors.transparent,
+  //                                       enabledBorder: const UnderlineInputBorder(
+  //                                         borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+  //                                       ),
+  //                                       focusedBorder: const UnderlineInputBorder(
+  //                                         borderSide: BorderSide(color: Color(0xFF7D4196)),
+  //                                       ),
+  //                                       hintText: productList[i]['name'],
+  //                                       hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+  //                                     ),
+  //                                     style: const TextStyle(color: Color(0xFF9C9C9C)),
+  //                                   ),
+  //                                 ))
+  //                             : Container(
+  //                                 // height: 50,
+  //                                 margin: const EdgeInsets.only(bottom: 20),
+  //                                 width: MediaQuery.of(context).size.width,
+  //                                 decoration: const BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Color(0xFF9C9C9C)))),
+  //                                 child: DropdownButtonHideUnderline(
+  //                                   child: ButtonTheme(
+  //                                     alignedDropdown: true,
+  //                                     child: DropdownButton(
+  //                                       value: productData['uomId'].text,
+  //                                       isExpanded: true,
+  //                                       hint: Text('${unitList[0]['name']}'),
+  //                                       icon: const Icon(Icons.chevron_right),
+  //                                       iconSize: 24,
+  //                                       iconEnabledColor: purple,
+  //                                       elevation: 16,
+  //                                       style: const TextStyle(color: Color(0xFF313131)),
+  //                                       underline: Container(
+  //                                         height: 2,
+  //                                         color: purple,
+  //                                       ),
+  //                                       onChanged: (newValue) {
+  //                                         setState(() {
+  //                                           productData[productList[i]['field_name']].text = newValue!;
+  //                                         });
+  //                                       },
+  //                                       items: unitList.map((item) {
+  //                                         return DropdownMenuItem<String>(
+  //                                           value: '${item['id']}',
+  //                                           child: Text(item['name']),
+  //                                         );
+  //                                       }).toList(),
+  //                                     ),
+  //                                   ),
+  //                                 ),
+  //                               ),
+  //                       // const SizedBox(height: 100)
+  //                     ],
+  //                   ),
+  //                 )),
+  //             actions: [
+  //               SizedBox(
+  //                 width: MediaQuery.of(context).size.width,
+  //                 child: ElevatedButton(
+  //                   onPressed: () {
+  //                     addProduct();
+  //                   },
+  //                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+  //                   child: Text('proceed'.tr),
+  //                 ),
+  //               )
+  //             ],
+  //           );
+  //         });
+  //       });
+  // }
 
   final quantityFormKey = GlobalKey<FormState>();
   dynamic products = [];
