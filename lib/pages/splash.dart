@@ -1,15 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:get/get.dart';
-
-import 'package:new_version/new_version.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cashback/helpers/helper.dart';
+
+import '../helpers/api.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -31,38 +29,25 @@ class _SplashState extends State<Splash> {
   }
 
   void checkVersion() async {
-    final newVersion = NewVersion(androidId: 'uz.cashbek.kassa');
-    dynamic status;
-    try {
-      status = await newVersion.getVersionStatus();
-      setState(() {
-        vesrion = status!.localVersion;
-        url = status.appStoreLink.toString();
-      });
-      if (status!.storeVersion != status.localVersion) {
-        final prefs = await SharedPreferences.getInstance();
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String localVersion = packageInfo.version;
 
-        final lastVersion = status.storeVersion.split('.')[2];
-        if ((int.parse(lastVersion) % 3).round() == 0) {
-          setState(() {
-            isRequired = true;
-          });
-        }
-        await showUpdateDialog();
-        if (isRequired) {
-          SystemNavigator.pop();
-          prefs.remove('lastShow');
-        } else {
-          startTimer();
-          prefs.setString('lastShow', jsonEncode({'storeVersion': status.storeVersion, 'time': DateTime.now().millisecondsSinceEpoch.toString()}));
-        }
+    var playMarketVersion = await get('/services/gocashmobile/api/get-version?name=uz.cashbek.kassa');
+    if (playMarketVersion == null) {
+      startTimer();
+    }
 
-        return;
-      } else {
-        startTimer();
+    if (playMarketVersion['version'] != localVersion) {
+      if (playMarketVersion['required']) {
+        setState(() {
+          isRequired = true;
+        });
       }
-    } catch (e) {
-      checkVersion();
+
+      await showUpdateDialog();
+      return;
+    } else {
+      startTimer();
     }
   }
 

@@ -15,14 +15,12 @@ var dio = Dio(options);
 
 Future get(String url, {payload}) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  if (prefs.getString('access_token') != null) {
+    dio.options.headers["authorization"] = "Bearer ${prefs.getString('token')}";
+    dio.options.headers["Accept"] = "application/json";
+  }
   try {
-    final response = await dio.get(hostUrl + url,
-        queryParameters: payload,
-        options: Options(headers: {
-          // "authorization":
-          //     "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJ0ZXN0bWQiLCJzY29wZSI6WyJvcGVuaWQiXSwibGFzdF9uYW1lIjpudWxsLCJleHAiOjE2NDg1MjI2OTIsImlhdCI6MTY0ODQzNjI5MiwiZmlyc3RfbmFtZSI6bnVsbCwiYXV0aG9yaXRpZXMiOlsiUk9MRV9CVVNJTkVTU19PV05FUiJdLCJqdGkiOiJzNXRiV0dyTEhLUFd4OENwa01BLWRSMTI1enMiLCJjbGllbnRfaWQiOiJ3ZWJfYXBwIiwib3duZXJMb2dpbiI6bnVsbH0.c1Oyl3ZBCkPXxX_i2x9fDUDnwAw89qRwZ6BCnO_wYtFke4z5sdsTWBeCYamNglSsZccSrhZMkqGj1L5nok60JZP1DagHGpHJ7yQW3VWlr6NQpjjhbcifwirfv_RC4uadl3OUWMh9JZlHUv8txEre_o8EZVOyUdj_mXLq0MSH9FQdOdoPL-04zoej_2HOLTDhIq4F5Ckabwt3-qKY2HDEhjJhxQR-Arm-JZzEPM89HCIPmw5cQEXUmm1xQ6VlTjXcQJvmec24Rv9n9zH4zgjALS9g34NQtReDx0PG-J24LXmxAovsGKgrODs1wTHq_mkd2IQqfqNpmvBclIetsAiu2g"
-          "authorization": "Bearer ${prefs.getString('access_token')}",
-        }));
+    final response = await dio.get(hostUrl + url, queryParameters: payload);
     return response.data;
   } on DioError catch (e) {
     statuscheker(e);
