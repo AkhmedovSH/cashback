@@ -19,7 +19,7 @@ class Splash extends StatefulWidget {
 class _SplashState extends State<Splash> {
   dynamic systemOverlayStyle = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light);
   dynamic vesrion = '';
-  dynamic url = '';
+  dynamic url = 'https://play.google.com/store/apps/details?id=uz.cashbek.kassa';
   bool isRequired = false;
 
   @override
