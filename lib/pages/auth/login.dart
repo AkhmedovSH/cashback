@@ -56,6 +56,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       prefs.setString('access_token', response['access_token'].toString());
       prefs.setString('user', jsonEncode(sendData));
       final user = await get('/services/uaa/api/account');
+      
       for (var i = 0; i < user['authorities'].length; i++) {
         if (user['authorities'][i] == 'ROLE_CASHIER') {
           Get.offAllNamed('/select-access-pos');

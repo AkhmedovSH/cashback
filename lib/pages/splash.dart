@@ -32,7 +32,7 @@ class _SplashState extends State<Splash> {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String localVersion = packageInfo.version;
 
-    var playMarketVersion = await get('/services/gocashmobile/api/get-version?name=uz.cashbek.kassa');
+    var playMarketVersion = await guestGet('/services/gocashmobile/api/get-version?name=uz.cashbek.kassa');
     if (playMarketVersion == null) {
       startTimer();
     }

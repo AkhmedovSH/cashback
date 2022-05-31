@@ -15,10 +15,9 @@ var dio = Dio(options);
 
 Future get(String url, {payload}) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  if (prefs.getString('access_token') != null) {
-    dio.options.headers["authorization"] = "Bearer ${prefs.getString('token')}";
-    dio.options.headers["Accept"] = "application/json";
-  }
+  dio.options.headers["authorization"] = "Bearer ${prefs.getString('access_token')}";
+  dio.options.headers["Accept"] = "application/json";
+
   try {
     final response = await dio.get(hostUrl + url, queryParameters: payload);
     return response.data;
@@ -35,6 +34,19 @@ Future post(String url, dynamic payload) async {
         options: Options(headers: {
           "authorization": "Bearer ${prefs.getString('access_token')}",
         }));
+    return response.data;
+  } on DioError catch (e) {
+    statuscheker(e);
+  }
+}
+
+Future guestGet(String url, {payload}) async {
+  try {
+    final response = await dio.get(
+      hostUrl + url,
+      queryParameters: payload,
+    );
+    
     return response.data;
   } on DioError catch (e) {
     statuscheker(e);
