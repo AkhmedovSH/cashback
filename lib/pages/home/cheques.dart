@@ -94,128 +94,130 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarIconBrightness: Brightness.dark,
-            statusBarColor: Colors.grey[50], // Status bar
-          ),
-          elevation: 0.0,
-          bottomOpacity: 0.0,
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          iconTheme: const IconThemeData(color: Colors.black),
-          title: const Text(
-            'moneyBek',
-            style: TextStyle(color: Colors.black),
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  showFilterBottomSheet();
-                },
-                icon: Icon(
-                  Icons.filter_alt_outlined,
-                  color: purple,
-                ))
-          ],
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarIconBrightness: Brightness.dark,
+          statusBarColor: Colors.grey[50], // Status bar
         ),
-        body: loading
-            ? SafeArea(
-                child: SingleChildScrollView(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                    child: Column(
-                      children: [
-                        SingleChildScrollView(
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 20),
-                            child: Column(
-                              children: [
-                                Table(
-                                  children: [
+        elevation: 0.0,
+        bottomOpacity: 0.0,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text(
+          'moneyBek',
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showFilterBottomSheet();
+              },
+              icon: Icon(
+                Icons.filter_alt_outlined,
+                color: purple,
+              ))
+        ],
+      ),
+      body: loading
+          ? SafeArea(
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  child: Column(
+                    children: [
+                      SingleChildScrollView(
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          child: Column(
+                            children: [
+                              Table(
+                                children: [
+                                  TableRow(children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      child: Text(
+                                        'date'.tr,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      child: Text(
+                                        'check_amount'.tr,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                                      ),
+                                    ),
+                                    // Text(
+                                    //   'check_amount'.tr,
+                                    //   textAlign: TextAlign.center,
+                                    // ),
+                                  ]),
+                                  for (var i = 0; i < checks.length; i++)
                                     TableRow(children: [
-                                      Container(
-                                        margin: const EdgeInsets.only(bottom: 10),
-                                        child: Text(
-                                          'date'.tr,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: const EdgeInsets.only(bottom: 10),
-                                        child: Text(
-                                          'check_amount'.tr,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-                                        ),
-                                      ),
-                                      // Text(
-                                      //   'check_amount'.tr,
-                                      //   textAlign: TextAlign.center,
-                                      // ),
-                                    ]),
-                                    for (var i = 0; i < checks.length; i++)
-                                      TableRow(children: [
-                                        GestureDetector(
-                                            onTap: () {
-                                              Get.toNamed('/cheque-by-id', arguments: checks[i]['id']);
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 14),
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  bottom: BorderSide(
-                                                    color: borderColor,
-                                                    width: 1,
-                                                  ),
+                                      GestureDetector(
+                                          onTap: () {
+                                            Get.toNamed('/cheque-by-id', arguments: checks[i]['id']);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 14),
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: borderColor,
+                                                  width: 1,
                                                 ),
                                               ),
-                                              child: Text(
-                                                '${formatDate(checks[i]['chequeDate'])}',
-                                                style: TextStyle(
-                                                  color: checks[i]['status'] == 1 ? blue : red,
-                                                  fontWeight: FontWeight.w500,
+                                            ),
+                                            child: Text(
+                                              '${formatDate(checks[i]['chequeDate'])}',
+                                              style: TextStyle(
+                                                color: checks[i]['status'] == 1 ? blue : red,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          )),
+                                      GestureDetector(
+                                          onTap: () {
+                                            Get.toNamed('/cheque-by-id', arguments: checks[i]['id']);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 14),
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: borderColor,
+                                                  width: 1,
                                                 ),
-                                                textAlign: TextAlign.center,
                                               ),
-                                            )),
-                                        GestureDetector(
-                                            onTap: () {
-                                              Get.toNamed('/cheque-by-id', arguments: checks[i]['id']);
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 14),
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  bottom: BorderSide(
-                                                    color: borderColor,
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                              ),
-                                              child: Text(
-                                                '${formatMoney(checks[i]['totalAmount'])}',
-                                                textAlign: TextAlign.center,
-                                                style: const TextStyle(fontWeight: FontWeight.w500),
-                                              ),
-                                            )),
-                                      ])
-                                  ],
-                                )
-                              ],
-                            ),
+                                            ),
+                                            child: Text(
+                                              '${formatMoney(checks[i]['totalAmount'])}',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(fontWeight: FontWeight.w500),
+                                            ),
+                                          )),
+                                    ])
+                                ],
+                              )
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              )
-            : Center(
-                child: CircularProgressIndicator(
+              ),
+            )
+          : Center(
+              child: CircularProgressIndicator(
                 color: purple,
-              )));
+              ),
+            ),
+    );
   }
 
   dynamic filter = {
@@ -263,7 +265,7 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
         //   {'id': 21, 'posName': "M DO'KON"}
         // ];
         return StatefulBuilder(
-            builder: ((context, setState) => Container(
+            builder: ((context, filterSetState) => Container(
                   height: MediaQuery.of(context).size.height * 0.65,
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   child: Stack(
@@ -371,11 +373,11 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
                                           controller: filter['clientLogin'],
                                           textInputAction: TextInputAction.next,
                                           onChanged: (value) {
-                                            setState(() {
+                                            filterSetState(() {
                                               sendData['clientLogin'] = value;
                                             });
                                           },
-                                          keyboardType: TextInputType.number,
+                                          keyboardType: TextInputType.text,
                                           decoration: const InputDecoration(
                                             contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 10),
                                             enabledBorder: OutlineInputBorder(
@@ -415,9 +417,9 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
                                         child: TextField(
                                           controller: filter['cashierName'],
                                           textInputAction: TextInputAction.next,
-                                          keyboardType: TextInputType.number,
+                                          keyboardType: TextInputType.text,
                                           onChanged: (value) {
-                                            setState(() {
+                                            filterSetState(() {
                                               sendData['cashierName'] = value;
                                             });
                                           },
@@ -474,7 +476,7 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
                                           color: purple,
                                         ),
                                         onChanged: (newValue) {
-                                          setState(() {
+                                          filterSetState(() {
                                             sendData['status'] = newValue;
                                           });
                                         },
@@ -501,6 +503,7 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
                                     child: ButtonTheme(
                                       alignedDropdown: true,
                                       child: DropdownButton(
+                                        value: sendData['posId'],
                                         isExpanded: true,
                                         hint: Text('${posList[0]['posName']}'),
                                         icon: const Icon(Icons.chevron_right),
@@ -512,8 +515,8 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
                                           height: 2,
                                           color: purple,
                                         ),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
+                                        onChanged: (newValue) {
+                                          filterSetState(() {
                                             sendData['posId'] = newValue!;
                                           });
                                         },

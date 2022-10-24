@@ -165,8 +165,8 @@ class _ChequeByIdState extends State<ChequeById> {
                   softWrap: false,
                 ),
               ),
-              buildRow('sale_amount'.tr, formatMoney(cheque['totalAmount'] != null ? cheque['totalAmount'] + cheque['writeOff'] : 0)),
-              buildRow('paid_in_soums'.tr, formatMoney(cheque['totalAmount'])),
+              buildRow('sale_amount'.tr, formatMoney(cheque['totalAmount'] ?? 0)),
+              buildRow('paid_in_soums'.tr, formatMoney(cheque['totalAmount'] != null ? cheque['totalAmount'] - cheque['writeOff'] : 0)),
               buildRow('paid_with_points'.tr, formatMoney(cheque['writeOff'])),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 2),
