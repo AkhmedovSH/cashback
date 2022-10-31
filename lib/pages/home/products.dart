@@ -59,9 +59,9 @@ class _ProductsState extends State<Products> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          systemOverlayStyle: SystemUiOverlayStyle(
+          systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarIconBrightness: Brightness.dark,
-            statusBarColor: Colors.grey[50], // Status bar
+            statusBarColor: Colors.transparent, // Status bar
           ),
           elevation: 0.0,
           bottomOpacity: 0.0,

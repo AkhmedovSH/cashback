@@ -72,4 +72,6 @@ final uzCyrl = {
   'register_user': 'Фойдаланувчини рўйхатдан ўтказиш',
   'login_with_fingerprint': 'Бармоқ изи билан кириш',
   'remember_me': 'Эслаб қолиш',
+  'partially_returned': 'Қисман қайтарилди',
+  'fully_returned': 'Тоълиқ қайтарилди',
 };

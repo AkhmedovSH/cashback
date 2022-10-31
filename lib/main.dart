@@ -13,7 +13,7 @@ import 'pages/auth/login.dart';
 import 'pages/auth/select_access_pos.dart';
 
 import 'pages/home/dashboard.dart';
-
+import 'package:cashback/pages/home/qr_scanner.dart';
 import 'pages/cheque_by_id.dart';
 
 void main() async {
@@ -65,6 +65,7 @@ void main() async {
       GetPage(name: '/select-access-pos', page: () => const SelectAccessPos(), transition: Transition.fade),
       GetPage(name: '/dashboard', page: () => const Dashboard(), transition: Transition.fade),
       GetPage(name: '/cheque-by-id', page: () => const ChequeById(), transition: Transition.fade),
+      GetPage(name: '/qr-scanner', page: () => const QrScanner(), transition: Transition.fade),
     ],
   ));
 }

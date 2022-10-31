@@ -72,4 +72,6 @@ final ru = {
   'register_user': 'Зарегистрировать юзера',
   'login_with_fingerprint': 'Вход с помощью отпечатка пальца',
   'remember_me': 'Запомнить меня',
+  'partially_returned': 'Частично возвращен',
+  'fully_returned': 'Полностью возвращен',
 };

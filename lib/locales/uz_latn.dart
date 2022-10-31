@@ -72,4 +72,6 @@ final uzLatn = {
   'register_user': 'Foydalanuvchini ro\'yxatdan o\'tkazish',
   'login_with_fingerprint': 'Barmoq izi bilan kirish',
   'remember_me': 'Eslab qolish',
+  'partially_returned': 'Qisman qaytarildi',
+  'fully_returned': 'To\'liq qaytarildi',
 };

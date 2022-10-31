@@ -69,17 +69,19 @@ class _ChequeByIdState extends State<ChequeById> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: white,
-          elevation: 0,
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              ))),
+        backgroundColor: white,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -177,27 +179,43 @@ class _ChequeByIdState extends State<ChequeById> {
                       'status'.tr,
                       style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                     ),
-                    cheque['status'] == 1
-                        ? Text(
-                            'confirmed'.tr,
-                            style: TextStyle(fontSize: 16, color: success),
-                          )
-                        : const Text(''),
-                    cheque['status'] == 2
-                        ? Text(
-                            'denied'.tr,
-                            style: TextStyle(fontSize: 16, color: warning),
-                          )
-                        : const Text(''),
-                    cheque['status'] == 3
-                        ? Text(
-                            'processing_error'.tr,
-                            style: TextStyle(fontSize: 16, color: danger),
-                          )
-                        : const Text(''),
+                    Row(
+                      children: [
+                        cheque['status'] == 1 && cheque['returnStatus'] == 0
+                            ? Text(
+                                'confirmed'.tr,
+                                style: TextStyle(fontSize: 16, color: success),
+                              )
+                            : const Text(''),
+                        cheque['status'] == 2 && cheque['returnStatus'] == 0
+                            ? Text(
+                                'denied'.tr,
+                                style: TextStyle(fontSize: 16, color: warning),
+                              )
+                            : const Text(''),
+                        cheque['status'] == 3 && cheque['returnStatus'] == 0
+                            ? Text(
+                                'processing_error'.tr,
+                                style: TextStyle(fontSize: 16, color: danger),
+                              )
+                            : const Text(''),
+                        cheque['returnStatus'] == 1
+                            ? Text(
+                                'partially_returned'.tr,
+                                style: TextStyle(fontSize: 16, color: warning),
+                              )
+                            : const Text(''),
+                        cheque['returnStatus'] == 2
+                            ? Text(
+                                'fully_returned'.tr,
+                                style: TextStyle(fontSize: 16, color: danger),
+                              )
+                            : const Text(''),
+                      ],
+                    )
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -248,9 +266,9 @@ class _ChequeByIdState extends State<ChequeById> {
   }
 
   returnCheque() async {
-    if (returnUser['id'] != null && int.parse(data['returnAmount']) > 0) {
+    if (int.parse(data['returnAmount']) > 0) {
       final response = await post('/services/gocashapi/api/cashbox-return-cheque', data);
-      if (response['success']) {
+      if (response != null && response['success']) {
         showSuccessToast('successfully'.tr);
         Get.back();
         getCheq();
@@ -259,8 +277,6 @@ class _ChequeByIdState extends State<ChequeById> {
   }
 
   showReturnModal(context) async {
-    final clientCodeController = TextEditingController();
-
     getData();
     final result = await showDialog(
         context: context,
@@ -275,56 +291,12 @@ class _ChequeByIdState extends State<ChequeById> {
                 textAlign: TextAlign.center,
               ),
               content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.3,
+                height: MediaQuery.of(context).size.height * 0.22,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: ThemeData().colorScheme.copyWith(
-                                  primary: purple,
-                                ),
-                          ),
-                          child: TextField(
-                            controller: clientCodeController,
-                            onChanged: (value) {
-                              if (value.length <= 6) {
-                                returnSetState(() {
-                                  data['clientCode'] = value;
-                                });
-                                searchUser(value, returnSetState);
-                              } else {
-                                clientCodeController.text = value.substring(0, value.length - 1);
-                                clientCodeController.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: clientCodeController.text.length),
-                                );
-                                searchUser(value, returnSetState);
-                              }
-                            },
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(
-                                Icons.phone_iphone,
-                              ),
-                              contentPadding: const EdgeInsets.all(12.0),
-                              focusColor: purple,
-                              filled: true,
-                              fillColor: Colors.transparent,
-                              enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                              ),
-                              focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFF7D4196)),
-                              ),
-                              hintText: 'qr_code'.tr,
-                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
-                            ),
-                            style: const TextStyle(color: Color(0xFF9C9C9C)),
-                          ),
-                        )),
+                    buildRow('sale_amount'.tr, formatMoney(cheque['totalAmount'] ?? 0)),
                     Container(
                       margin: const EdgeInsets.only(bottom: 10),
                       child: returnUser['firstName'] != null
@@ -338,62 +310,65 @@ class _ChequeByIdState extends State<ChequeById> {
                         ? Row(
                             children: [
                               Container(
-                                  margin: const EdgeInsets.only(bottom: 10),
+                                  margin: const EdgeInsets.only(bottom: 20),
                                   child: Text(
                                     'balance'.tr + ': ',
                                     style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                                   )),
                               Container(
-                                  margin: const EdgeInsets.only(bottom: 10),
-                                  child: Text(
-                                    '${formatMoney(returnUser['balance'])}',
-                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: purple),
-                                  ))
+                                margin: const EdgeInsets.only(bottom: 10),
+                                child: Text(
+                                  '${formatMoney(returnUser['balance'])}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    color: purple,
+                                  ),
+                                ),
+                              ),
                             ],
                           )
                         : Container(),
-                    Container(
-                        margin: const EdgeInsets.only(bottom: 20),
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: ThemeData().colorScheme.copyWith(
-                                  primary: purple,
-                                ),
-                          ),
-                          child: TextFormField(
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-                            ],
-                            onChanged: (value) {
-                              returnSetState(() {
-                                if (value.isNotEmpty) {
-                                  data['returnAmount'] = value;
-                                } else {
-                                  data['returnAmount'] = '0';
-                                }
-                              });
-                            },
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(
-                                Icons.payments_outlined,
-                              ),
-                              contentPadding: const EdgeInsets.all(12.0),
-                              focusColor: purple,
-                              filled: true,
-                              fillColor: Colors.transparent,
-                              enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFF9C9C9C)),
-                              ),
-                              focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFF7D4196)),
-                              ),
-                              hintText: 'return_amount'.tr,
-                              hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: ThemeData().colorScheme.copyWith(
+                              primary: purple,
                             ),
-                            style: const TextStyle(color: Color(0xFF9C9C9C)),
+                      ),
+                      child: TextFormField(
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                        ],
+                        onChanged: (value) {
+                          returnSetState(() {
+                            if (value.isNotEmpty) {
+                              data['returnAmount'] = value;
+                            } else {
+                              data['returnAmount'] = '0';
+                            }
+                          });
+                        },
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.payments_outlined,
                           ),
-                        )),
+                          contentPadding: const EdgeInsets.all(12.0),
+                          focusColor: purple,
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          enabledBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF9C9C9C)),
+                          ),
+                          focusedBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF7D4196)),
+                          ),
+                          hintText: 'return_amount'.tr,
+                          hintStyle: const TextStyle(color: Color(0xFF9C9C9C)),
+                        ),
+                        style: const TextStyle(color: Color(0xFF9C9C9C)),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -418,15 +393,16 @@ class _ChequeByIdState extends State<ChequeById> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.35,
                       child: ElevatedButton(
-                        onPressed: returnUser['firstName'] != null && int.parse(data['returnAmount']) > 0
+                        onPressed: int.parse(data['returnAmount']) > 0
                             ? () {
                                 returnCheque();
                               }
                             : null,
                         style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            primary: returnUser['id'] != null ? purple : grey,
-                            onSurface: Colors.black),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          primary: int.parse(data['returnAmount']) > 0 ? purple : grey,
+                          disabledBackgroundColor: Colors.black.withOpacity(0.2),
+                        ),
                         child: Text('proceed'.tr),
                       ),
                     )
@@ -439,7 +415,7 @@ class _ChequeByIdState extends State<ChequeById> {
     if (result == null) {
       setState(() {
         returnUser = {};
-        data = {'id': '', 'posId': '', 'clientCode': '', 'cashierName': '', 'returnAmount': '0'};
+        data = {'id': '', 'posId': '', 'cashierName': '', 'returnAmount': '0'};
       });
     }
   }
