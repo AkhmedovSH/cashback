@@ -893,13 +893,33 @@ class _IndexState extends State<Index> {
   }
 
   addProductFromSaved() {
+    print(data['products']);
+    // print(data['products']);
+    // print(changedProducts);
     for (var i = 0; i < changedProducts.length; i++) {
-      setState(() {
-        totalAmount = changedProducts[i]['totalAmount'] + (totalAmount);
-      });
+      int index = data['products'].indexWhere(
+        (prod) => prod["id"].toString() == changedProducts[i]['id'].toString(),
+      );
+      if (index >= 0) {
+        // print('-----------------------------------------');
+        // print(index);
+        // print(changedProducts[i]);
+        // print(data['products'][index]);
+        // setState(() {
+        //   data['products'][index]['quantity'] = int.parse(changedProducts[i]['quantity']) + int.parse(data['products'][index]['quantity']);
+        //   data['products'][index]['totalAmount'] = data['products'][index]['totalAmount'] + changedProducts[i]['totalAmount'];
+        // });
+      } else if (index == -1) {
+        print('-----------------------------------------');
+        setState(() {
+          data['products'].add(changedProducts[i]);
+        });
+        print(data['products']);
+      }
     }
+
     setState(() {
-      data['products'] = [...data['products'], ...changedProducts];
+      // data['products'] = [...data['products'], ...changedProducts];
       changedProducts = [];
       data['totalAmount'].text = totalAmount.toString();
       validate = true;

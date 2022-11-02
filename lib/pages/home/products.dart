@@ -24,15 +24,19 @@ class _ProductsState extends State<Products> {
   }
 
   getProduts() async {
-    setState(() {
-      loading = true;
-    });
+    if (mounted) {
+      setState(() {
+        loading = true;
+      });
+    }
     final response = await get('/services/gocashapi/api/product-list');
-    setState(() {
-      products = response;
-      prevProducts = List.from(response);
-      loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        products = response;
+        prevProducts = List.from(response);
+        loading = false;
+      });
+    }
   }
 
   onSearchTextChanged(String text) async {

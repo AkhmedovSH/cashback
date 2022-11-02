@@ -38,25 +38,31 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
   }
 
   getData() async {
-    setState(() {
-      animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
-    });
-    setState(() {
-      loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
+      });
+      setState(() {
+        loading = false;
+      });
+    }
     await getCheques();
     await getPoses();
-    setState(() {
-      loading = true;
-    });
+    if (mounted) {
+      setState(() {
+        loading = true;
+      });
+    }
   }
 
   getCheques() async {
     final response = await get('/services/gocashapi/api/cashbox-cheque-pageList', payload: sendData);
     if (response != null) {
-      setState(() {
-        checks = response;
-      });
+      if (mounted) {
+        setState(() {
+          checks = response;
+        });
+      }
     }
   }
 
@@ -84,10 +90,12 @@ class _ChecksState extends State<Checks> with TickerProviderStateMixin {
           arr.add(response[i]['posList'][j]);
         }
       }
-      setState(() {
-        sendData['posId'] = arr[0]['posId'].toString();
-        poses = arr;
-      });
+      if (mounted) {
+        setState(() {
+          sendData['posId'] = arr[0]['posId'].toString();
+          poses = arr;
+        });
+      }
     }
   }
 
