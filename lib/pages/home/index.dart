@@ -290,6 +290,7 @@ class _IndexState extends State<Index> {
                               debounce(value);
                             },
                             keyboardType: TextInputType.number,
+                            cursorColor: purple,
                             decoration: InputDecoration(
                               prefixIcon: const Icon(
                                 Icons.phone_iphone,
@@ -363,12 +364,14 @@ class _IndexState extends State<Index> {
                                 validate = int.parse(data['totalAmount'].text == '' ? '0' : data['totalAmount'].text) > 0;
                               });
                             },
+                            cursorColor: purple,
                             decoration: InputDecoration(
                               prefixIcon: IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.credit_card,
-                                  )),
+                                onPressed: () {},
+                                icon: const Icon(
+                                  Icons.credit_card,
+                                ),
+                              ),
                               contentPadding: const EdgeInsets.all(18.0),
                               focusColor: purple,
                               filled: true,
@@ -408,6 +411,7 @@ class _IndexState extends State<Index> {
                             onChanged: (value) {
                               validateWriteOffField(value);
                             },
+                            cursorColor: purple,
                             decoration: InputDecoration(
                               prefixIcon: const Icon(
                                 Icons.payments_outlined,
@@ -553,7 +557,7 @@ class _IndexState extends State<Index> {
             padding: const EdgeInsets.symmetric(vertical: 16),
             elevation: 0,
             onSurface: Colors.black,
-            primary: purple,
+            backgroundColor: purple,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -820,6 +824,7 @@ class _IndexState extends State<Index> {
                             focusNode: quantytyFocus,
                             autofocus: true,
                             keyboardType: TextInputType.number,
+                            cursorColor: purple,
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(12.0),
                               focusColor: purple,
@@ -848,7 +853,10 @@ class _IndexState extends State<Index> {
                         onPressed: () {
                           Get.back();
                         },
-                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), primary: red),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: red,
+                        ),
                         child: Text('cancel'.tr),
                       ),
                     ),
@@ -969,6 +977,12 @@ class _IndexState extends State<Index> {
                               Radius.circular(18),
                             ),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: grey),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(18),
+                            ),
+                          ),
                           focusColor: purple,
                           hintText: 'search_by_name'.tr + ', QR code ...',
                           hintStyle: TextStyle(
@@ -1084,7 +1098,7 @@ class _IndexState extends State<Index> {
                         onPressed: () {
                           Get.back();
                         },
-                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), primary: red),
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), backgroundColor: red),
                         child: Text('cancel'.tr),
                       ),
                     ),
@@ -1196,6 +1210,7 @@ class _IndexState extends State<Index> {
                               focusNode: userFocus,
                               autofocus: true,
                               keyboardType: TextInputType.number,
+                              cursorColor: purple,
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.all(12.0),
                                 focusColor: purple,
@@ -1231,6 +1246,7 @@ class _IndexState extends State<Index> {
                               },
                               scrollPadding: const EdgeInsets.only(bottom: 100),
                               keyboardType: TextInputType.text,
+                              cursorColor: purple,
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.all(12.0),
                                 focusColor: purple,
@@ -1266,6 +1282,7 @@ class _IndexState extends State<Index> {
                               },
                               scrollPadding: const EdgeInsets.only(bottom: 200),
                               keyboardType: TextInputType.text,
+                              cursorColor: purple,
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.all(12.0),
                                 focusColor: purple,
@@ -1369,7 +1386,7 @@ class _IndexState extends State<Index> {
                         onPressed: () {
                           Get.back();
                         },
-                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), primary: red),
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), backgroundColor: red),
                         child: Text('cancel'.tr),
                       ),
                     ),
@@ -1420,14 +1437,11 @@ class _IndexState extends State<Index> {
       initialDate: selectedDate,
       firstDate: DateTime(1950),
       lastDate: DateTime(int.parse(year) + 1),
-      builder: (context, child) {
+      builder: (BuildContext? context, Widget? child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                primary: Colors.lightBlue[800], // button text color
-              ),
-            ),
+          data: ThemeData.light().copyWith(
+            primaryColor: purple,
+            colorScheme: ColorScheme.light(primary: purple),
           ),
           child: child!,
         );

@@ -23,24 +23,24 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   final prefs = await SharedPreferences.getInstance();
-  dynamic locale = const Locale('uz_latn', 'UZ');
+  dynamic locale = const Locale('uz-Latn-UZ');
 
   if (prefs.getString('currentLocale') != null) {
     if (prefs.getString('currentLocale') == '1') {
-      locale = const Locale('ru', 'RU');
+      locale = const Locale('ru');
     }
     if (prefs.getString('currentLocale') == '3') {
-      locale = const Locale('uz_latn', 'UZ');
+      locale = const Locale('uz-Latn-UZ');
     }
     if (prefs.getString('currentLocale') == '4') {
-      locale = const Locale('uz_cyrl', 'UZ');
+      locale = const Locale('uz-Cyrl-UZ');
     }
   }
 
   runApp(GetMaterialApp(
     translations: Messages(),
     locale: locale,
-    fallbackLocale: const Locale('uz_latn', 'UZ'),
+    fallbackLocale: const Locale('uz-Latn-UZ'),
     debugShowCheckedModeBanner: false,
     popGesture: true,
     defaultTransition: Transition.fade,
@@ -50,12 +50,12 @@ void main() async {
       scaffoldBackgroundColor: const Color(0xFFFFFFFF),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: purple,
+          backgroundColor: purple,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-        primary: purple,
+        backgroundColor: purple,
       )),
     ),
     initialRoute: '/splash',
@@ -76,8 +76,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       translations: Messages(),
-      locale: const Locale('uz_latn', 'UZ'),
-      fallbackLocale: const Locale('ru', 'RU'),
+      locale: const Locale('uz-Latn-UZ'),
+      fallbackLocale: const Locale('ru'),
       debugShowCheckedModeBanner: false,
       popGesture: true,
       defaultTransition: Transition.leftToRight,
@@ -87,12 +87,12 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFFFFFFF),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: purple,
+            backgroundColor: purple,
           ),
         ),
         textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
-          primary: purple,
+          backgroundColor: purple,
         )),
       ),
       initialRoute: '/splash',

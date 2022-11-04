@@ -7,8 +7,8 @@ import '../locales/uz_latn.dart';
 class Messages extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
-        'ru_RU': ru,
-        'uz_cyrl_UZ': uzCyrl,
-        'uz_latn_UZ': uzLatn,
+        'ru': ru,
+        'uz-Cyrl-UZ': uzCyrl,
+        'uz-Latn-UZ': uzLatn,
       };
 }

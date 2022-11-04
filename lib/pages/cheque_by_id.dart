@@ -48,17 +48,23 @@ class _ChequeByIdState extends State<ChequeById> {
 
   buildRow(text, text2, {fz = 16.0}) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             text,
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: fz),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: fz,
+            ),
           ),
           Text(
             '$text2',
-            style: TextStyle(fontSize: fz),
+            style: TextStyle(
+              fontSize: fz,
+              fontWeight: FontWeight.w500,
+            ),
           )
         ],
       ),
@@ -84,7 +90,7 @@ class _ChequeByIdState extends State<ChequeById> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
               // Center(
@@ -170,6 +176,7 @@ class _ChequeByIdState extends State<ChequeById> {
               buildRow('sale_amount'.tr, formatMoney(cheque['totalAmount'] ?? 0)),
               buildRow('paid_in_soums'.tr, formatMoney(cheque['totalAmount'] != null ? cheque['totalAmount'] - cheque['writeOff'] : 0)),
               buildRow('paid_with_points'.tr, formatMoney(cheque['writeOff'])),
+              buildRow('return_amount'.tr, formatMoney(cheque['returnAmount'])),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 2),
                 child: Row(
@@ -177,7 +184,10 @@ class _ChequeByIdState extends State<ChequeById> {
                   children: [
                     Text(
                       'status'.tr,
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
                     ),
                     Row(
                       children: [
@@ -224,19 +234,25 @@ class _ChequeByIdState extends State<ChequeById> {
         margin: const EdgeInsets.only(left: 32),
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: () {
-            showReturnModal(context);
-          },
+          onPressed: cheque['returnStatus'] != null && cheque['returnStatus'] < 2
+              ? () {
+                  showReturnModal(context);
+                }
+              : null,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            disabledBackgroundColor: cheque['returnStatus'] != null && cheque['returnStatus'] < 2 ? purple : Colors.black.withOpacity(0.2),
           ),
           child: Text(
             'return'.tr,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+            ),
           ),
         ),
       ),
@@ -276,6 +292,8 @@ class _ChequeByIdState extends State<ChequeById> {
     }
   }
 
+  TextEditingController returnAmountCotroller = TextEditingController();
+
   showReturnModal(context) async {
     getData();
     final result = await showDialog(
@@ -291,44 +309,26 @@ class _ChequeByIdState extends State<ChequeById> {
                 textAlign: TextAlign.center,
               ),
               content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.22,
+                height: MediaQuery.of(context).size.height * 0.3,
+                width: MediaQuery.of(context).size.width * 0.8,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    buildRow('sale_amount'.tr, formatMoney(cheque['totalAmount'] ?? 0)),
                     Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: returnUser['firstName'] != null
-                          ? Text(
-                              '${returnUser['firstName'] + ' ' + returnUser['lastName']}',
-                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                            )
-                          : null,
+                      margin: const EdgeInsets.only(bottom: 5),
+                      child: buildRow(
+                        'sale_amount'.tr,
+                        formatMoney(cheque['totalAmount'] ?? 0),
+                      ),
                     ),
-                    returnUser['firstName'] != null
-                        ? Row(
-                            children: [
-                              Container(
-                                  margin: const EdgeInsets.only(bottom: 20),
-                                  child: Text(
-                                    'balance'.tr + ': ',
-                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                                  )),
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                child: Text(
-                                  '${formatMoney(returnUser['balance'])}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                    color: purple,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        : Container(),
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: buildRow(
+                        'return_amount'.tr,
+                        formatMoney(cheque['returnAmount']),
+                      ),
+                    ),
                     Theme(
                       data: Theme.of(context).copyWith(
                         colorScheme: ThemeData().colorScheme.copyWith(
@@ -339,9 +339,30 @@ class _ChequeByIdState extends State<ChequeById> {
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp("[0-9]")),
                         ],
+                        controller: returnAmountCotroller,
                         onChanged: (value) {
                           returnSetState(() {
                             if (value.isNotEmpty) {
+                              if (int.parse(value) > (cheque['totalAmount'] - cheque['returnAmount']).round()) {
+                                returnAmountCotroller.text = formatMoney(
+                                  returnAmountCotroller.text.substring(
+                                    0,
+                                    returnAmountCotroller.text.length - 1,
+                                  ),
+                                );
+                                returnAmountCotroller.selection = TextSelection.fromPosition(
+                                  TextPosition(
+                                    offset: returnAmountCotroller.text.length - 1,
+                                  ),
+                                );
+                                return;
+                              }
+                              returnAmountCotroller.text = formatMoney(value);
+                              returnAmountCotroller.selection = TextSelection.fromPosition(
+                                TextPosition(
+                                  offset: returnAmountCotroller.text.length - 1,
+                                ),
+                              );
                               data['returnAmount'] = value;
                             } else {
                               data['returnAmount'] = '0';
@@ -349,6 +370,7 @@ class _ChequeByIdState extends State<ChequeById> {
                           });
                         },
                         keyboardType: TextInputType.number,
+                        cursorColor: purple,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(
                             Icons.payments_outlined,
@@ -377,11 +399,11 @@ class _ChequeByIdState extends State<ChequeById> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.35,
+                      width: MediaQuery.of(context).size.width * 0.39,
                       child: ElevatedButton(
                         onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(
-                          primary: red,
+                          backgroundColor: red,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         child: Text(
@@ -391,7 +413,7 @@ class _ChequeByIdState extends State<ChequeById> {
                       ),
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.35,
+                      width: MediaQuery.of(context).size.width * 0.39,
                       child: ElevatedButton(
                         onPressed: int.parse(data['returnAmount']) > 0
                             ? () {
@@ -400,7 +422,7 @@ class _ChequeByIdState extends State<ChequeById> {
                             : null,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          primary: int.parse(data['returnAmount']) > 0 ? purple : grey,
+                          backgroundColor: int.parse(data['returnAmount']) > 0 ? purple : grey,
                           disabledBackgroundColor: Colors.black.withOpacity(0.2),
                         ),
                         child: Text('proceed'.tr),

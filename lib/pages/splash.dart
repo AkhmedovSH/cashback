@@ -139,7 +139,7 @@ class _SplashState extends State<Splash> {
                                     onPressed: () {
                                       Get.back();
                                     },
-                                    style: TextButton.styleFrom(primary: const Color(0xFF00865F)),
+                                    style: TextButton.styleFrom(backgroundColor: const Color(0xFF00865F)),
                                     child: Text(
                                       'no_thanks'.tr,
                                       style: const TextStyle(fontWeight: FontWeight.w500),
@@ -151,7 +151,7 @@ class _SplashState extends State<Splash> {
                               launch(url);
                             },
                             style: ElevatedButton.styleFrom(
-                              primary: const Color(0xFF00865F),
+                              backgroundColor: const Color(0xFF00865F),
                               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4),

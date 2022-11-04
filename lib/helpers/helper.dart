@@ -5,6 +5,7 @@ import 'package:simple_moment/simple_moment.dart';
 
 // Colors
 
+Color black = const Color(0xFF000000);
 Color purple = const Color(0xFF78379B);
 Color white = const Color(0xFFFFFFFF);
 Color red = const Color(0xFFdc3545);

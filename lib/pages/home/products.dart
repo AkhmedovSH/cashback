@@ -101,6 +101,7 @@ class _ProductsState extends State<Products> {
                     height: 40,
                     child: TextField(
                       onChanged: onSearchTextChanged,
+                      cursorColor: grey,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(2),
                         isDense: true,
@@ -111,6 +112,12 @@ class _ProductsState extends State<Products> {
                         ),
                         border: OutlineInputBorder(
                           borderSide: BorderSide(color: borderColor),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(18),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: grey),
                           borderRadius: const BorderRadius.all(
                             Radius.circular(18),
                           ),
@@ -338,6 +345,7 @@ class _ProductsState extends State<Products> {
                                         // data[productList[i]['field_name']] = value;
                                       },
                                       keyboardType: productList[i]['inputType'],
+                                      cursorColor: purple,
                                       decoration: InputDecoration(
                                         contentPadding: const EdgeInsets.all(12.0),
                                         focusColor: purple,
